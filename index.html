@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Love@Fx Pro — Signal Engine v6.2</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{--bg:#08101d;--panel:#10192b;--text:#eef4ff;--muted:#96a6c7;--cyan:#58d8ff;--blue:#4f7cff;--purple:#9a6dff;--green:#59d78f;--red:#ff6e7d;--yellow:#ffcf5a;--border:rgba(140,170,220,.18)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:radial-gradient(circle at 90% 10%, rgba(120,60,255,.18), transparent 25%),radial-gradient(circle at 10% 90%, rgba(40,200,255,.12), transparent 25%),linear-gradient(180deg,#050913,#09101f 55%,#070c16);color:var(--text)}
+.container{max-width:1720px;margin:0 auto;padding:14px}.glass{background:linear-gradient(180deg, rgba(16,25,43,.94), rgba(10,16,29,.95));border:1px solid var(--border);border-radius:20px;box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;margin-bottom:14px}.brand{display:flex;gap:12px;align-items:center}.logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--cyan),var(--purple));display:grid;place-items:center;font-size:28px;font-weight:800}
+.title{font-size:26px;font-weight:800;margin:0;background:linear-gradient(90deg,#93f7ff,#62bcff,#e4e9ff);-webkit-background-clip:text;color:transparent}.subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+.header-right{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{display:flex;gap:8px;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.03);font-size:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--green)}.btn{border:none;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:700;color:white;background:linear-gradient(90deg,var(--cyan),var(--blue))}.btn.secondary{background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.row1{display:grid;grid-template-columns:1fr auto auto auto auto;gap:12px;margin-bottom:14px}.box{padding:12px 14px}.pillbar{display:flex;gap:8px;flex-wrap:wrap}.pill{padding:10px 13px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:#dce7ff;cursor:pointer;font-weight:700}.pill.active{background:linear-gradient(90deg,rgba(88,216,255,.16),rgba(154,109,255,.16));border-color:rgba(88,216,255,.45)}
+select,input,textarea{background:#121a30;color:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-weight:700}select{min-width:170px} input[type="number"]{width:100%}textarea{width:100%;min-height:82px;resize:vertical}
+.grid{display:grid;grid-template-columns:1.35fr .92fr;gap:14px}.stack{display:grid;gap:14px}.hero{display:grid;grid-template-columns:1fr .7fr .95fr;gap:14px;padding:18px}
+.badge{display:inline-block;padding:7px 10px;border-radius:10px;font-size:12px;font-weight:800;margin-right:8px;margin-bottom:6px}.green{background:rgba(89,215,143,.12);color:#9ff2bf}.red{background:rgba(255,110,125,.12);color:#ffb2bb}.blue{background:rgba(88,216,255,.12);color:#9beeff}.yellow{background:rgba(255,207,90,.12);color:#ffe09a}
+.price{font-size:42px;font-weight:900;margin:16px 0 6px}.muted{color:var(--muted)}.small{font-size:12px}.ringwrap{display:grid;place-items:center;position:relative}.ring{width:166px;height:166px;border-radius:50%;background:conic-gradient(#5be5ff var(--deg), #9a6dff calc(var(--deg) + 20deg), rgba(255,255,255,.07) 0)}.ring:after{content:"";position:absolute;inset:20px;border-radius:50%;background:#10172a;border:1px solid var(--border)}.ringtext{position:absolute;text-align:center;z-index:1}.ringtext strong{display:block;font-size:40px}
+.kpis{display:grid;gap:12px;align-content:center}.bar{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#5be5ff,#4f7cff)}
+.card{padding:16px 18px}.card h3{margin:0 0 12px;font-size:15px}#chart,#equityChart{height:410px}.list{display:grid;gap:10px}
+.item{display:flex;justify-content:space-between;align-items:center;padding:12px 13px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);gap:12px}.res{background:rgba(255,110,125,.07);color:#ffb2bb}.sup{background:rgba(89,215,143,.07);color:#a7f0c0}.inv{background:rgba(255,207,90,.09);color:#ffdf93}
+.banner{padding:12px 14px;border-radius:14px;margin-bottom:14px;font-weight:800}.banner.wait{background:rgba(255,207,90,.12);color:#ffe09a;border:1px solid rgba(255,207,90,.22)}.banner.buy{background:rgba(89,215,143,.12);color:#9ff2bf;border:1px solid rgba(89,215,143,.22)}.banner.sell{background:rgba(255,110,125,.12);color:#ffb2bb;border:1px solid rgba(255,110,125,.22)}
+.analysis{line-height:1.65}.analysisbox{margin-top:10px;padding:14px;border-radius:16px;background:linear-gradient(180deg, rgba(90,150,255,.12), rgba(132,75,255,.10));border:1px solid rgba(93,122,255,.22)}
+.history-item{padding:12px 13px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);margin-top:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:16px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;white-space:nowrap}th{color:#9beeff;background:rgba(255,255,255,.03);position:sticky;top:0}
+.good{color:#9ff2bf}.bad{color:#ffb2bb}.warn{color:#ffe09a}
+@media(max-width:1250px){.grid,.row1,.hero,.grid2{grid-template-columns:1fr}}@media(max-width:760px){#chart,#equityChart{height:310px}.title{font-size:22px}.price{font-size:34px}select{min-width:unset;width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="glass header">
+  <div class="brand"><div class="logo">⚡</div><div><h1 class="title">AI Love@Fx Pro</h1><div class="subtitle">Live Deriv + Forex Intelligence | Signal Engine v6.2 • HTF Bias Lock + Retracement Priority + Countertrend Block</div></div></div>
+  <div class="header-right">
+    <div class="status"><span class="dot"></span><span id="connStatus">Connected</span></div>
+    <div class="status"><span id="engineDot" class="dot" style="background:#59d78f"></span><span id="engineLabel">Paper engine active</span></div>
+    <div class="status"><span id="modeDot" class="dot" style="background:#58d8ff"></span><span id="modeLabel">Balanced mode</span></div>
+    <button class="btn secondary" id="resetSessionBtn">Reset Session</button>
+    <button class="btn" id="toggleEngineBtn">Pause Engine</button>
+  </div>
+</div>
+
+<div class="row1">
+  <div class="glass box"><div class="pillbar" id="marketTabs"><button class="pill active" data-market="deriv">Deriv Volatility</button><button class="pill" data-market="forex">Forex</button></div></div>
+  <div class="glass box"><select id="symbolSelect"></select></div>
+  <div class="glass box"><div class="pillbar" id="tfTabs"><button class="pill active" data-tf="M1">M1</button><button class="pill" data-tf="M5">M5</button><button class="pill" data-tf="M15">M15</button><button class="pill" data-tf="H1">H1</button><button class="pill" data-tf="H4">H4</button><button class="pill" data-tf="D1">D1</button></div></div>
+  <div class="glass box"><div class="pillbar" id="modeTabs"><button class="pill" data-mode="conservative">Conservative</button><button class="pill active" data-mode="balanced">Balanced</button><button class="pill" data-mode="aggressive">Aggressive</button></div></div>
+  <div class="glass box"><div class="grid2"><div><div class="muted small">Execution</div><strong>auto paper trade</strong></div><div><div class="muted small">Trigger model</div><strong>retracement-first</strong></div></div></div>
+</div>
+
+<div id="signalBanner" class="banner wait">WAIT — paper engine is monitoring for the next valid setup.</div>
+
+<div class="grid">
+  <div class="stack">
+    <div class="glass hero">
+      <div>
+        <span id="biasBadge" class="badge yellow">WAIT</span>
+        <span id="structureBadge" class="badge blue">Range / Transition</span>
+        <span id="lockBadge" class="badge yellow">HTF mixed</span>
+        <span id="crtBadge" class="badge yellow">No CRT sweep</span>
+        <div class="price" id="priceValue">--</div>
+        <div class="muted" id="priceDelta">Waiting for data…</div>
+        <div class="muted small" style="margin-top:10px">Symbol: <span id="activeSymbol">--</span></div>
+      </div>
+      <div class="ringwrap"><div id="ring" class="ring" style="--deg:72deg"></div><div class="ringtext"><strong id="confidenceValue">20%</strong><span class="muted small">Confidence</span></div></div>
+      <div class="kpis">
+        <div><div class="muted small" style="margin-bottom:6px">Probability</div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong id="probValue">20%</strong><span id="lastUpdate" class="muted small">--</span></div><div class="bar"><span id="probBar" style="width:20%"></span></div></div>
+        <div><div class="muted small">EMA Bias</div><strong id="emaBias">waiting</strong></div>
+        <div><div class="muted small">RSI</div><strong id="rsiValue">--</strong></div>
+        <div><div class="muted small">H4 Bias</div><strong id="h4Bias">--</strong></div>
+        <div><div class="muted small">H1 Bias</div><strong id="h1Bias">--</strong></div>
+        <div><div class="muted small">D1 Bias</div><strong id="d1Bias">--</strong></div>
+      </div>
+    </div>
+    <div class="glass card"><h3>Live Price Action <span class="muted small" id="candleMeta" style="float:right">0 candles • M1</span></h3><div id="chart"></div></div>
+    <div class="glass card"><h3>AI Analysis &amp; Reasoning</h3><div id="analysisText" class="analysis">Waiting for live data and enough candles to compute analysis.</div><div class="analysisbox"><strong style="color:#86e6ff">Confluence Edge</strong><ul id="confluenceList"><li>Waiting for EMA / RSI / structure alignment</li></ul></div></div>
+    <div class="glass card"><h3>Performance Intelligence</h3><div id="equityChart"></div></div>
+    <div class="glass card"><h3>Auto Trade Journal</h3><div class="table-wrap"><table><thead><tr><th>Time</th><th>Symbol</th><th>TF</th><th>Type</th><th>Mode</th><th>HTF Lock</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead><tbody id="journalBody"></tbody></table></div></div>
+  </div>
+
+  <div class="stack">
+    <div class="glass card"><h3>Execution Control</h3><div id="executionSummary" class="list"></div></div>
+    <div class="glass card"><h3>HTF Bias Lock</h3><div id="lockPanel" class="list"></div></div>
+    <div class="glass card"><h3>CRT Sweep Module</h3><div id="crtPanel" class="list"></div></div>
+    <div class="glass card"><h3>Risk Engine</h3><div class="grid2">
+      <div><label class="muted small">Paper Balance</label><input type="number" id="balanceInput" value="50000" min="100" step="100"></div>
+      <div><label class="muted small">Risk % per Trade</label><input type="number" id="riskInput" value="1" min="0.1" max="5" step="0.1"></div>
+      <div><label class="muted small">Max Trades / Session</label><input type="number" id="maxTradesInput" value="4" min="1" max="20" step="1"></div>
+      <div><label class="muted small">Daily Loss Cap %</label><input type="number" id="dailyLossInput" value="3" min="1" max="20" step="0.5"></div>
+      <div><label class="muted small">Take Partial at TP1</label><select id="tp1Partial"><option value="0.5">50%</option><option value="0.33">33%</option><option value="1">100%</option></select></div>
+      <div><label class="muted small">Cooldown Minutes</label><input type="number" id="cooldownInput" value="15" min="1" max="180" step="1"></div>
+    </div><div id="riskSummary" class="list" style="margin-top:12px"></div></div>
+    <div class="glass card"><h3>Current Paper Trade</h3><div id="currentTradePanel" class="list"></div></div>
+    <div class="glass card"><h3>Key Levels</h3><div id="levelsList" class="list"></div></div>
+    <div class="glass card"><h3>Trade Map</h3><div id="tradeMap" class="list"></div></div>
+    <div class="glass card"><h3>Performance Tracking</h3><div id="perfSummary" class="list"></div></div>
+    <div class="glass card"><h3>Signal History</h3><div id="signalHistory" class="muted small">No alerts fired yet.</div></div>
+    <div class="glass card"><h3>Journal Notes</h3><textarea id="journalNote" placeholder="Type your market observation, lesson, or forward testing comment here..."></textarea></div>
+  </div>
+</div>
+</div>
+
+<script>
+const APP_ID=1089, WS_URL=`wss://ws.derivws.com/websockets/v3?app_id=${APP_ID}`, STORAGE_KEY='ai_lovefx_v62_htf_lock';
+const markets={deriv:[['V10 (1s)','1HZ10V'],['V50 (1s)','1HZ50V'],['V100 (1s)','1HZ100V']],forex:[['EUR/USD','frxEURUSD'],['GBP/USD','frxGBPUSD'],['USD/JPY','frxUSDJPY'],['XAU/USD','frxXAUUSD'],['US30','frxUS30'],['NAS100','frxNAS100']]};
+const tfs={M1:{g:60,c:120},M5:{g:300,c:120},M15:{g:900,c:120},H1:{g:3600,c:120},H4:{g:14400,c:120},D1:{g:86400,c:120}};
+const state={market:'deriv',symbol:'1HZ10V',tf:'M1',mode:'balanced',candles:[],tick:null,d1Candles:[],h4Candles:[],h1Candles:[],ws:null,engineActive:true,lastSignalKey:null,lastSignalTs:0,settings:{balance:50000,riskPct:1,maxTrades:4,dailyLossPct:3,tp1Partial:0.5,cooldownMin:15},perf:{sessionTrades:0,wins:0,losses:0,breakevens:0,blocked:0,totalR:0,balanceCurve:[50000],journal:[],history:[],dailyLossValue:0},currentTrade:null};
+const $=id=>document.getElementById(id);
+function saveState(){localStorage.setItem(STORAGE_KEY, JSON.stringify({market:state.market,symbol:state.symbol,tf:state.tf,mode:state.mode,engineActive:state.engineActive,settings:state.settings,perf:state.perf,currentTrade:state.currentTrade}))}
+function loadState(){try{const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); if(!d)return; state.market=d.market||state.market; state.symbol=d.symbol||state.symbol; state.tf=d.tf||state.tf; state.mode=d.mode||state.mode; state.engineActive=d.engineActive!==undefined?d.engineActive:state.engineActive; Object.assign(state.settings,d.settings||{}); Object.assign(state.perf,d.perf||{}); state.currentTrade=d.currentTrade||null;}catch(e){}}
+function fillSelect(sel,list,val){sel.innerHTML='';list.forEach(([label,v])=>{const o=document.createElement('option');o.textContent=label;o.value=v;if(v===val)o.selected=true;sel.appendChild(o);})}
+function pills(node,key,val){node.querySelectorAll('.pill').forEach(b=>b.classList.toggle('active',b.dataset[key]===val))}
+function fmt(v,symbol){if(v==null||isNaN(v))return'--';const d=symbol.startsWith('frx')?5:3;return Number(v).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d})}
+function ema(arr,p){if(arr.length<p)return[];const k=2/(p+1),r=[];let sma=arr.slice(0,p).reduce((a,b)=>a+b,0)/p;r[p-1]=sma;for(let i=p;i<arr.length;i++)r[i]=arr[i]*k+r[i-1]*(1-k);return r}
+function rsi(arr,p=14){if(arr.length<=p)return null;let g=0,l=0;for(let i=1;i<=p;i++){const d=arr[i]-arr[i-1];if(d>=0)g+=d;else l-=d}let ag=g/p,al=l/p;for(let i=p+1;i<arr.length;i++){const d=arr[i]-arr[i-1];ag=((ag*(p-1))+(d>0?d:0))/p;al=((al*(p-1))+(d<0?-d:0))/p}if(al===0)return 100;const rs=ag/al;return 100-(100/(1+rs))}
+function structure(c){if(c.length<15)return'Range / Transition';const h=c.slice(-10).map(x=>x.high),l=c.slice(-10).map(x=>x.low),rh=Math.max(...h.slice(-5)),ph=Math.max(...h.slice(0,5)),rl=Math.min(...l.slice(-5)),pl=Math.min(...l.slice(0,5));if(rh>ph&&rl>pl)return'HH / HL Structure';if(rh<ph&&rl<pl)return'LH / LL Structure';return'Range / Transition'}
+function bosChoch(c){if(c.length<12)return{bos:'None',choch:'None'};const p=c.slice(-12,-6),r=c.slice(-6),ph=Math.max(...p.map(x=>x.high)),pl=Math.min(...p.map(x=>x.low)),rh=Math.max(...r.map(x=>x.high)),rl=Math.min(...r.map(x=>x.low));let bos='None',choch='None';if(rh>ph)bos='Bullish BOS';if(rl<pl)bos=bos==='Bullish BOS'?'Both-side break':'Bearish BOS';const a=structure(c.slice(-18,-9)),b=structure(c.slice(-18));if(a!==b&&b!=='Range / Transition')choch=b==='HH / HL Structure'?'Bullish CHoCH':'Bearish CHoCH';return{bos,choch}}
+function fvg(c){if(c.length<3)return null;for(let i=c.length-1;i>=2;i--){const a=c[i-2],z=c[i];if(z.low>a.high)return{type:'Bullish FVG',low:a.high,high:z.low};if(z.high<a.low)return{type:'Bearish FVG',low:z.high,a:a.low,high:a.low}}return null}
+function ob(c,st){if(c.length<6)return null;const r=c.slice(-8);if(st==='HH / HL Structure'){for(let i=r.length-3;i>=1;i--){const x=r[i];if(x.close<x.open)return{type:'Bullish OB',low:Math.min(x.low,x.open,x.close),high:Math.max(x.open,x.close)}}}if(st==='LH / LL Structure'){for(let i=r.length-3;i>=1;i--){const x=r[i];if(x.close>x.open)return{type:'Bearish OB',low:Math.min(x.open,x.close),high:Math.max(x.high,x.open,x.close)}}}return null}
+function fibZone(c){if(c.length<20)return null;const s=c.slice(-20),hi=Math.max(...s.map(x=>x.high)),lo=Math.min(...s.map(x=>x.low)),r=hi-lo;return{hi,lo,f50:hi-r*0.5,f618:hi-r*0.618}}
+function trendScore(c){if(c.length<20)return 0;const close=c.slice(-20).map(x=>x.close);let up=0,down=0;for(let i=1;i<close.length;i++){if(close[i]>close[i-1])up++;if(close[i]<close[i-1])down++;}return Math.abs(up-down)/19}
+function modeThresholds(){if(state.mode==='conservative')return{minScore:84,trend:0.22,allowBreakout:false,allowMixed:false,crtMin:68};if(state.mode==='aggressive')return{minScore:62,trend:0.08,allowBreakout:true,allowMixed:false,crtMin:50};return{minScore:72,trend:0.12,allowBreakout:true,allowMixed:false,crtMin:60}}
+function timeframeBias(c){if(!c||c.length<25)return'Mixed';const close=c.map(x=>x.close),e20=ema(close,20),e50=ema(close,50),r=rsi(close,14),st=structure(c),le20=e20[e20.length-1],le50=e50[e50.length-1];if(le20&&le50){if(le20>le50&&st==='HH / HL Structure'&&(r||0)>=50)return'Bullish';if(le20<le50&&st==='LH / LL Structure'&&(r||100)<=50)return'Bearish'}return'Mixed'}
+function lockBias(h4Bias,h1Bias){if(h4Bias==='Bullish'&&h1Bias==='Bullish')return'Bullish Locked';if(h4Bias==='Bearish'&&h1Bias==='Bearish')return'Bearish Locked';return'Mixed / No Lock'}
+function get4HRangeInfo(){const h4=state.h4Candles;if(!h4.length)return null;const curr=h4[h4.length-1],prev=h4.length>1?h4[h4.length-2]:curr;return{useHigh:curr.high,useLow:curr.low,width:curr.high-curr.low}}
+function detectCRTSweep(c,rangeInfo,signalHint){if(!rangeInfo||c.length<3)return{type:'None',score:0,reclaimed:false,details:[]};const last=c[c.length-1],body=Math.abs(last.close-last.open),full=Math.max(last.high-last.low,0.0000001),bodyPct=body/full,reclaimBull=(last.low<rangeInfo.useLow)&&(last.close>rangeInfo.useLow)&&(last.close<rangeInfo.useHigh),reclaimBear=(last.high>rangeInfo.useHigh)&&(last.close<rangeInfo.useHigh)&&(last.close>rangeInfo.useLow);const details=[];let score=0,type='None',reclaimed=false;if(reclaimBull){type='Bullish CRT Sweep';reclaimed=true;score+=28;details.push('wick swept below 4H low');details.push('close reclaimed inside 4H range');if(bodyPct>0.4){score+=10;details.push('reclaim body strong')}if(last.close>last.open){score+=8;details.push('bullish reclaim candle')}if(signalHint==='BULLISH'){score+=10;details.push('aligned with directional bias')}}if(reclaimBear){type='Bearish CRT Sweep';reclaimed=true;score+=28;details.push('wick swept above 4H high');details.push('close reclaimed inside 4H range');if(bodyPct>0.4){score+=10;details.push('reclaim body strong')}if(last.close<last.open){score+=8;details.push('bearish reclaim candle')}if(signalHint==='BEARISH'){score+=10;details.push('aligned with directional bias')}}return{type,score,reclaimed,details}}
+function computeRisk(levels){const balance=Number(state.settings.balance)||0,riskPct=Number(state.settings.riskPct)||1,riskAmt=balance*(riskPct/100),stopDist=Math.abs(levels.entry-levels.inv),lot=stopDist>0?(riskAmt/(stopDist*1000)):0,lossCap=balance*((Number(state.settings.dailyLossPct)||3)/100);return{riskAmt,stopDist,lot,lossCap}}
+function makeLevels(price,signal){const step=state.symbol.startsWith('frx')?0.0015:1.9;if(signal==='BULLISH')return{entry:price,tp1:price+step*2,tp2:price+step*4,tp3:price+step*6,inv:price-step*2,r1:price+step*4,r2:price+step*5,r3:price+step*6,s1:price-step*1,s2:price-step*2,s3:price-step*3};if(signal==='BEARISH')return{entry:price,tp1:price-step*2,tp2:price-step*4,tp3:price-step*6,inv:price+step*2.2,r1:price+step*1,r2:price+step*2,r3:price+step*3,s1:price-step*1,s2:price-step*2,s3:price-step*3};return{entry:price,tp1:price,tp2:price,tp3:price,inv:price,r1:price,r2:price,r3:price,s1:price,s2:price,s3:price}}
+function pullbackSignal(signal,c,zone,e20){if(c.length<5||!zone)return false;const recent=c.slice(-5),last=recent[recent.length-1];if(signal==='BULLISH'){const fibTouch=recent.some(x=>x.low<=zone.f50&&x.low>=zone.f618-(state.symbol.startsWith('frx')?0.0015:8));const emaTouch=e20!=null?recent.some(x=>x.low<=e20*1.0018):false;return (fibTouch||emaTouch)&&last.close>last.open}if(signal==='BEARISH'){const fibTouch=recent.some(x=>x.high>=zone.f50&&x.high<=zone.hi+(state.symbol.startsWith('frx')?0.0015:8));const emaTouch=e20!=null?recent.some(x=>x.high>=e20*0.9982):false;return (fibTouch||emaTouch)&&last.close<last.open}return false}
+function breakoutRetestSignal(signal,c,bc,e20){if(c.length<8)return false;const recent=c.slice(-4),last=recent[recent.length-1];if(signal==='BULLISH')return bc.bos.includes('Bullish')&&recent.some(x=>x.low<=(e20||last.close)*1.002)&&last.close>last.open;if(signal==='BEARISH')return bc.bos.includes('Bearish')&&recent.some(x=>x.high>=(e20||last.close)*0.998)&&last.close<last.open;return false}
+function analyze(c,price){
+  const close=c.map(x=>x.close),e20=ema(close,20),e50=ema(close,50),le20=e20[e20.length-1],le50=e50[e50.length-1],rs=rsi(close,14),st=structure(c),bc=bosChoch(c),gap=fvg(c),block=ob(c,st),zone=fibZone(c),h4Bias=timeframeBias(state.h4Candles),h1Bias=timeframeBias(state.h1Candles),d1Bias=timeframeBias(state.d1Candles),lock=lockBias(h4Bias,h1Bias),th=modeThresholds();
+  let score=0,signal='WAIT',bias='Mixed bias'; const con=[], blockedReasons=[];
+  if(le20&&le50){if(le20>le50){score+=22;bias='EMA bullish';con.push('EMA20 vs EMA50 bullish alignment')}else if(le20<le50){score+=22;bias='EMA bearish';con.push('EMA20 vs EMA50 bearish alignment')}}
+  if(rs!=null){if(rs>55){score+=16;con.push(`RSI bullish ${rs.toFixed(1)}`)}else if(rs<45){score+=16;con.push(`RSI bearish ${rs.toFixed(1)}`)}else con.push(`RSI neutral ${rs.toFixed(1)}`)}
+  if(st==='HH / HL Structure'){score+=22;signal='BULLISH';con.push('Structure HH/HL')}else if(st==='LH / LL Structure'){score+=22;signal='BEARISH';con.push('Structure LH/LL')}else con.push('Structure range / transition')
+  if(d1Bias==='Bullish'&&signal==='BULLISH'){score+=8;con.push('D1 bias bullish')} if(d1Bias==='Bearish'&&signal==='BEARISH'){score+=8;con.push('D1 bias bearish')}
+  if(gap){score+=8;con.push(`${gap.type} ${fmt(gap.low,state.symbol)} - ${fmt(gap.high,state.symbol)}`)} if(block){score+=8;con.push(`${block.type} ${fmt(block.low,state.symbol)} - ${fmt(block.high,state.symbol)}`)}
+  if(zone)con.push(`Fib 50 ${fmt(zone.f50,state.symbol)} / 61.8 ${fmt(zone.f618,state.symbol)}`)
+  if(bc.bos!=='None'){score+=6;con.push(bc.bos)} if(bc.choch!=='None'){score+=4;con.push(bc.choch)}
+
+  const crtRange=get4HRangeInfo(), crt=detectCRTSweep(c,crtRange,signal);
+  if(crt.type!=='None'){score+=crt.score; con.push(crt.type); crt.details.forEach(x=>con.push(`CRT: ${x}`)); if(crt.type==='Bullish CRT Sweep')signal='BULLISH'; if(crt.type==='Bearish CRT Sweep')signal='BEARISH'}
+
+  const pullback=pullbackSignal(signal,c,zone,le20), breakout=th.allowBreakout?breakoutRetestSignal(signal,c,bc,le20):false, crtEntry=(crt.type==='Bullish CRT Sweep'&&signal==='BULLISH')||(crt.type==='Bearish CRT Sweep'&&signal==='BEARISH');
+  let setupType='None';
+  if(lock==='Bullish Locked' && signal==='BULLISH' && pullback){ score+=16; setupType='Retracement'; con.push('Retracement priority active') }
+  else if(lock==='Bearish Locked' && signal==='BEARISH' && pullback){ score+=16; setupType='Retracement'; con.push('Retracement priority active') }
+  else if(lock==='Bullish Locked' && signal==='BULLISH' && crtEntry){ score+=10; setupType='CRT Sweep Reclaim' }
+  else if(lock==='Bearish Locked' && signal==='BEARISH' && crtEntry){ score+=10; setupType='CRT Sweep Reclaim' }
+  else if(lock==='Bullish Locked' && signal==='BULLISH' && breakout){ score+=8; setupType='Breakout + Retest'; con.push('Breakout secondary trigger active') }
+  else if(lock==='Bearish Locked' && signal==='BEARISH' && breakout){ score+=8; setupType='Breakout + Retest'; con.push('Breakout secondary trigger active') }
+  else if(lock==='Mixed / No Lock' && pullback){ setupType='Retracement'; score+=6; con.push('Retracement candidate under mixed HTF') }
+
+  const countertrendBlocked = (lock==='Bullish Locked'&&signal==='BEARISH') || (lock==='Bearish Locked'&&signal==='BULLISH');
+  if(countertrendBlocked){score=Math.min(score,40); blockedReasons.push('countertrend blocked by HTF bias lock'); con.push('Countertrend signal blocked by H4 + H1 alignment')}
+  const noLockBlocked = (lock==='Mixed / No Lock' && !th.allowMixed);
+  if(noLockBlocked){blockedReasons.push('no HTF lock for execution')}
+  const trendOK = trendScore(c)>=th.trend;
+  if(!trendOK) blockedReasons.push('trend filter not passed');
+  const crtGate = crt.type==='None' ? true : crt.score>=th.crtMin;
+  if(!crtGate) blockedReasons.push('CRT quality below threshold');
+  if(setupType==='None') blockedReasons.push('no valid retracement / breakout / CRT trigger');
+  const extended=Math.abs(price-(le20||price))>(state.symbol.startsWith('frx')?0.003:18);
+  if(extended) blockedReasons.push('move extended / late entry risk');
+
+  let confirmed=false;
+  if(signal!=='WAIT'){
+    const scorePass=score>=th.minScore;
+    if(!scorePass) blockedReasons.push('base confirmation not passed');
+    confirmed = scorePass && !countertrendBlocked && !noLockBlocked && trendOK && crtGate && !extended && setupType!=='None';
+  } else blockedReasons.push('no directional setup');
+
+  const levels=makeLevels(price, signal), risk=computeRisk(levels);
+  return {confidence:Math.max(20,Math.min(96,score)), signal, confirmed, structure:st, bias, rsi:rs, h4Bias, h1Bias, d1Bias, lock, con, blockedReasons, levels, risk, setupType, crt, crtRange}
+}
+function governance(res){
+  const tradesOk=state.perf.sessionTrades<Number(state.settings.maxTrades||4),
+        dailyCapOk=state.perf.dailyLossValue<(Number(state.settings.balance||0)*(Number(state.settings.dailyLossPct)||3)/100),
+        cooldownOk=(Date.now()-state.lastSignalTs)>(Number(state.settings.cooldownMin||15)*60*1000),
+        engineOk=state.engineActive, tradeFree=!state.currentTrade||state.currentTrade.status!=='OPEN';
+  const blocked=[]; if(!engineOk)blocked.push('paper engine paused'); if(!tradesOk)blocked.push('max session trades reached'); if(!dailyCapOk)blocked.push('daily loss cap reached'); if(!cooldownOk)blocked.push('cooldown active'); if(!tradeFree)blocked.push('paper trade already open'); res.blockedReasons.forEach(r=>blocked.push(r));
+  return {allow:engineOk&&tradesOk&&dailyCapOk&&cooldownOk&&tradeFree&&res.confirmed, tradesOk,dailyCapOk,cooldownOk,engineOk,tradeFree, blocked}
+}
+function drawDash(res,gov,price){
+  $('biasBadge').textContent=res.signal==='WAIT'?'WAIT':res.signal; $('biasBadge').className='badge '+(res.signal==='BULLISH'?'green':res.signal==='BEARISH'?'red':'yellow');
+  $('structureBadge').textContent=res.structure;
+  $('lockBadge').textContent=res.lock; $('lockBadge').className='badge '+(res.lock.startsWith('Bullish')?'green':res.lock.startsWith('Bearish')?'red':'yellow');
+  $('crtBadge').textContent=res.crt.type==='None'?'No CRT sweep':res.crt.type; $('crtBadge').className='badge '+(res.crt.type.includes('Bullish')?'green':res.crt.type.includes('Bearish')?'red':'yellow');
+  $('priceValue').textContent=fmt(price,state.symbol); $('activeSymbol').textContent=state.symbol;
+  $('confidenceValue').textContent=res.confidence+'%'; $('probValue').textContent=res.confidence+'%'; $('probBar').style.width=res.confidence+'%'; $('ring').style.setProperty('--deg',Math.round(res.confidence*3.6)+'deg');
+  $('emaBias').textContent=res.bias; $('rsiValue').textContent=res.rsi!=null?res.rsi.toFixed(1):'--'; $('h4Bias').textContent=res.h4Bias; $('h1Bias').textContent=res.h1Bias; $('d1Bias').textContent=res.d1Bias; $('lastUpdate').textContent=new Date().toLocaleTimeString(); $('candleMeta').textContent=`${state.candles.length} candles • ${state.tf}`;
+  $('analysisText').innerHTML=`${state.symbol} on ${state.tf} reads <strong>${res.signal}</strong> with ${res.confidence}% confidence. Setup type: <strong>${res.setupType}</strong>. H4 bias is <strong>${res.h4Bias}</strong>, H1 bias is <strong>${res.h1Bias}</strong>, lock state is <strong>${res.lock}</strong>. EMA stack is ${res.bias.toLowerCase()} while RSI sits at ${res.rsi?res.rsi.toFixed(1):'--'}. ${gov.allow?'<strong>Paper execution allowed.</strong>':'<strong>Paper execution blocked.</strong>'}`;
+  const ul=$('confluenceList'); ul.innerHTML=''; res.con.forEach(t=>{const li=document.createElement('li'); li.textContent=t; ul.appendChild(li)}); gov.blocked.forEach(t=>{const li=document.createElement('li'); li.innerHTML=`<span class="warn">Filter:</span> ${t}`; ul.appendChild(li)});
+  const levels=$('levelsList'); levels.innerHTML=''; [['Resistance 1',res.levels.r1,'res'],['Resistance 2',res.levels.r2,'res'],['Resistance 3',res.levels.r3,'res'],['Invalidation',res.levels.inv,'inv'],['Support 1',res.levels.s1,'sup'],['Support 2',res.levels.s2,'sup'],['Support 3',res.levels.s3,'sup']].forEach(([lab,val,cls])=>{const d=document.createElement('div'); d.className='item '+cls; d.innerHTML=`<span>${lab}</span><strong>${fmt(val,state.symbol)}</strong>`; levels.appendChild(d)});
+  const tm=$('tradeMap'); tm.innerHTML=''; [['Entry',res.levels.entry],['TP1',res.levels.tp1],['TP2',res.levels.tp2],['TP3',res.levels.tp3],['Signal',res.signal],['Setup type',res.setupType],['HTF Lock',res.lock]].forEach(([lab,val])=>{const d=document.createElement('div'); d.className='item'; d.innerHTML=`<span>${lab}</span><strong>${typeof val==='string'?val:fmt(val,state.symbol)}</strong>`; tm.appendChild(d)});
+  const ex=$('executionSummary'); ex.innerHTML=''; [['Engine',gov.engineOk?'PASS':'BLOCKED',gov.engineOk?'good':'bad'],['Trade slot',gov.tradeFree?'PASS':'BLOCKED',gov.tradeFree?'good':'bad'],['Cooldown',gov.cooldownOk?'PASS':'BLOCKED',gov.cooldownOk?'good':'bad'],['Trade limit',gov.tradesOk?'PASS':'BLOCKED',gov.tradesOk?'good':'bad'],['Daily cap',gov.dailyCapOk?'PASS':'BLOCKED',gov.dailyCapOk?'good':'bad'],['Execution status',gov.allow?`${res.signal} PAPER TRADE READY`:'WAIT / FILTERED',gov.allow?'good':'warn']].forEach(([lab,val,cls])=>{const d=document.createElement('div'); d.className='item'; d.innerHTML=`<span>${lab}</span><strong class="${cls}">${val}</strong>`; ex.appendChild(d)});
+  const lockPanel=$('lockPanel'); lockPanel.innerHTML=''; [['H4 Bias',res.h4Bias],['H1 Bias',res.h1Bias],['D1 Bias',res.d1Bias],['Bias Lock',res.lock],['Countertrend Block', ((res.lock==='Bullish Locked'&&res.signal==='BEARISH')||(res.lock==='Bearish Locked'&&res.signal==='BULLISH')) ? 'YES' : 'NO'], ['Priority Model', 'Retracement first']].forEach(([lab,val])=>{const d=document.createElement('div'); d.className='item'; d.innerHTML=`<span>${lab}</span><strong>${val}</strong>`; lockPanel.appendChild(d)});
+  const crtPanel=$('crtPanel'); crtPanel.innerHTML=''; [['Current 4H High',res.crtRange?fmt(res.crtRange.useHigh,state.symbol):'--'],['Current 4H Low',res.crtRange?fmt(res.crtRange.useLow,state.symbol):'--'],['4H Range Width',res.crtRange?fmt(res.crtRange.width,state.symbol):'--'],['CRT Sweep',res.crt.type],['CRT Score',res.crt.score],['Reclaimed',res.crt.reclaimed?'YES':'NO']].forEach(([lab,val])=>{const d=document.createElement('div'); d.className='item'; d.innerHTML=`<span>${lab}</span><strong>${val}</strong>`; crtPanel.appendChild(d)});
+  const risk=$('riskSummary'); risk.innerHTML=''; [['Risk amount / trade',`$${res.risk.riskAmt.toFixed(2)}`],['Stop distance',fmt(res.risk.stopDist,state.symbol)],['Suggested lot',res.risk.lot.toFixed(2)],['Daily loss cap',`$${res.risk.lossCap.toFixed(2)}`]].forEach(([lab,val])=>{const d=document.createElement('div'); d.className='item'; d.innerHTML=`<span>${lab}</span><strong>${val}</strong>`; risk.appendChild(d)});
+  renderCurrentTrade(); renderPerformance();
+  const b=$('signalBanner'); b.className='banner '+(gov.allow?(res.signal==='BULLISH'?'buy':'sell'):'wait'); b.textContent=gov.allow?`${res.signal} ${res.setupType.toUpperCase()} — HTF lock ${res.lock} — paper engine ready at ${fmt(res.levels.entry,state.symbol)}`:'WAIT — paper engine is monitoring for the next valid setup.';
+}
+function renderChart(res=null){
+  if(!state.candles.length)return;
+  const x=state.candles.map(c=>new Date(c.epoch*1000)), close=state.candles.map(c=>c.close), e20=ema(close,20).map(v=>v??null), e50=ema(close,50).map(v=>v??null);
+  const traces=[{type:'candlestick',x,open:state.candles.map(c=>c.open),high:state.candles.map(c=>c.high),low:state.candles.map(c=>c.low),close,increasing:{line:{color:'#59d78f'},fillcolor:'#59d78f'},decreasing:{line:{color:'#ff6e7d'},fillcolor:'#ff6e7d'},name:'Price'},{type:'scatter',mode:'lines',x,y:e20,line:{color:'#8e71ff',width:2.5},name:'EMA 20'},{type:'scatter',mode:'lines',x,y:e50,line:{color:'#efb35c',width:2.5},name:'EMA 50'}];
+  if(res&&res.crtRange){ traces.push({type:'scatter',mode:'lines',x:[x[0],x[x.length-1]],y:[res.crtRange.useHigh,res.crtRange.useHigh],line:{color:'#ff7a7a',dash:'dot',width:2},name:'4H High'},{type:'scatter',mode:'lines',x:[x[0],x[x.length-1]],y:[res.crtRange.useLow,res.crtRange.useLow],line:{color:'#6df0a2',dash:'dot',width:2},name:'4H Low'}) }
+  if(state.currentTrade&&state.currentTrade.status==='OPEN'){ traces.push({type:'scatter',mode:'lines',x:[x[0],x[x.length-1]],y:[state.currentTrade.entry,state.currentTrade.entry],line:{color:'#58d8ff',dash:'dot',width:2},name:'Entry'},{type:'scatter',mode:'lines',x:[x[0],x[x.length-1]],y:[state.currentTrade.sl,state.currentTrade.sl],line:{color:'#ff6e7d',dash:'dot',width:2},name:'SL'},{type:'scatter',mode:'lines',x:[x[0],x[x.length-1]],y:[state.currentTrade.tp1,state.currentTrade.tp1],line:{color:'#59d78f',dash:'dot',width:2},name:'TP1'}) }
+  Plotly.react('chart',traces,{margin:{l:40,r:18,t:10,b:34},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',xaxis:{gridcolor:'rgba(255,255,255,.08)',color:'#9badcf'},yaxis:{gridcolor:'rgba(255,255,255,.08)',color:'#9badcf'},legend:{orientation:'h',x:0.02,y:1.1,bgcolor:'rgba(0,0,0,0)',font:{color:'#dce7ff',size:11}}},{displayModeBar:false,responsive:true})
+}
+function renderEquity(){const y=state.perf.balanceCurve.length?state.perf.balanceCurve:[state.settings.balance],x=y.map((_,i)=>i);Plotly.react('equityChart',[{type:'scatter',mode:'lines+markers',x,y,line:{width:3},marker:{size:6},name:'Paper Equity'}],{margin:{l:45,r:10,t:10,b:35},paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',xaxis:{title:'Trade #',gridcolor:'rgba(255,255,255,.08)',color:'#9badcf'},yaxis:{title:'Balance',gridcolor:'rgba(255,255,255,.08)',color:'#9badcf'}},{displayModeBar:false,responsive:true})}
+function renderPerformance(){const perf=$('perfSummary');perf.innerHTML='';const total=state.perf.wins+state.perf.losses+state.perf.breakevens,wr=total?((state.perf.wins/total)*100).toFixed(1):'0.0',pf=(state.perf.wins&&state.perf.losses)?((state.perf.wins*1.5)/(state.perf.losses*1.0)).toFixed(2):(state.perf.wins?'∞':'0.00');[['Session trades',state.perf.sessionTrades],['Wins / Losses / BE',`${state.perf.wins} / ${state.perf.losses} / ${state.perf.breakevens}`],['Win rate',`${wr}%`],['Blocked setups',state.perf.blocked],['Total R',state.perf.totalR.toFixed(2)],['Profit factor',pf],['Daily loss value',`$${state.perf.dailyLossValue.toFixed(2)}`]].forEach(([lab,val])=>{const d=document.createElement('div');d.className='item';d.innerHTML=`<span>${lab}</span><strong>${val}</strong>`;perf.appendChild(d)});renderEquity();renderJournal();renderHistory()}
+function renderJournal(){const body=$('journalBody');body.innerHTML='';if(!state.perf.journal.length){const tr=document.createElement('tr');tr.innerHTML='<td colspan="14" class="muted">No paper trades logged yet.</td>';body.appendChild(tr);return;}state.perf.journal.slice().reverse().forEach(j=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${j.time}</td><td>${j.symbol}</td><td>${j.tf}</td><td>${j.signal}</td><td>${j.mode}</td><td>${j.lock}</td><td>${j.entry}</td><td>${j.sl}</td><td>${j.tp1}</td><td>${j.tp2}</td><td>${j.tp3}</td><td>${j.status}</td><td class="${j.result==='WIN'?'good':j.result==='LOSS'?'bad':'warn'}">${j.result}</td><td>${j.r.toFixed(2)}</td>`;body.appendChild(tr)})}
+function renderHistory(){const wrap=$('signalHistory');wrap.innerHTML='';if(!state.perf.history.length){wrap.textContent='No alerts fired yet.';return;}state.perf.history.forEach(h=>{const d=document.createElement('div');d.className='history-item';d.innerHTML=`<strong>${h.signal} ${h.symbol}</strong><div class="muted small">${h.time}</div><div style="margin-top:8px">${h.setupType} | ${h.lock} | Entry ${h.entry} | SL ${h.sl} | TP1 ${h.tp1}</div>`;wrap.appendChild(d)})}
+function renderCurrentTrade(){const wrap=$('currentTradePanel');wrap.innerHTML='';if(!state.currentTrade||state.currentTrade.status!=='OPEN'){const d=document.createElement('div');d.className='item';d.innerHTML='<span>Engine status</span><strong>Waiting for trade</strong>';wrap.appendChild(d);return;}const t=state.currentTrade,pnl=t.signal==='BULLISH'?((state.tick||t.entry)-t.entry):(t.entry-(state.tick||t.entry)),rr=t.riskPerPoint?(pnl/t.riskPerPoint).toFixed(2):'0.00';[['Status','IN PAPER TRADE'],['Direction',t.signal],['Setup type',t.setupType],['HTF Lock',t.lock],['Entry',fmt(t.entry,state.symbol)],['Stop Loss',fmt(t.sl,state.symbol)],['TP1',fmt(t.tp1,state.symbol)],['TP2',fmt(t.tp2,state.symbol)],['TP3',fmt(t.tp3,state.symbol)],['Floating PnL',fmt(pnl,state.symbol)],['Floating R',rr]].forEach(([lab,val])=>{const d=document.createElement('div');d.className='item';d.innerHTML=`<span>${lab}</span><strong>${val}</strong>`;wrap.appendChild(d)})}
+function pushHistory(obj){const i=state.perf.history.findIndex(x=>x.key===obj.key);if(i>=0)state.perf.history[i]=obj;else state.perf.history.unshift(obj);state.perf.history=state.perf.history.slice(0,12)}
+function canOpenTrade(res,gov){if(!gov.allow)return false;const key=`${state.symbol}|${state.tf}|${res.signal}|${Math.round(res.levels.entry*1000)}|${res.setupType}|${res.lock}`;if(state.lastSignalKey===key&&(Date.now()-state.lastSignalTs)<(Number(state.settings.cooldownMin||15)*60*1000))return false;state.lastSignalKey=key;state.lastSignalTs=Date.now();return true}
+function openPaperTrade(res){const t={time:new Date().toLocaleString(),openTs:Date.now(),symbol:state.symbol,tf:state.tf,mode:state.mode,signal:res.signal,setupType:res.setupType,lock:res.lock,entry:res.levels.entry,sl:res.levels.inv,tp1:res.levels.tp1,tp2:res.levels.tp2,tp3:res.levels.tp3,riskCash:res.risk.riskAmt,riskPerPoint:Math.abs(res.levels.entry-res.levels.inv),partialTaken:false,result:'OPEN',status:'OPEN',r:0};state.currentTrade=t;state.perf.sessionTrades+=1;pushHistory({key:`${t.symbol}|${t.tf}|${t.time}`,signal:t.signal,symbol:t.symbol,time:t.time,entry:fmt(t.entry,state.symbol),sl:fmt(t.sl,state.symbol),tp1:fmt(t.tp1,state.symbol),setupType:t.setupType,lock:t.lock});saveState()}
+function closePaperTrade(result,rValue){if(!state.currentTrade)return;const t=state.currentTrade;t.status='CLOSED';t.result=result;t.r=rValue;state.perf.totalR+=rValue;const pnlCash=t.riskCash*rValue;if(result==='WIN')state.perf.wins+=1;else if(result==='LOSS'){state.perf.losses+=1;state.perf.dailyLossValue+=Math.abs(Math.min(0,pnlCash))}else state.perf.breakevens+=1;const lastBal=state.perf.balanceCurve[state.perf.balanceCurve.length-1]||state.settings.balance;state.perf.balanceCurve.push(Number((lastBal+pnlCash).toFixed(2)));state.perf.journal.push({time:t.time,symbol:t.symbol,tf:t.tf,signal:t.signal,mode:t.mode,lock:t.lock,entry:fmt(t.entry,state.symbol),sl:fmt(t.sl,state.symbol),tp1:fmt(t.tp1,state.symbol),tp2:fmt(t.tp2,state.symbol),tp3:fmt(t.tp3,state.symbol),status:'closed',result,r:rValue});state.currentTrade=null;saveState();renderPerformance();renderCurrentTrade()}
+function managePaperTrade(){if(!state.currentTrade||!state.candles.length)return;const t=state.currentTrade,last=state.candles[state.candles.length-1];if(t.signal==='BULLISH'){if(last.low<=t.sl)return closePaperTrade('LOSS',-1.0);if(!t.partialTaken&&last.high>=t.tp1){t.partialTaken=true;t.sl=t.entry}if(t.partialTaken&&last.low<=t.entry)return closePaperTrade('BE',0.25+0.25*Number(state.settings.tp1Partial||0.5));if(last.high>=t.tp3)return closePaperTrade('WIN',2.2);if(last.high>=t.tp2&&t.partialTaken)return closePaperTrade('WIN',1.5)}else if(t.signal==='BEARISH'){if(last.high>=t.sl)return closePaperTrade('LOSS',-1.0);if(!t.partialTaken&&last.low<=t.tp1){t.partialTaken=true;t.sl=t.entry}if(t.partialTaken&&last.high>=t.entry)return closePaperTrade('BE',0.25+0.25*Number(state.settings.tp1Partial||0.5));if(last.low<=t.tp3)return closePaperTrade('WIN',2.2);if(last.low<=t.tp2&&t.partialTaken)return closePaperTrade('WIN',1.5)}}
+function connect(){if(state.ws)try{state.ws.close()}catch(e){}const ws=new WebSocket(WS_URL);state.ws=ws;ws.onopen=()=>{$('connStatus').textContent='Connected';requestCandles();requestD1();requestH4();requestH1();ws.send(JSON.stringify({ticks:state.symbol,subscribe:1}))};ws.onclose=()=>{$('connStatus').textContent='Disconnected'};ws.onerror=()=>{$('connStatus').textContent='Connection error'};ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.error){$('connStatus').textContent='Data error';return;}if(m.msg_type==='candles'&&m.echo_req&&m.echo_req.granularity===86400){state.d1Candles=m.candles.map(c=>({epoch:c.epoch,open:+c.open,high:+c.high,low:+c.low,close:+c.close}));return;}if(m.msg_type==='candles'&&m.echo_req&&m.echo_req.granularity===14400){state.h4Candles=m.candles.map(c=>({epoch:c.epoch,open:+c.open,high:+c.high,low:+c.low,close:+c.close}));return;}if(m.msg_type==='candles'&&m.echo_req&&m.echo_req.granularity===3600){state.h1Candles=m.candles.map(c=>({epoch:c.epoch,open:+c.open,high:+c.high,low:+c.low,close:+c.close}));return;}if(m.msg_type==='candles'&&m.candles){state.candles=m.candles.map(c=>({epoch:c.epoch,open:+c.open,high:+c.high,low:+c.low,close:+c.close}));const price=state.tick??state.candles[state.candles.length-1].close,res=analyze(state.candles,price),gov=governance(res);state.perf.blocked=gov.blocked.length;drawDash(res,gov,price);renderChart(res);if(canOpenTrade(res,gov))openPaperTrade(res);managePaperTrade();renderCurrentTrade();}if(m.msg_type==='tick'&&m.tick){state.tick=+m.tick.quote;const prior=state.candles[state.candles.length-2]?.close??state.tick,d=state.tick-prior,pct=prior?(d/prior)*100:0;$('priceDelta').textContent=`${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(state.symbol.startsWith('frx')?5:3)} (${pct.toFixed(2)}%)`;if(state.candles.length){const res=analyze(state.candles,state.tick),gov=governance(res);state.perf.blocked=gov.blocked.length;drawDash(res,gov,state.tick);renderChart(res);if(canOpenTrade(res,gov))openPaperTrade(res);managePaperTrade();renderCurrentTrade();}}}}
+function requestCandles(){if(!state.ws||state.ws.readyState!==1)return;const tf=tfs[state.tf];state.ws.send(JSON.stringify({ticks_history:state.symbol,adjust_start_time:1,style:'candles',granularity:tf.g,count:tf.c,end:'latest'}))}
+function requestD1(){if(!state.ws||state.ws.readyState!==1)return;state.ws.send(JSON.stringify({ticks_history:state.symbol,adjust_start_time:1,style:'candles',granularity:86400,count:120,end:'latest'}))}
+function requestH4(){if(!state.ws||state.ws.readyState!==1)return;state.ws.send(JSON.stringify({ticks_history:state.symbol,adjust_start_time:1,style:'candles',granularity:14400,count:80,end:'latest'}))}
+function requestH1(){if(!state.ws||state.ws.readyState!==1)return;state.ws.send(JSON.stringify({ticks_history:state.symbol,adjust_start_time:1,style:'candles',granularity:3600,count:120,end:'latest'}))}
+function updateEngineUI(){$('engineDot').style.background=state.engineActive?'#59d78f':'#ff6e7d';$('engineLabel').textContent=state.engineActive?'Paper engine active':'Paper engine paused';$('toggleEngineBtn').textContent=state.engineActive?'Pause Engine':'Start Engine';$('modeLabel').textContent=`${state.mode.charAt(0).toUpperCase()+state.mode.slice(1)} mode`}
+function resetSession(){state.perf.sessionTrades=0;state.perf.wins=0;state.perf.losses=0;state.perf.breakevens=0;state.perf.blocked=0;state.perf.totalR=0;state.perf.dailyLossValue=0;state.perf.balanceCurve=[Number(state.settings.balance)];state.perf.journal=[];state.perf.history=[];state.currentTrade=null;state.lastSignalKey=null;state.lastSignalTs=0;saveState();renderPerformance();renderCurrentTrade();renderHistory()}
+$('marketTabs').addEventListener('click',e=>{if(!e.target.dataset.market)return;state.market=e.target.dataset.market;fillSelect($('symbolSelect'),markets[state.market],markets[state.market][0][1]);state.symbol=$('symbolSelect').value;pills($('marketTabs'),'market',state.market);saveState();connect()});
+$('tfTabs').addEventListener('click',e=>{if(!e.target.dataset.tf)return;state.tf=e.target.dataset.tf;pills($('tfTabs'),'tf',state.tf);saveState();connect()});
+$('modeTabs').addEventListener('click',e=>{if(!e.target.dataset.mode)return;state.mode=e.target.dataset.mode;pills($('modeTabs'),'mode',state.mode);updateEngineUI();saveState()});
+$('symbolSelect').addEventListener('change',()=>{state.symbol=$('symbolSelect').value;saveState();connect()});
+$('toggleEngineBtn').addEventListener('click',()=>{state.engineActive=!state.engineActive;updateEngineUI();saveState()});
+$('resetSessionBtn').addEventListener('click',resetSession);
+$('balanceInput').addEventListener('input',e=>{state.settings.balance=Number(e.target.value||0);if(!state.perf.balanceCurve.length)state.perf.balanceCurve=[state.settings.balance];saveState();renderPerformance()});
+$('riskInput').addEventListener('input',e=>{state.settings.riskPct=Number(e.target.value||1);saveState()});
+$('maxTradesInput').addEventListener('input',e=>{state.settings.maxTrades=Number(e.target.value||4);saveState()});
+$('dailyLossInput').addEventListener('input',e=>{state.settings.dailyLossPct=Number(e.target.value||3);saveState()});
+$('tp1Partial').addEventListener('change',e=>{state.settings.tp1Partial=Number(e.target.value);saveState()});
+$('cooldownInput').addEventListener('input',e=>{state.settings.cooldownMin=Number(e.target.value||15);saveState()});
+
+loadState(); fillSelect($('symbolSelect'),markets[state.market],state.symbol);
+$('balanceInput').value=state.settings.balance; $('riskInput').value=state.settings.riskPct; $('maxTradesInput').value=state.settings.maxTrades; $('dailyLossInput').value=state.settings.dailyLossPct; $('tp1Partial').value=String(state.settings.tp1Partial); $('cooldownInput').value=state.settings.cooldownMin;
+pills($('marketTabs'),'market',state.market); pills($('tfTabs'),'tf',state.tf); pills($('modeTabs'),'mode',state.mode);
+updateEngineUI(); renderPerformance(); renderCurrentTrade(); connect();
+</script>
+</body>
+</html>
