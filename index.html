@@ -1,17 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Love@Fx Pro — Signal Engine v6.4</title>
+  <title>AI Love@Fx Pro — Signal Engine v6.6</title>
   <style>
     :root{
       --bg:#09111f; --panel:#0f1a2b; --panel2:#122036; --line:#20324b; --text:#e8f1ff;
-      --muted:#9db0cb; --green:#37d39f; --red:#ff6b7c; --yellow:#ffd166; --blue:#59c7ff; --purple:#8b7dff;
+      --muted:#9db0cb; --green:#37d39f; --red:#ff6b7c; --yellow:#ffd166; --blue:#59c7ff;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08101c,#0b1422 45%,#09111f);color:var(--text)}
-    .wrap{max-width:1450px;margin:0 auto;padding:18px}
+    .wrap{max-width:1500px;margin:0 auto;padding:18px}
     .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
     .top{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:14px}
     .grid{display:grid;grid-template-columns:1.2fr .95fr;gap:14px}
@@ -24,12 +25,15 @@
     .chiprow{display:flex;gap:8px;flex-wrap:wrap}
     .chip,.btn,.tf{border:1px solid var(--line);background:#102038;color:var(--text);border-radius:10px;padding:8px 12px;font-size:12px;cursor:pointer;user-select:none}
     .chip.active,.tf.active,.btn.primary{background:linear-gradient(180deg,#143154,#0f2745);border-color:#355c88}
-    .btn.primary{background:linear-gradient(180deg,#19b8ff,#1687ff)}
+    .chip.signal-green{background:linear-gradient(180deg,#143322,#10271b);border-color:#2c6f4a;color:#a8f6cf}
+    .btn.refresh{background:linear-gradient(180deg,#1cc4a1,#138f74);border-color:#2b8c77}
+    .market-btn.active{background:linear-gradient(180deg,#143154,#0f2745);border-color:#355c88}
     select,input,textarea{width:100%;background:#0e1c30;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
     textarea{min-height:88px;resize:vertical}
     .metric{background:#0c1729;border:1px solid var(--line);border-radius:12px;padding:12px}
     .metric .k{color:var(--muted);font-size:12px}.metric .v{font-weight:800;font-size:18px;margin-top:6px}
     .statusbar{background:#201b12;border:1px solid #4d4022;color:#ffe3a2;border-radius:12px;padding:10px 12px;margin:12px 0;font-weight:700}
+    .statusbar.ok{background:#112319;border-color:#27543b;color:#a9f1ca}
     .price-box{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
     .price{font-size:52px;font-weight:900;letter-spacing:.2px}
     .pill{display:inline-block;padding:6px 9px;border-radius:999px;border:1px solid var(--line);font-size:12px;margin-right:6px;background:#0e1b2d}
@@ -61,14 +65,15 @@
     <div class="titlebar">
       <div>
         <div class="brand"><div class="brand-badge"></div><div>AI Love@Fx Pro</div></div>
-        <div class="sub">Live Deriv + Forex Intelligence | Signal Engine v6.4 | Execution Unlock Version</div>
+        <div class="sub">Live Deriv + Forex Intelligence | Signal Engine v6.6 | Session Auto-Reset + Mobile Refresh</div>
       </div>
       <div class="chiprow">
-        <div class="chip active">Connected</div>
-        <div class="chip active">Paper engine active</div>
+        <div class="chip signal-green" id="connectedChip">Connected</div>
+        <div class="chip signal-green" id="paperChip">Paper engine active</div>
         <div class="chip active">Execution unlock</div>
         <div class="chip" id="notifChip">Notifications off</div>
         <button class="btn" id="testNotif">Test Notification</button>
+        <button class="btn refresh" id="refreshBtn">Refresh</button>
         <button class="btn" id="resetBtn">Reset Session</button>
       </div>
     </div>
@@ -76,8 +81,8 @@
     <div class="top">
       <div class="card" style="padding:12px">
         <div class="chiprow" style="margin-bottom:8px">
-          <div class="chip active">Deriv Volatility</div>
-          <div class="chip">Forex</div>
+          <button class="chip market-btn active" id="derivBtn">Deriv Volatility</button>
+          <button class="chip market-btn" id="forexBtn">Forex</button>
         </div>
         <div class="mini-grid">
           <div><label class="sub">Symbol</label><select id="symbolSelect"><option value="1HZ10V">V10 (1s)</option><option value="1HZ50V">V50 (1s)</option><option value="1HZ100V">V100 (1s)</option></select></div>
@@ -92,9 +97,9 @@
       <div class="card" style="padding:12px">
         <div class="mini-grid">
           <div class="metric"><div class="k">Execution</div><div class="v">auto paper trade</div></div>
-          <div class="metric"><div class="k">HTF Lock</div><div class="v">relaxed</div></div>
-          <div class="metric"><div class="k">CRT Role</div><div class="v">booster only</div></div>
-          <div class="metric"><div class="k">Trigger Ladder</div><div class="v">tiered</div></div>
+          <div class="metric"><div class="k">Session trade cap</div><div class="v">10</div></div>
+          <div class="metric"><div class="k">Auto reset</div><div class="v">enabled</div></div>
+          <div class="metric"><div class="k">Market</div><div class="v" id="marketText">Deriv</div></div>
         </div>
       </div>
     </div>
@@ -106,20 +111,20 @@
         <div class="price-box">
           <div>
             <div><span class="pill wait" id="signalPill">WAIT</span><span class="pill" id="setupPill">Range / Transition</span><span class="pill" id="tierPill">Tier 0</span></div>
-            <div class="price" id="priceText">9,866.279</div>
+            <div class="price" id="priceText">10,794.732</div>
             <div class="muted small" id="deltaText">▲ 0.000 (0.00%)</div>
             <div class="sub">Symbol: <span id="symbolText">1HZ10V</span></div>
           </div>
-          <div class="confidence" id="confRing" style="--conf:64">
-            <div><div class="n" id="confNum">64%</div><div class="s">Confidence</div></div>
+          <div class="confidence" id="confRing" style="--conf:52">
+            <div><div class="n" id="confNum">52%</div><div class="s">Confidence</div></div>
           </div>
         </div>
 
         <div class="mini-grid" style="margin-top:12px">
           <div class="metric"><div class="k">EMA Bias</div><div class="v" id="emaBias">EMA bullish</div></div>
-          <div class="metric"><div class="k">RSI</div><div class="v" id="rsiValue">53.1</div></div>
+          <div class="metric"><div class="k">RSI</div><div class="v" id="rsiValue">48.3</div></div>
           <div class="metric"><div class="k">H1 Bias</div><div class="v" id="h1Bias">Mixed</div></div>
-          <div class="metric"><div class="k">D1 Bias</div><div class="v" id="d1Bias">Bullish</div></div>
+          <div class="metric"><div class="k">D1 Bias</div><div class="v" id="d1Bias">Bearish</div></div>
         </div>
 
         <div class="card" style="margin-top:14px;padding:12px">
@@ -158,6 +163,14 @@
         <div class="section-title">Performance Tracking</div>
         <div class="list" id="perfStats"></div>
 
+        <div class="section-title" style="margin-top:14px">Open Paper Trades</div>
+        <div class="table-wrap" style="max-height:140px">
+          <table>
+            <thead><tr><th>Time</th><th>Type</th><th>Tier</th><th>Entry</th><th>SL</th><th>Float R</th><th>Status</th></tr></thead>
+            <tbody id="openTradesBody"></tbody>
+          </table>
+        </div>
+
         <div class="section-title" style="margin-top:14px">Auto Trade Journal</div>
         <div class="table-wrap">
           <table>
@@ -173,7 +186,7 @@
 
         <div class="section-title" style="margin-top:14px">Journal Notes</div>
         <textarea placeholder="Type your trade note, execution comment, mistake, or lesson here..."></textarea>
-        <div class="footer-note">v6.4 focus: soft trigger ladder + CRT booster + H1 mixed tolerance + faster execution.</div>
+        <div class="footer-note">v6.6 focus: session auto-reset, 10-trade session cap, green engine status, Forex toggle, mobile refresh.</div>
       </div>
     </div>
   </div>
@@ -181,27 +194,41 @@
 
 <script>
 const state = {
-  symbol:"1HZ10V", tf:"H4", mode:"Balanced", triggerModel:"Retracement first", balance:50000,
+  market:"Deriv", symbol:"1HZ10V", tf:"H4", mode:"Balanced", triggerModel:"Retracement first", balance:50000,
   notifications:false, sessionTrades:0, wins:0, losses:0, be:0, blocked:0, totalR:0, dailyLossValue:0,
-  currentPrice:9866.279, series:[], trades:[], history:[], currentTrade:null, cooldownEndsAt:0
+  currentPrice:10794.732, series:[], trades:[], history:[], openTrades:[], cooldownEndsAt:0,
+  sessionCap:10, sessionId:1
 };
 
 function fmt(n,d=3){return Number(n).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});}
 function nowStr(){return new Date().toLocaleString();}
 function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
 
-function seedSeries(){
-  let p=9848;
+function seedSeries(base=10760){
+  let p=base;
   state.series=[];
   for(let i=0;i<120;i++){
-    const phase1 = i < 30 ? 0.10 : i < 60 ? 0.02 : i < 85 ? -0.02 : 0.12;
-    const noise=(Math.random()-0.5)*1.7;
-    let open=p, close=p+phase1+noise;
-    let high=Math.max(open,close)+Math.random()*1.0, low=Math.min(open,close)-Math.random()*1.0;
+    const phase = i < 25 ? 0.08 : i < 45 ? 0.16 : i < 62 ? -0.06 : i < 80 ? 0.04 : i < 100 ? -0.02 : 0.14;
+    const noise=(Math.random()-0.5)*1.5;
+    let open=p, close=p+phase+noise;
+    let high=Math.max(open,close)+Math.random()*0.9, low=Math.min(open,close)-Math.random()*0.9;
     state.series.push({open,high,low,close});
     p=close;
   }
   state.currentPrice=state.series.at(-1).close;
+}
+
+function autoResetSession(){
+  state.sessionId += 1;
+  state.sessionTrades = 0;
+  state.wins = 0;
+  state.losses = 0;
+  state.be = 0;
+  state.blocked = 0;
+  state.totalR = 0;
+  state.dailyLossValue = 0;
+  state.trades = [];
+  state.history.unshift({text:`SESSION AUTO-RESET | New session #${state.sessionId} started after completing previous session`, time:nowStr()});
 }
 
 function ema(period, arr){
@@ -222,8 +249,8 @@ function rsi(period, closes){
 }
 function trendBias(fast, slow, closes){
   const slope=closes.at(-1)-closes[Math.max(0,closes.length-8)];
-  if(fast.at(-1)>slow.at(-1)&&slope>0.35)return "Bullish";
-  if(fast.at(-1)<slow.at(-1)&&slope<-0.35)return "Bearish";
+  if(fast.at(-1)>slow.at(-1)&&slope>0.30)return "Bullish";
+  if(fast.at(-1)<slow.at(-1)&&slope<-0.30)return "Bearish";
   return "Mixed";
 }
 function getSwing(closes){ return {hi:Math.max(...closes.slice(-35)), lo:Math.min(...closes.slice(-35))}; }
@@ -243,21 +270,15 @@ function detectSetup(data){
   const body=Math.abs(last.close-last.open);
   const lowerWick=Math.min(last.open,last.close)-last.low;
   const upperWick=last.high-Math.max(last.open,last.close);
+  const rejectionBull=lowerWick > body*0.8;
+  const rejectionBear=upperWick > body*0.8;
   const microBull=last.close>prev.close && prev.close>p3.close;
   const microBear=last.close<prev.close && prev.close<p3.close;
-  const rejectionBull=lowerWick > body*0.9;
-  const rejectionBear=upperWick > body*0.9;
 
-  const nearFibBull=last.close <= fib.fib50+1.8 && last.close >= fib.fib61-1.8;
-  const nearFibBear=last.close >= fib.fib50-1.8 && last.close <= fib.fib38+1.8;
-  const emaBounceBull=last.low <= e20.at(-1)+0.9 && last.close >= e20.at(-1)-0.1;
-  const emaBounceBear=last.high >= e20.at(-1)-0.9 && last.close <= e20.at(-1)+0.1;
-
-  const crtHigh=Math.max(...highs.slice(-16)), crtLow=Math.min(...lows.slice(-16));
-  const reclaimedBull=lows.slice(-6).some(v=>v<crtLow) && last.close > crtLow;
-  const reclaimedBear=highs.slice(-6).some(v=>v>crtHigh) && last.close < crtHigh;
-  const crtSweep=reclaimedBull?"Bullish reclaim":reclaimedBear?"Bearish reject":"None";
-
+  const nearFibBull=last.close <= fib.fib50+1.7 && last.close >= fib.fib61-1.7;
+  const nearFibBear=last.close >= fib.fib50-1.7 && last.close <= fib.fib38+1.7;
+  const emaBounceBull=last.low <= e20.at(-1)+0.8 && last.close >= e20.at(-1)-0.15;
+  const emaBounceBear=last.high >= e20.at(-1)-0.8 && last.close <= e20.at(-1)+0.15;
   const breakoutBull=last.close > Math.max(...closes.slice(-8));
   const breakoutBear=last.close < Math.min(...closes.slice(-8));
 
@@ -266,7 +287,6 @@ function detectSetup(data){
   if(emaBull){ longScore += 18; passed.push("EMA20 vs EMA50 bullish alignment"); }
   if(emaBear){ shortScore += 18; passed.push("EMA20 vs EMA50 bearish alignment"); }
 
-  // relaxed HTF lock
   if(h4Bias==="Bullish" && d1Bias==="Bullish"){ longScore += 18; passed.push("HTF bias lock bullish"); }
   else if(h4Bias==="Bullish" && h1Bias==="Mixed"){ longScore += 12; passed.push("H4 bullish + H1 mixed tolerated"); }
   else if(d1Bias==="Bullish" && h1Bias==="Bullish"){ longScore += 10; passed.push("D1 support bullish"); }
@@ -284,27 +304,20 @@ function detectSetup(data){
   if(rejectionBull){ longScore += 8; passed.push("Bullish rejection candle"); }
   if(rejectionBear){ shortScore += 8; passed.push("Bearish rejection candle"); }
 
-  if(microBull){ longScore += 9; passed.push("Micro bullish trigger"); }
-  if(microBear){ shortScore += 9; passed.push("Micro bearish trigger"); }
+  if(microBull){ longScore += 10; passed.push("Micro bullish trigger"); }
+  if(microBear){ shortScore += 10; passed.push("Micro bearish trigger"); }
 
-  // CRT booster only, not gatekeeper
-  if(reclaimedBull){ longScore += 6; passed.push("CRT bullish reclaim booster"); }
-  if(reclaimedBear){ shortScore += 6; passed.push("CRT bearish reject booster"); }
-
-  // breakout assists
   if(state.triggerModel !== "Retracement first" && breakoutBull){ longScore += 10; passed.push("Breakout continuation active"); }
   if(state.triggerModel !== "Retracement first" && breakoutBear){ shortScore += 10; passed.push("Breakout continuation active"); }
 
-  if(myRsi>=50 && myRsi<=74){ longScore += 8; passed.push(`RSI bullish ${myRsi.toFixed(1)}`); }
-  if(myRsi<=50 && myRsi>=26){ shortScore += 8; passed.push(`RSI bearish ${myRsi.toFixed(1)}`); }
+  if(myRsi>=49 && myRsi<=76){ longScore += 8; passed.push("RSI bullish " + myRsi.toFixed(1)); }
+  if(myRsi<=51 && myRsi>=24){ shortScore += 8; passed.push("RSI bearish " + myRsi.toFixed(1)); }
 
-  // countertrend block
   const counterLong = h4Bias==="Bearish" && d1Bias==="Bearish";
   const counterShort = h4Bias==="Bullish" && d1Bias==="Bullish";
   if(counterLong && longScore>0){ longScore -= 18; blocked.push("Countertrend long blocked"); }
   if(counterShort && shortScore>0){ shortScore -= 18; blocked.push("Countertrend short blocked"); }
 
-  // priority boost
   if(state.triggerModel==="Retracement first"){
     if(nearFibBull || emaBounceBull) longScore += 10;
     if(nearFibBear || emaBounceBear) shortScore += 10;
@@ -312,14 +325,13 @@ function detectSetup(data){
     if(breakoutBull) longScore += 10;
     if(breakoutBear) shortScore += 10;
   } else {
-    if((nearFibBull||breakoutBull)) longScore += 5;
-    if((nearFibBear||breakoutBear)) shortScore += 5;
+    if(nearFibBull || breakoutBull) longScore += 5;
+    if(nearFibBear || breakoutBear) shortScore += 5;
   }
 
-  // mode thresholds
-  let tier1=62, tier2=72, tier3=82;
+  let tier1=58, tier2=68, tier3=80;
   if(state.mode==="Conservative"){ tier1=68; tier2=78; tier3=88; }
-  if(state.mode==="Aggressive"){ tier1=56; tier2=66; tier3=76; }
+  if(state.mode==="Aggressive"){ tier1=50; tier2=60; tier3=72; }
 
   let direction="WAIT", setupType="Range / Transition", tier="Tier 0";
   const bestScore=Math.max(longScore,shortScore);
@@ -349,42 +361,43 @@ function detectSetup(data){
     blocked.push("No valid directional setup");
   }
 
-  const tradeSlotPass = state.currentTrade === null;
+  const maxOpenTrades = state.mode==="Aggressive" ? 3 : state.mode==="Balanced" ? 2 : 1;
+  const sameDirectionOpen = state.openTrades.filter(t=>t.type===direction).length;
   const cooldownActive = Date.now() < state.cooldownEndsAt;
-  const tradeLimitPass = state.sessionTrades < 5;
+  const tradeLimitPass = state.sessionTrades < state.sessionCap;
   const dailyCapPass = state.dailyLossValue < (state.balance * 0.03);
+  const openTradePass = sameDirectionOpen < maxOpenTrades;
 
   let enginePass = direction !== "WAIT";
-  if(!tradeSlotPass){ enginePass = False = false; blocked.push("Paper trade already open"); }
+  if(!openTradePass){ enginePass = false; blocked.push("Trade slot restriction active"); }
   if(cooldownActive){ enginePass = false; blocked.push("Cooldown active"); }
   if(!tradeLimitPass){ enginePass = false; blocked.push("Trade limit reached"); }
   if(!dailyCapPass){ enginePass = false; blocked.push("Daily cap breached"); }
 
   let entry=last.close;
-  let stop = direction==="BULLISH" ? Math.min(fib.fib61,e50.at(-1),Math.min(...lows.slice(-10))) - 1.2 : Math.max(fib.fib38,e50.at(-1),Math.max(...highs.slice(-10))) + 1.2;
+  let stop = direction==="BULLISH" ? Math.min(fib.fib61,e50.at(-1),Math.min(...lows.slice(-10))) - 1.1 : Math.max(fib.fib38,e50.at(-1),Math.max(...highs.slice(-10))) + 1.1;
   let risk=Math.abs(entry-stop);
-  if(risk < 2.0){ stop = direction==="BULLISH" ? entry-3.2 : entry+3.2; risk=Math.abs(entry-stop); }
+  if(risk < 1.9){ stop = direction==="BULLISH" ? entry-3.0 : entry+3.0; risk=Math.abs(entry-stop); }
 
   const tp1 = direction==="BULLISH" ? entry + risk*1.0 : entry - risk*1.0;
   const tp2 = direction==="BULLISH" ? entry + risk*2.0 : entry - risk*2.0;
   const tp3 = direction==="BULLISH" ? entry + risk*3.0 : entry - risk*3.0;
-
   const riskAmount = state.balance*0.01;
   const suggestedLot = risk>0 ? clamp((riskAmount/(risk*1000)),0.01,1.5) : 0.01;
 
   return {
     direction, setupType, tier, confidence, myRsi, ema20:e20.at(-1), ema50:e50.at(-1),
-    h4Bias, h1Bias, d1Bias, passed, blocked, enginePass, tradeSlotPass, cooldownActive, tradeLimitPass, dailyCapPass,
-    entry, stop, tp1, tp2, tp3, risk, riskAmount, suggestedLot, fib, crtHigh, crtLow, crtSweep,
-    reclaimed: reclaimedBull || reclaimedBear ? "YES":"NO"
+    h4Bias, h1Bias, d1Bias, passed, blocked, enginePass, openTradePass, cooldownActive, tradeLimitPass, dailyCapPass,
+    entry, stop, tp1, tp2, tp3, risk, riskAmount, suggestedLot, maxOpenTrades
   };
 }
 
 function createTrade(signal){
-  state.currentTrade = {
-    id:Date.now(), time:nowStr(), symbol:state.symbol, tf:state.tf, type:signal.direction, mode:state.mode, tier:signal.tier,
+  const t = {
+    id:Date.now()+Math.random(), time:nowStr(), symbol:state.symbol, tf:state.tf, type:signal.direction, mode:state.mode, tier:signal.tier,
     entry:signal.entry, sl:signal.stop, tp1:signal.tp1, tp2:signal.tp2, tp3:signal.tp3, status:"open", result:"", r:0, partialTaken:false
   };
+  state.openTrades.unshift(t);
   state.sessionTrades += 1;
   state.history.unshift({text:`${signal.direction} ${state.symbol} | ${state.tf} | ${signal.setupType} | ${signal.tier} | Entry ${fmt(signal.entry)} | SL ${fmt(signal.stop)}`, time:nowStr()});
   if(state.notifications && "Notification" in window && Notification.permission==="granted"){
@@ -392,56 +405,70 @@ function createTrade(signal){
   }
 }
 
-function updateTrade(){
-  if(!state.currentTrade) return;
-  const t=state.currentTrade, px=state.currentPrice;
-  if(t.type==="BULLISH"){
-    const floatR=(px-t.entry)/Math.abs(t.entry-t.sl);
-    if(!t.partialTaken && px>=t.tp1) t.partialTaken=true;
-    if(px<=t.sl){ t.status="closed"; t.result="LOSS"; t.r=-1; }
-    else if(px>=t.tp3){ t.status="closed"; t.result="WIN"; t.r=2.2; }
-    else if(t.partialTaken && px<t.entry && floatR>0){ t.status="closed"; t.result="BE"; t.r=0.25; }
-  } else if(t.type==="BEARISH"){
-    const floatR=(t.entry-px)/Math.abs(t.entry-t.sl);
-    if(!t.partialTaken && px<=t.tp1) t.partialTaken=true;
-    if(px>=t.sl){ t.status="closed"; t.result="LOSS"; t.r=-1; }
-    else if(px<=t.tp3){ t.status="closed"; t.result="WIN"; t.r=2.2; }
-    else if(t.partialTaken && px>t.entry && floatR>0){ t.status="closed"; t.result="BE"; t.r=0.25; }
+function updateTrades(){
+  if(!state.openTrades.length) return;
+  const stillOpen = [];
+  for(const t of state.openTrades){
+    const px=state.currentPrice;
+    if(t.type==="BULLISH"){
+      const floatR=(px-t.entry)/Math.abs(t.entry-t.sl);
+      t.floatR=floatR;
+      if(!t.partialTaken && px>=t.tp1) t.partialTaken=true;
+      if(px<=t.sl){ t.status="closed"; t.result="LOSS"; t.r=-1; }
+      else if(px>=t.tp3){ t.status="closed"; t.result="WIN"; t.r=2.2; }
+      else if(t.partialTaken && px<t.entry && floatR>0){ t.status="closed"; t.result="BE"; t.r=0.25; }
+      else stillOpen.push(t);
+    } else {
+      const floatR=(t.entry-px)/Math.abs(t.entry-t.sl);
+      t.floatR=floatR;
+      if(!t.partialTaken && px<=t.tp1) t.partialTaken=true;
+      if(px>=t.sl){ t.status="closed"; t.result="LOSS"; t.r=-1; }
+      else if(px<=t.tp3){ t.status="closed"; t.result="WIN"; t.r=2.2; }
+      else if(t.partialTaken && px>t.entry && floatR>0){ t.status="closed"; t.result="BE"; t.r=0.25; }
+      else stillOpen.push(t);
+    }
+    if(t.status==="closed"){
+      state.trades.unshift({...t});
+      if(t.result==="WIN") state.wins += 1;
+      if(t.result==="LOSS"){ state.losses += 1; state.dailyLossValue += state.balance*0.01; }
+      if(t.result==="BE") state.be += 1;
+      state.totalR += t.r;
+      state.balance += (state.balance*0.01) * t.r;
+      state.cooldownEndsAt = Date.now() + (2 * 60 * 1000);
+    }
   }
-  if(t.status==="closed"){
-    state.trades.unshift({...t});
-    if(t.result==="WIN") state.wins += 1;
-    if(t.result==="LOSS"){ state.losses += 1; state.dailyLossValue += state.balance*0.01; }
-    if(t.result==="BE") state.be += 1;
-    state.totalR += t.r;
-    state.balance += (state.balance*0.01) * t.r;
-    state.currentTrade = null;
-    state.cooldownEndsAt = Date.now() + (8 * 60 * 1000); // shorter cooldown unlock
+  state.openTrades = stillOpen;
+  if(state.sessionTrades >= state.sessionCap && state.openTrades.length === 0){
+    autoResetSession();
   }
 }
 
 function tickMarket(){
-  const prev = state.series.at(-1).close;
-  const driftUp = Math.random() > 0.47 ? 0.24 : -0.10;
-  const noise = (Math.random()-0.5)*1.0;
-  const close = prev + driftUp + noise;
+  const prev = state.series[state.series.length-1].close;
+  let drift = 0.02;
+  if(state.openTrades.some(t=>t.type==="BULLISH")) drift += 0.08;
+  if(state.openTrades.some(t=>t.type==="BEARISH")) drift -= 0.08;
+  if(state.market==="Forex") drift *= 0.35;
+  const regime = Math.random()>0.55 ? 0.14 : -0.06;
+  const noise = (Math.random()-0.5)*(state.market==="Forex"?0.25:0.85);
+  const close = prev + drift + regime + noise;
   const open = prev;
-  const high = Math.max(open, close) + Math.random()*0.8;
-  const low = Math.min(open, close) - Math.random()*0.8;
-  state.series.push({open,high,low,close});
+  const high = Math.max(open, close) + Math.random()*0.7;
+  const low = Math.min(open, close) - Math.random()*0.7;
+  state.series.push({open:open,high:high,low:low,close:close});
   if(state.series.length > 120) state.series.shift();
   state.currentPrice = close;
 }
 
 function renderList(el, items){
-  el.innerHTML = items.map(i => `<div class="row"><span>${i.k}</span><strong class="${i.cls||''}">${i.v}</strong></div>`).join("");
+  el.innerHTML = items.map(i => '<div class="row"><span>'+i.k+'</span><strong class="'+(i.cls||'')+'">'+i.v+'</strong></div>').join("");
 }
 function drawPriceChart(signal){
   const c=document.getElementById("priceChart"), ctx=c.getContext("2d"), w=c.width, h=c.height;
   ctx.clearRect(0,0,w,h); ctx.fillStyle="#0b1627"; ctx.fillRect(0,0,w,h);
   const m={l:52,r:18,t:18,b:36}, plotW=w-m.l-m.r, plotH=h-m.t-m.b;
   const highs=state.series.map(x=>x.high), lows=state.series.map(x=>x.low);
-  const max=Math.max(...highs, signal.tp3), min=Math.min(...lows, signal.stop);
+  const max=Math.max.apply(null, highs.concat([signal.tp3])), min=Math.min.apply(null, lows.concat([signal.stop]));
   const x=i=>m.l+(i/(state.series.length-1))*plotW, y=v=>m.t+(1-(v-min)/(max-min))*plotH;
 
   ctx.strokeStyle="#1b2a42";
@@ -454,39 +481,40 @@ function drawPriceChart(signal){
     ctx.strokeStyle=g?"#8af7d1":"#ff9aa7"; ctx.beginPath(); ctx.moveTo(xx,wt); ctx.lineTo(xx,wb); ctx.stroke();
     ctx.fillStyle=g?"#56d6a2":"#ff788b"; ctx.fillRect(xx-2.6, Math.min(o,cl), 5.2, Math.max(2,Math.abs(cl-o)));
   });
-
   function line(arr,color,width){ ctx.beginPath(); arr.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v))); ctx.strokeStyle=color; ctx.lineWidth=width; ctx.stroke(); }
   line(e20, "#8b7dff", 2); line(e50, "#ffd166", 2);
-
-  [signal.fib.fib50, signal.fib.fib61].forEach(lv => {
-    ctx.setLineDash([6,5]); ctx.strokeStyle="#4fe0a5";
-    ctx.beginPath(); ctx.moveTo(m.l,y(lv)); ctx.lineTo(w-m.r,y(lv)); ctx.stroke();
-  });
-  ctx.setLineDash([]);
-  ctx.fillStyle="#9db0cb"; ctx.font="12px Segoe UI";
-  ctx.fillText(`120 candles • ${state.tf}`, w-120, 14);
 }
 function drawPerfChart(){
   const c=document.getElementById("perfChart"), ctx=c.getContext("2d"), w=c.width, h=c.height;
   ctx.clearRect(0,0,w,h); ctx.fillStyle="#0b1627"; ctx.fillRect(0,0,w,h);
   const m={l:48,r:18,t:12,b:30}, plotW=w-m.l-m.r, plotH=h-m.t-m.b;
   let curve=[50000], eq=50000;
-  [...state.trades].reverse().forEach(t=>{ eq += 500*t.r; curve.push(eq); });
-  const max=Math.max(...curve,50100), min=Math.min(...curve,49800), x=i=>m.l+(i/Math.max(1,curve.length-1))*plotW, y=v=>m.t+(1-(v-min)/(max-min||1))*plotH;
+  Array.from(state.trades).reverse().forEach(t=>{ eq += 500*t.r; curve.push(eq); });
+  const max=Math.max.apply(null, curve.concat([50100])), min=Math.min.apply(null, curve.concat([49800]));
+  const x=i=>m.l+(i/Math.max(1,curve.length-1))*plotW, y=v=>m.t+(1-(v-min)/(max-min||1))*plotH;
   ctx.strokeStyle="#1b2a42"; for(let i=0;i<4;i++){ const yy=m.t+(plotH/3)*i; ctx.beginPath(); ctx.moveTo(m.l,yy); ctx.lineTo(w-m.r,yy); ctx.stroke(); }
   ctx.beginPath(); curve.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v))); ctx.strokeStyle="#3fb9ff"; ctx.lineWidth=3; ctx.stroke();
 }
 function maybeTrade(signal){
-  if(signal.enginePass && !state.currentTrade){ createTrade(signal); }
-  else if(!signal.enginePass && signal.direction!=="WAIT"){ state.blocked += 1; }
+  if(signal.enginePass){
+    const duplicate = state.openTrades.some(t => t.type===signal.direction && Math.abs(t.entry-signal.entry)<0.35);
+    if(!duplicate) createTrade(signal);
+  } else if(signal.direction!=="WAIT"){
+    state.blocked += 1;
+  }
+}
+function refreshApp(){
+  state.history.unshift({text:'MANUAL REFRESH | App refreshed by user', time:nowStr()});
+  updateUI();
 }
 function updateUI(){
   const s = detectSetup(state.series);
+  document.getElementById("marketText").textContent = state.market;
   document.getElementById("priceText").textContent = fmt(state.currentPrice);
-  const prev=state.series.at(-2).close, d=state.currentPrice-prev, pct=(d/prev)*100;
-  document.getElementById("deltaText").textContent = `${d>=0?"▲":"▼"} ${fmt(Math.abs(d))} (${pct.toFixed(2)}%)`;
+  const prev=state.series[state.series.length-2].close, d=state.currentPrice-prev, pct=(d/prev)*100;
+  document.getElementById("deltaText").textContent = (d>=0?"▲":"▼") + " " + fmt(Math.abs(d)) + " (" + pct.toFixed(2) + "%)";
   document.getElementById("symbolText").textContent = state.symbol;
-  document.getElementById("confNum").textContent = `${s.confidence}%`;
+  document.getElementById("confNum").textContent = s.confidence + "%";
   document.getElementById("confRing").style.setProperty("--conf", s.confidence);
   document.getElementById("emaBias").textContent = s.ema20 > s.ema50 ? "EMA bullish" : "EMA bearish";
   document.getElementById("rsiValue").textContent = s.myRsi.toFixed(1);
@@ -498,33 +526,36 @@ function updateUI(){
   document.getElementById("setupPill").textContent = s.setupType;
   document.getElementById("tierPill").textContent = s.tier;
 
-  document.getElementById("statusBar").textContent = s.enginePass
-    ? `${s.direction} ${s.tier} UNLOCKED — paper entry ${fmt(s.entry)} | SL ${fmt(s.stop)}`
-    : `WAIT — paper engine is monitoring for the next unlocked setup.`;
+  const sb=document.getElementById("statusBar");
+  if(s.enginePass){
+    sb.textContent = s.direction + " " + s.tier + " UNLOCKED — paper entry " + fmt(s.entry) + " | SL " + fmt(s.stop);
+    sb.className = "statusbar ok";
+  } else {
+    sb.textContent = "WAIT — paper engine is monitoring for the next unlocked setup.";
+    sb.className = "statusbar";
+  }
 
   renderList(document.getElementById("controlList"), [
     {k:"Engine",v:"PASS",cls:"good"},
-    {k:"Trade slot",v:s.tradeSlotPass?"PASS":"BLOCKED",cls:s.tradeSlotPass?"good":"bad"},
+    {k:"Trade slot",v:s.openTradePass?("PASS ("+state.openTrades.length+"/"+s.maxOpenTrades+")"):("BLOCKED ("+state.openTrades.length+"/"+s.maxOpenTrades+")"),cls:s.openTradePass?"good":"bad"},
     {k:"Cooldown",v:s.cooldownActive?"BLOCKED":"PASS",cls:s.cooldownActive?"bad":"good"},
-    {k:"Trade limit",v:s.tradeLimitPass?"PASS":"BLOCKED",cls:s.tradeLimitPass?"good":"bad"},
+    {k:"Trade limit",v:s.tradeLimitPass?("PASS ("+state.sessionTrades+"/"+state.sessionCap+")"):("BLOCKED ("+state.sessionTrades+"/"+state.sessionCap+")"),cls:s.tradeLimitPass?"good":"bad"},
     {k:"Daily cap",v:s.dailyCapPass?"PASS":"BLOCKED",cls:s.dailyCapPass?"good":"bad"},
-    {k:"Execution status",v:s.enginePass?"READY":"WAIT / FILTERED",cls:s.enginePass?"good":"mid"},
   ]);
 
   renderList(document.getElementById("precisionList"), [
-    {k:"HTF lock",v:`H4 ${s.h4Bias} | H1 ${s.h1Bias} | D1 ${s.d1Bias}`,cls:(s.h4Bias===s.d1Bias && s.h4Bias!=="Mixed")?"good":"mid"},
+    {k:"HTF lock",v:"H4 "+s.h4Bias+" | H1 "+s.h1Bias+" | D1 "+s.d1Bias,cls:(s.h4Bias===s.d1Bias && s.h4Bias!=="Mixed")?"good":"mid"},
     {k:"Priority model",v:state.triggerModel},
-    {k:"CRT Sweep",v:s.crtSweep,cls:s.crtSweep==="None"?"mid":"good"},
-    {k:"Reclaimed",v:s.reclaimed,cls:s.reclaimed==="YES"?"good":"mid"},
-    {k:"Countertrend block",v:"ACTIVE",cls:"good"},
+    {k:"CRT role",v:"booster only",cls:"good"},
     {k:"Trigger ladder",v:s.tier,cls:s.tier==="Tier 0"?"mid":"good"},
+    {k:"Session reset",v:"auto",cls:"good"},
   ]);
 
   renderList(document.getElementById("riskList"), [
     {k:"Paper balance",v:"$"+state.balance.toFixed(2)},
     {k:"Risk % / trade",v:"1"},
-    {k:"Max trades / session",v:"5"},
-    {k:"Cooldown min",v:"8"},
+    {k:"Max trades / session",v:String(state.sessionCap)},
+    {k:"Cooldown min",v:"2"},
     {k:"Risk amount / trade",v:"$"+s.riskAmount.toFixed(2)},
     {k:"Stop distance",v:s.risk.toFixed(3)},
     {k:"Suggested lot",v:s.suggestedLot.toFixed(2)},
@@ -539,35 +570,32 @@ function updateUI(){
     {k:"Setup type",v:s.setupType}
   ]);
 
-  document.getElementById("analysisText").innerHTML = `
-    ${state.symbol} on ${state.tf} reads <strong>${s.direction}</strong> with <strong>${s.confidence}%</strong> confidence.
-    Setup type is <strong>${s.setupType}</strong> and the active trigger is <strong>${s.tier}</strong>.
-    H4 bias is <strong>${s.h4Bias}</strong>, H1 bias is <strong>${s.h1Bias}</strong>, and D1 bias is <strong>${s.d1Bias}</strong>.
-    CRT is now treated as a <strong>booster</strong>, not a blocker.
-    ${s.enginePass ? "Paper execution unlocked." : "Paper execution stays filtered until the trigger ladder passes."}
-  `;
+  document.getElementById("analysisText").innerHTML = state.symbol + " on " + state.tf + " reads <strong>" + s.direction + "</strong> with <strong>" + s.confidence + "%</strong> confidence. H4 bias is <strong>" + s.h4Bias + "</strong>, H1 bias is <strong>" + s.h1Bias + "</strong>, and D1 bias is <strong>" + s.d1Bias + "</strong>. This version now runs with <strong>10 trades per session</strong>, then automatically resets and starts fresh. Forex button is now active and the top engine signals stay <strong>green</strong> when the app is live.";
 
   document.getElementById("edgeList").innerHTML =
-    `<ul>${s.passed.slice(0,10).map(x=>`<li>${x}</li>`).join("")}${s.blocked.slice(0,8).map(x=>`<li class="mid">${x}</li>`).join("")}</ul>`;
+    "<ul>" + s.passed.slice(0,10).map(x=>"<li>"+x+"</li>").join("") + s.blocked.slice(0,8).map(x=>"<li class='mid'>"+x+"</li>").join("") + "</ul>";
 
   renderList(document.getElementById("perfStats"), [
+    {k:"Session",v:"#"+state.sessionId},
     {k:"Session trades",v:state.sessionTrades},
-    {k:"Wins / Losses / BE",v:`${state.wins}/${state.losses}/${state.be}`},
+    {k:"Wins / Losses / BE",v:state.wins+"/"+state.losses+"/"+state.be},
     {k:"Win rate",v:state.sessionTrades?((state.wins/state.sessionTrades)*100).toFixed(1)+"%":"0.0%"},
     {k:"Blocked setups",v:state.blocked},
     {k:"Total R",v:state.totalR.toFixed(2),cls:state.totalR>0?"good":state.totalR<0?"bad":"mid"},
     {k:"Daily loss value",v:"$"+state.dailyLossValue.toFixed(2)}
   ]);
 
-  document.getElementById("journalBody").innerHTML = state.trades.map(t=>`
-    <tr><td>${t.time}</td><td>${t.symbol}</td><td>${t.tf}</td><td>${t.type}</td><td>${t.mode}</td><td>${t.tier}</td>
-    <td>${fmt(t.entry)}</td><td>${fmt(t.sl)}</td><td>${fmt(t.tp1)}</td><td>${fmt(t.tp2)}</td><td>${fmt(t.tp3)}</td>
-    <td>${t.status}</td><td class="${t.result==='WIN'?'good':t.result==='LOSS'?'bad':'mid'}">${t.result}</td><td>${t.r.toFixed(2)}</td></tr>
-  `).join("") || `<tr><td colspan="14" class="muted">No paper trades logged yet</td></tr>`;
+  document.getElementById("openTradesBody").innerHTML = state.openTrades.map(t=>
+    "<tr><td>"+t.time+"</td><td>"+t.type+"</td><td>"+t.tier+"</td><td>"+fmt(t.entry)+"</td><td>"+fmt(t.sl)+"</td><td>"+((t.floatR||0).toFixed(2))+"</td><td class='mid'>OPEN</td></tr>"
+  ).join("") || "<tr><td colspan='7' class='muted'>No open paper trades</td></tr>";
 
-  document.getElementById("signalHistory").innerHTML = state.history.map(h=>`
-    <tr><td><strong>${h.text}</strong><div class="muted">${h.time}</div></td></tr>
-  `).join("") || `<tr><td class="muted">No alerts fired yet.</td></tr>`;
+  document.getElementById("journalBody").innerHTML = state.trades.map(t=>
+    "<tr><td>"+t.time+"</td><td>"+t.symbol+"</td><td>"+t.tf+"</td><td>"+t.type+"</td><td>"+t.mode+"</td><td>"+t.tier+"</td><td>"+fmt(t.entry)+"</td><td>"+fmt(t.sl)+"</td><td>"+fmt(t.tp1)+"</td><td>"+fmt(t.tp2)+"</td><td>"+fmt(t.tp3)+"</td><td>"+t.status+"</td><td class='"+(t.result==='WIN'?'good':t.result==='LOSS'?'bad':'mid')+"'>"+t.result+"</td><td>"+t.r.toFixed(2)+"</td></tr>"
+  ).join("") || "<tr><td colspan='14' class='muted'>No paper trades logged yet</td></tr>";
+
+  document.getElementById("signalHistory").innerHTML = state.history.map(h=>
+    "<tr><td><strong>"+h.text+"</strong><div class='muted'>"+h.time+"</div></td></tr>"
+  ).join("") || "<tr><td class='muted'>No alerts fired yet.</td></tr>";
 
   drawPriceChart(s);
   drawPerfChart();
@@ -588,8 +616,27 @@ document.getElementById("triggerSelect").onchange=e=>{state.triggerModel=e.targe
 document.getElementById("balanceInput").onchange=e=>{state.balance=Number(e.target.value||50000); updateUI();};
 document.getElementById("resetBtn").onclick=()=>{
   state.sessionTrades=0; state.wins=0; state.losses=0; state.be=0; state.blocked=0; state.totalR=0; state.dailyLossValue=0;
-  state.trades=[]; state.history=[]; state.currentTrade=null; state.cooldownEndsAt=0; updateUI();
+  state.trades=[]; state.history=[]; state.openTrades=[]; state.cooldownEndsAt=0; updateUI();
 };
+document.getElementById("refreshBtn").onclick=refreshApp;
+
+document.getElementById("derivBtn").onclick=()=>{
+  state.market="Deriv";
+  document.getElementById("marketText").textContent="Deriv";
+  document.getElementById("derivBtn").classList.add("active");
+  document.getElementById("forexBtn").classList.remove("active");
+  document.getElementById("symbolSelect").innerHTML = "<option value='1HZ10V'>V10 (1s)</option><option value='1HZ50V'>V50 (1s)</option><option value='1HZ100V'>V100 (1s)</option>";
+  state.symbol="1HZ10V"; seedSeries(10760); updateUI();
+};
+document.getElementById("forexBtn").onclick=()=>{
+  state.market="Forex";
+  document.getElementById("marketText").textContent="Forex";
+  document.getElementById("forexBtn").classList.add("active");
+  document.getElementById("derivBtn").classList.remove("active");
+  document.getElementById("symbolSelect").innerHTML = "<option value='EURUSD'>EURUSD</option><option value='GBPUSD'>GBPUSD</option><option value='USDJPY'>USDJPY</option>";
+  state.symbol="EURUSD"; seedSeries(1.084); updateUI();
+};
+
 document.getElementById("testNotif").onclick=async()=>{
   if("Notification" in window){
     if(Notification.permission!=="granted"){
@@ -598,10 +645,10 @@ document.getElementById("testNotif").onclick=async()=>{
     } else state.notifications=true;
     const chip=document.getElementById("notifChip");
     if(state.notifications){
-      chip.textContent="Notifications on"; chip.classList.add("active");
-      new Notification("AI Love@Fx Pro",{body:"v6.4 execution unlock notifications are working."});
+      chip.textContent="Notifications on"; chip.classList.add("signal-green");
+      new Notification("AI Love@Fx Pro",{body:"v6.6 notifications are working."});
     } else {
-      chip.textContent="Notifications off"; chip.classList.remove("active");
+      chip.textContent="Notifications off"; chip.classList.remove("signal-green");
     }
   }
 };
@@ -610,9 +657,9 @@ seedSeries();
 updateUI();
 setInterval(()=>{
   tickMarket();
-  updateTrade();
+  updateTrades();
   updateUI();
-}, 2400);
+}, 2200);
 </script>
 </body>
 </html>
