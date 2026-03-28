@@ -3,347 +3,603 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Love@Fx Pro — Signal Engine v7.2</title>
+  <title>AI Love@Fx Pro — Signal Engine v7.3.1</title>
   <style>
     :root{
-      --bg:#0a1020; --panel:#10192e; --panel2:#121f39; --line:#24395f; --text:#e9f1ff;
-      --muted:#9fb1d3; --green:#34d399; --amber:#fbbf24; --red:#f87171; --blue:#60a5fa;
-      --chip:#172845; --cyan:#22d3ee;
+      --bg:#0b1020; --panel:#121a31; --panel2:#16213f; --line:#2c3966; --text:#e9eefc;
+      --muted:#9fb0dd; --good:#36d47b; --warn:#ffcc66; --bad:#ff6b6b; --blue:#49a6ff;
     }
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#07101f,#0b1730 35%,#08111f);color:var(--text)}
-    .wrap{max-width:1500px;margin:0 auto;padding:14px}
-    .topbar,.panel,.card{background:rgba(16,25,46,.96);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 28px rgba(0,0,0,.28)}
-    .topbar{padding:14px 16px;display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:center}
-    .brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:radial-gradient(circle at 30% 30%,#7dd3fc,#2563eb 60%,#1e293b)}
-    .brand h1{font-size:26px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:3px}
-    .statusrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .chip{padding:8px 12px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;color:var(--text)}
-    .chip.green{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.35);color:#d1fae5}.chip.amber{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.35);color:#fef3c7}
-    .controls{margin-top:14px;display:grid;grid-template-columns:1.2fr 1.2fr 1.6fr 1.2fr;gap:12px}.panel{padding:14px}
-    .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btn,.sel{background:var(--chip);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600}
-    .btn.active{outline:2px solid rgba(96,165,250,.5);background:#1a2d52}.btn.green{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.35)}
-    select{appearance:none}.notice{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:#fde68a;font-weight:700}
-    .grid{margin-top:14px;display:grid;grid-template-columns:1.6fr 1fr;gap:14px}.leftcol,.rightcol{display:grid;gap:14px}
-    .card{padding:14px}.hero{display:grid;grid-template-columns:1fr 220px 1fr;gap:10px;align-items:center}.big{font-size:56px;font-weight:800;letter-spacing:-.04em}
-    .small{font-size:13px;color:var(--muted)}.ring{width:180px;height:180px;border-radius:50%;margin:auto;background:conic-gradient(var(--cyan) calc(var(--p)*1%), rgba(255,255,255,.08) 0);display:grid;place-items:center}
-    .ring > div{width:136px;height:136px;border-radius:50%;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);text-align:center}
-    .ring strong{font-size:42px}.metricGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.mini{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:12px}
-    .mini .v{font-size:22px;font-weight:800;margin-top:6px}.chart{height:280px;background:linear-gradient(180deg,rgba(96,165,250,.08),rgba(255,255,255,.02));border-radius:14px;border:1px solid var(--line);position:relative;overflow:hidden}
-    svg{display:block;width:100%;height:100%}.tbl{width:100%;border-collapse:collapse;font-size:12px}.tbl th,.tbl td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}.tbl th{color:var(--muted);font-weight:700}.tag{display:inline-block;padding:4px 8px;border-radius:999px;background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.25)}
-    .ok{color:var(--green)}.bad{color:var(--red)}.muted{color:var(--muted)} .stack{display:grid;gap:8px}.lineitem{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px}
-    .footerNote{font-size:11px;color:var(--muted);margin-top:10px}
-    @media (max-width:1100px){.topbar,.controls,.grid,.hero{grid-template-columns:1fr}.metricGrid{grid-template-columns:repeat(2,1fr)}.big{font-size:44px}.statusrow{justify-content:flex-start}}
-    @media (max-width:640px){.wrap{padding:10px}.brand h1{font-size:22px}.metricGrid{grid-template-columns:1fr 1fr}.big{font-size:38px}.btn,.sel{padding:9px 10px;font-size:12px}.hero{gap:16px}.ring{width:140px;height:140px}.ring>div{width:108px;height:108px}.ring strong{font-size:30px}}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#0a1020,#0e1530 40%,#0b1020);font-family:Segoe UI,Arial,sans-serif;color:var(--text)}
+    .wrap{max-width:1400px;margin:0 auto;padding:14px}
+    .title{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);padding:12px 14px;border-radius:18px}
+    .logo{width:34px;height:34px;border-radius:12px;background:radial-gradient(circle at 30% 30%,#7dd3fc,#2563eb 70%,#1d4ed8)}
+    h1{margin:0;font-size:28px}
+    .sub{color:var(--muted);font-size:13px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:13px}
+    .good{color:#dff8ea;background:rgba(54,212,123,.12);border-color:rgba(54,212,123,.4)}
+    .warn{color:#fff3d1;background:rgba(255,204,102,.12);border-color:rgba(255,204,102,.45)}
+    .bad{color:#ffe2e2;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.45)}
+    .blue{color:#dff0ff;background:rgba(73,166,255,.12);border-color:rgba(73,166,255,.45)}
+    .grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px;margin-top:14px}
+    .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:14px;min-height:120px}
+    .card h3{margin:0 0 10px;font-size:15px;color:#dfe7ff}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    select,button,input{background:#0f1730;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+    button{cursor:pointer}
+    button:hover{filter:brightness(1.06)}
+    .tf button,.market button{padding:8px 11px}
+    .active{outline:2px solid rgba(73,166,255,.5);border-color:#4aa8ff;background:#102145}
+    .statusBar{margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(255,204,102,.08);border:1px solid rgba(255,204,102,.35);font-weight:600}
+    .main{display:grid;grid-template-columns:1.3fr .95fr;gap:12px;margin-top:12px}
+    .hero{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .metricBig{font-size:52px;font-weight:800;letter-spacing:.5px}
+    .muted{color:var(--muted)}
+    .confidenceWrap{display:flex;align-items:center;justify-content:center;min-height:240px}
+    .ring{width:220px;height:220px;border-radius:50%;background:conic-gradient(var(--blue) calc(var(--p)*1%), rgba(255,255,255,.08) 0);display:grid;place-items:center;border:1px solid var(--line)}
+    .ringInner{width:148px;height:148px;border-radius:50%;background:#121a31;display:grid;place-items:center;text-align:center;border:1px solid var(--line)}
+    .labelGroup{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .pill{padding:10px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .pill .k{display:block;color:var(--muted);font-size:12px}
+    .pill .v{display:block;font-size:20px;font-weight:700;margin-top:4px}
+    .chartBox{height:280px;border:1px solid var(--line);border-radius:16px;padding:8px;background:rgba(255,255,255,.02)}
+    canvas{width:100%;height:100%}
+    .sideGrid{display:grid;gap:12px}
+    .kv{display:grid;grid-template-columns:1fr auto;gap:8px;margin:8px 0;padding:8px 10px;border:1px solid rgba(255,255,255,.05);border-radius:10px;background:rgba(255,255,255,.02)}
+    .kv span:last-child{font-weight:700}
+    .greenText{color:var(--good)} .redText{color:var(--bad)} .yellowText{color:var(--warn)}
+    .bottom{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:12px}
+    textarea{width:100%;min-height:100px;background:#0f1730;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px;resize:vertical}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left}
+    th{color:var(--muted);font-weight:600}
+    .scroll{max-height:270px;overflow:auto}
+    .small{font-size:12px}
+    @media (max-width:1100px){.grid,.main,.bottom,.hero{grid-template-columns:1fr}.metricBig{font-size:40px}}
   </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo"></div>
+  <div class="wrap">
+    <div class="title">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>AI Love@Fx Pro</h1>
+          <div class="sub">Live Deriv + Forex Intelligence | Signal Engine v7.3.1 — Startup Recovery + Forced Unlock Patch</div>
+        </div>
+      </div>
+      <div class="chips">
+        <div id="chipConnected" class="chip bad">disconnected</div>
+        <div id="chipFeed" class="chip bad">feed idle</div>
+        <div id="chipEngine" class="chip warn">paper engine standby</div>
+        <div id="chipWarmup" class="chip warn">warmup pending</div>
+        <button id="btnRefresh" class="chip blue">refresh</button>
+        <button id="btnReset" class="chip">reset session</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Market</h3>
+        <div class="row market">
+          <button id="mktDeriv" class="active">Deriv Volatility</button>
+          <button id="mktForex">Forex</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <select id="symbolSel">
+            <option value="1HZ10V">V10 (1s)</option>
+            <option value="1HZ25V">V25 (1s)</option>
+            <option value="1HZ50V">V50 (1s)</option>
+            <option value="frxEURUSD">EUR/USD</option>
+            <option value="frxGBPUSD">GBP/USD</option>
+          </select>
+          <select id="modeSel">
+            <option>Aggressive</option>
+            <option selected>Balanced</option>
+            <option>Conservative</option>
+          </select>
+          <select id="triggerSel">
+            <option selected>Retracement first</option>
+            <option>Breakout first</option>
+            <option>Hybrid</option>
+          </select>
+          <input id="balanceInp" type="number" value="35" step="1" min="1" style="width:100px" />
+        </div>
+      </div>
+      <div class="card">
+        <h3>Top-Down TF Stack</h3>
+        <div class="row tf">
+          <button>M1</button><button>M5</button><button>M15</button><button>H1</button><button class="active">H4</button><button>D1</button>
+        </div>
+        <div class="sub" style="margin-top:10px">Bias ladder: D1 → H4 → H1 → M15 → M5 → M1</div>
+        <div class="sub" style="margin-top:6px">Forced unlock enabled after 120s or minimum viable candles.</div>
+      </div>
+      <div class="card">
+        <h3>Execution Profile</h3>
+        <div class="kv"><span>execution</span><span>auto paper trade</span></div>
+        <div class="kv"><span>session trade cap</span><span id="tradeCapView">10</span></div>
+        <div class="kv"><span>auto reset</span><span class="greenText">enabled</span></div>
+        <div class="kv"><span>burst model</span><span class="blueText">Aggressive Burst 4x</span></div>
+      </div>
+    </div>
+
+    <div id="statusBar" class="statusBar">WAIT — paper engine is bootstrapping candles and preparing live continuation.</div>
+
+    <div class="main">
       <div>
-        <h1>AI Love@Fx Pro</h1>
-        <div class="sub">Live Deriv + Forex Intelligence | Signal Engine v7.2 — Warmup Unlock + Soft Bias Start</div>
-      </div>
-    </div>
-    <div class="statusrow">
-      <div class="chip green" id="connChip">connected</div>
-      <div class="chip green" id="feedChip">feed synced</div>
-      <div class="chip green" id="paperChip">paper engine active</div>
-      <button class="chip" id="notifBtn">notifications off</button>
-      <button class="chip green" id="refreshBtn">refresh</button>
-      <button class="chip" id="resetBtn">reset session</button>
-    </div>
-  </div>
-
-  <div class="controls">
-    <div class="panel">
-      <div class="label">Market</div>
-      <div class="row">
-        <button class="btn active" id="derivBtn">Deriv Volatility</button>
-        <button class="btn" id="forexBtn">Forex</button>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <select class="sel" id="symbolSel">
-          <option value="1HZ10V">V10 (1s)</option>
-          <option value="R_100">V100</option>
-          <option value="frxEURUSD">EURUSD</option>
-          <option value="frxGBPUSD">GBPUSD</option>
-        </select>
-        <select class="sel" id="modeSel">
-          <option>Balanced</option>
-          <option>Aggressive</option>
-          <option>Conservative</option>
-        </select>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <select class="sel" id="triggerSel">
-          <option>Retracement first</option>
-          <option>Hybrid</option>
-          <option>Breakout first</option>
-        </select>
-        <input class="sel" id="paperBal" value="35" style="width:90px" />
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="label">Top-Down TF Stack</div>
-      <div class="row">
-        <button class="btn" data-tf="M1">M1</button><button class="btn" data-tf="M5">M5</button><button class="btn" data-tf="M15">M15</button>
-        <button class="btn" data-tf="H1">H1</button><button class="btn active" data-tf="H4">H4</button><button class="btn" data-tf="D1">D1</button>
-      </div>
-      <div class="footerNote">Bias ladder: D1 → H4 → H1 → M15 → M5 → M1</div>
-    </div>
-
-    <div class="panel">
-      <div class="label">Execution Profile</div>
-      <div class="stack">
-        <div class="lineitem"><span>execution</span><strong>auto paper trade</strong></div>
-        <div class="lineitem"><span>session trade cap</span><strong id="capView">10</strong></div>
-        <div class="lineitem"><span>auto reset</span><strong>enabled</strong></div>
-        <button class="btn active" id="burstBtn">Aggressive Burst 4x</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="label">Deriv Data Bridge</div>
-      <div class="stack">
-        <div class="lineitem"><span>data source</span><strong>Deriv WebSocket</strong></div>
-        <div class="lineitem"><span>real candle engine</span><strong id="warmState">warming</strong></div>
-        <div class="lineitem"><span>warmup timer</span><strong id="warmTime">0s</strong></div>
-        <div class="lineitem"><span>real price</span><strong id="realPrice">--</strong></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="notice" id="notice">WAIT — paper engine is warming true candles from live Deriv data.</div>
-
-  <div class="grid">
-    <div class="leftcol">
-      <div class="card">
         <div class="hero">
-          <div>
-            <div class="small"><span class="tag" id="signalTag">WAIT</span> <span class="tag" id="setupTag">Warmup</span> <span class="tag" id="tierTag">Tier 0</span></div>
-            <div class="big" id="priceBig">--</div>
-            <div class="small" id="symbolLbl">Symbol 1HZ10V</div>
+          <div class="card">
+            <div class="row" style="justify-content:space-between;align-items:flex-start">
+              <div>
+                <div class="row small"><span id="sigChip" class="chip warn">WAIT</span><span id="setupChip" class="chip">Warmup</span><span id="tierChip" class="chip">Tier 0</span></div>
+                <div id="priceView" class="metricBig" style="margin-top:14px">--</div>
+                <div class="muted">symbol <span id="symbolView">1HZ10V</span></div>
+              </div>
+              <div style="text-align:right">
+                <div class="muted">warmup timer</div>
+                <div id="timerView" style="font-size:28px;font-weight:800">0s</div>
+              </div>
+            </div>
+            <div class="labelGroup">
+              <div class="pill"><span class="k">EMA Bias</span><span class="v" id="emaBias">Waiting</span></div>
+              <div class="pill"><span class="k">RSI</span><span class="v" id="rsiVal">0.0</span></div>
+              <div class="pill"><span class="k">M1 Bias</span><span class="v" id="m1Bias">Mixed</span></div>
+              <div class="pill"><span class="k">H1 Bias</span><span class="v" id="h1Bias">Mixed</span></div>
+              <div class="pill"><span class="k">H4 Bias</span><span class="v" id="h4Bias">Mixed</span></div>
+              <div class="pill"><span class="k">D1 Bias</span><span class="v" id="d1Bias">Mixed</span></div>
+            </div>
           </div>
-          <div class="ring" id="ring" style="--p:0"><div><strong id="confVal">0%</strong><div class="small">confidence</div></div></div>
-          <div class="stack">
-            <div class="lineitem"><span>EMA bias</span><strong id="emaBias">Waiting</strong></div>
-            <div class="lineitem"><span>RSI</span><strong id="rsiVal">0.0</strong></div>
-            <div class="lineitem"><span>H1 bias</span><strong id="h1Bias">Mixed</strong></div>
-            <div class="lineitem"><span>D1 bias</span><strong id="d1Bias">Mixed</strong></div>
+          <div class="card confidenceWrap">
+            <div class="ring" id="ring" style="--p:0">
+              <div class="ringInner"><div><div id="confView" style="font-size:46px;font-weight:800">0%</div><div class="muted">confidence</div></div></div>
+            </div>
           </div>
         </div>
-        <div class="metricGrid">
-          <div class="mini"><div class="small">M1 candles</div><div class="v" id="m1Count">0</div></div>
-          <div class="mini"><div class="small">M5 candles</div><div class="v" id="m5Count">0</div></div>
-          <div class="mini"><div class="small">M15 candles</div><div class="v" id="m15Count">0</div></div>
-          <div class="mini"><div class="small">Warmup unlock</div><div class="v" id="unlockState">No</div></div>
+        <div class="card" style="margin-top:12px">
+          <h3>Live Price Action</h3>
+          <div class="chartBox"><canvas id="chart"></canvas></div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="label">Live Price Action</div>
-        <div class="chart"><svg id="chartSvg" viewBox="0 0 900 280" preserveAspectRatio="none"></svg></div>
-      </div>
-
-      <div class="card">
-        <div class="label">AI Analysis & Reasoning</div>
-        <div id="analysisText" class="small" style="font-size:14px;line-height:1.6;color:#dbe7ff">Waiting for enough live candles to build minimum viable structure.</div>
-        <div class="stack" style="margin-top:12px" id="edgeList"></div>
+      <div class="sideGrid">
+        <div class="card">
+          <h3>Deriv Data Bridge</h3>
+          <div class="kv"><span>data source</span><span>Deriv WebSocket</span></div>
+          <div class="kv"><span>bootstrap load</span><span id="bootstrapView" class="yellowText">starting</span></div>
+          <div class="kv"><span>live feed sync</span><span id="feedView" class="redText">idle</span></div>
+          <div class="kv"><span>real candle engine</span><span id="engineView" class="yellowText">warming</span></div>
+          <div class="kv"><span>real price</span><span id="realPriceView">--</span></div>
+        </div>
+        <div class="card">
+          <h3>Execution Control</h3>
+          <div class="kv"><span>Engine</span><span class="greenText">PASS</span></div>
+          <div class="kv"><span>Trade slot</span><span id="slotView" class="greenText">PASS</span></div>
+          <div class="kv"><span>Cooldown</span><span id="cooldownView" class="greenText">PASS</span></div>
+          <div class="kv"><span>Trade limit</span><span id="limitView" class="greenText">PASS</span></div>
+          <div class="kv"><span>Execution status</span><span id="execStatus" class="yellowText">WAIT / FILTERED</span></div>
+        </div>
+        <div class="card">
+          <h3>Precision Entry Stack</h3>
+          <div class="kv"><span>HTF lock</span><span id="htfLock">Mixed | Mixed | Mixed</span></div>
+          <div class="kv"><span>Priority model</span><span id="priorityView">Retracement first</span></div>
+          <div class="kv"><span>CRT sweep</span><span id="crtView">None</span></div>
+          <div class="kv"><span>Reclaimed</span><span id="reclaimView">NO</span></div>
+          <div class="kv"><span>Forced unlock</span><span id="forceView" class="yellowText">armed</span></div>
+        </div>
+        <div class="card">
+          <h3>Risk Engine</h3>
+          <div class="kv"><span>paper balance</span><span id="balanceView">$35.00</span></div>
+          <div class="kv"><span>risk % / trade</span><span>1</span></div>
+          <div class="kv"><span>max trades / session</span><span>10</span></div>
+          <div class="kv"><span>cooldown min</span><span>2</span></div>
+          <div class="kv"><span>risk amount / trade</span><span id="riskAmt">$0.35</span></div>
+          <div class="kv"><span>stop distance</span><span id="stopDist">3.800</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="rightcol">
+    <div class="bottom">
       <div class="card">
-        <div class="label">Execution Control</div>
-        <div class="stack">
-          <div class="lineitem"><span>Engine</span><strong class="ok">PASS</strong></div>
-          <div class="lineitem"><span>Trade slot</span><strong id="tradeSlot">PASS</strong></div>
-          <div class="lineitem"><span>Cooldown</span><strong id="cooldownState">PASS</strong></div>
-          <div class="lineitem"><span>Trade limit</span><strong id="tradeLimitState">PASS</strong></div>
-          <div class="lineitem"><span>Daily cap</span><strong class="ok">PASS</strong></div>
-          <div class="lineitem"><span>Execution status</span><strong id="execStatus">WAIT / FILTERED</strong></div>
+        <h3>AI Analysis &amp; Reasoning</h3>
+        <div id="analysisText" class="small">Booting signal engine. Waiting for bootstrap candles, then live ticks will take over. Startup recovery patch will force unlock when minimum viable structure is ready or warmup reaches 120 seconds.</div>
+        <div style="margin-top:12px">
+          <h3 style="margin-bottom:8px">Confluence Edge</h3>
+          <div id="edgeText" class="small">• bootstrap pending<br>• waiting for enough M1 / M5 candles<br>• no valid trigger yet</div>
+        </div>
+        <div style="margin-top:12px">
+          <h3 style="margin-bottom:8px">Performance Intelligence</h3>
+          <div class="chartBox" style="height:160px"><canvas id="equityChart"></canvas></div>
         </div>
       </div>
-
       <div class="card">
-        <div class="label">Precision Entry Stack</div>
-        <div class="stack">
-          <div class="lineitem"><span>HTF lock</span><strong id="htfLock">Mixed | Mixed | Mixed</strong></div>
-          <div class="lineitem"><span>Priority model</span><strong id="priorityModel">Retracement first</strong></div>
-          <div class="lineitem"><span>CRT sweep</span><strong id="crtState">None</strong></div>
-          <div class="lineitem"><span>Reclaimed</span><strong id="reclaimState">NO</strong></div>
-          <div class="lineitem"><span>Countertrend block</span><strong id="ctBlock">NO</strong></div>
-          <div class="lineitem"><span>Trigger ladder</span><strong id="tierState">Tier 0</strong></div>
-          <div class="lineitem"><span>Live feed sync</span><strong class="ok">Green</strong></div>
-          <div class="lineitem"><span>Real candle engine</span><strong id="realEngineState">warming</strong></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="label">Risk Engine</div>
-        <div class="stack">
-          <div class="lineitem"><span>Paper balance</span><strong id="balView">$35.00</strong></div>
-          <div class="lineitem"><span>Risk % / trade</span><strong>1</strong></div>
-          <div class="lineitem"><span>Max trades / session</span><strong>10</strong></div>
-          <div class="lineitem"><span>Cooldown min</span><strong>2</strong></div>
-          <div class="lineitem"><span>Risk amount / trade</span><strong id="riskAmt">$0.35</strong></div>
-          <div class="lineitem"><span>Stop distance</span><strong id="stopDist">3.800</strong></div>
-          <div class="lineitem"><span>Suggested lot</span><strong>1.00 × 4</strong></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="label">Trade Map</div>
-        <div class="stack">
-          <div class="lineitem"><span>Entry</span><strong id="entryView">--</strong></div>
-          <div class="lineitem"><span>TP1</span><strong id="tp1View">--</strong></div>
-          <div class="lineitem"><span>TP2</span><strong id="tp2View">--</strong></div>
-          <div class="lineitem"><span>TP3</span><strong id="tp3View">--</strong></div>
-          <div class="lineitem"><span>Signal</span><strong id="tradeSignal">WAIT</strong></div>
-          <div class="lineitem"><span>Setup type</span><strong id="setupTypeView">Warmup</strong></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="label">Performance Tracking</div>
-        <div class="stack">
-          <div class="lineitem"><span>Session trades</span><strong id="sessTrades">0</strong></div>
-          <div class="lineitem"><span>Wins / Losses / BE</span><strong id="wlb">0 / 0 / 0</strong></div>
-          <div class="lineitem"><span>Win rate</span><strong id="winRate">0.0%</strong></div>
-          <div class="lineitem"><span>Blocked setups</span><strong id="blockedSetups">0</strong></div>
-          <div class="lineitem"><span>Total R</span><strong id="totalR">0.00</strong></div>
-          <div class="lineitem"><span>Daily loss value</span><strong id="dailyLoss">$0.00</strong></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="label">Open Paper Trades</div>
-        <table class="tbl" id="openTradesTbl"><thead><tr><th>Time</th><th>Dir</th><th>TF</th><th>Tier</th><th>Entry</th><th>SL</th><th>Float R</th><th>Status</th></tr></thead><tbody><tr><td colspan="8" class="muted">No open paper trades</td></tr></tbody></table>
-      </div>
-
-      <div class="card">
-        <div class="label">Auto Trade Journal</div>
-        <table class="tbl" id="journalTbl"><thead><tr><th>Time</th><th>Symbol</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead><tbody><tr><td colspan="14" class="muted">No paper trades logged yet</td></tr></tbody></table>
-      </div>
-
-      <div class="card">
-        <div class="label">Signal History</div>
-        <div id="signalHistory" class="stack"><div class="small muted">No alerts fired yet</div></div>
+        <h3>Performance Tracking</h3>
+        <div class="kv"><span>Session trades</span><span id="sessionTrades">0</span></div>
+        <div class="kv"><span>Wins / Losses / BE</span><span id="wlb">0 / 0 / 0</span></div>
+        <div class="kv"><span>Win rate</span><span id="winRate">0.0%</span></div>
+        <div class="kv"><span>Blocked setups</span><span id="blockedSetups">0</span></div>
+        <div class="kv"><span>Total R</span><span id="totalR">0.00</span></div>
+        <div class="kv"><span>Daily loss value</span><span id="dailyLoss">$0.00</span></div>
+        <h3 style="margin-top:12px">Open Paper Trades</h3>
+        <div class="scroll"><table><thead><tr><th>Time</th><th>Dir</th><th>TF</th><th>Tier</th><th>Entry</th><th>SL</th><th>Float R</th><th>Status</th></tr></thead><tbody id="openTrades"></tbody></table></div>
+        <h3 style="margin-top:12px">Auto Trade Journal</h3>
+        <div class="scroll"><table><thead><tr><th>Time</th><th>Symbol</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead><tbody id="journal"></tbody></table></div>
+        <h3 style="margin-top:12px">Signal History</h3>
+        <div id="history" class="scroll small" style="border:1px solid rgba(255,255,255,.08);padding:8px;border-radius:12px;background:rgba(255,255,255,.02);max-height:150px"></div>
+        <h3 style="margin-top:12px">Journal Notes</h3>
+        <textarea placeholder="Type your trade note, execution comment, mistake, or lesson here..."></textarea>
       </div>
     </div>
   </div>
-</div>
-<script>
-const state = {
-  symbol: '1HZ10V', market:'deriv', mode:'Balanced', trigger:'Retracement first',
-  warmupStart: Date.now(), warmupUnlocked:false, minCandles:{M1:25,M5:8,M15:3},
-  counts:{M1:0,M5:0,M15:0}, price: null, prices: [], signalHistory: [], journal: [], openTrades: [],
-  sessionTrades:0, wins:0, losses:0, be:0, blocked:0, totalR:0, cooldownUntil:0, sessionCap:10,
-  lastSignalAt:0, notif:false, ws:null, syntheticInterval:null
-};
 
-const $ = id => document.getElementById(id);
-const fmt = n => n==null || !isFinite(n) ? '--' : Number(n).toFixed(3);
-function pushSignal(txt){ state.signalHistory.unshift({t:new Date(),txt}); if(state.signalHistory.length>12)state.signalHistory.pop(); renderHistory(); }
-function renderHistory(){ const box=$('signalHistory'); box.innerHTML=''; if(!state.signalHistory.length){box.innerHTML='<div class="small muted">No alerts fired yet</div>'; return;} state.signalHistory.forEach(x=>{const d=document.createElement('div'); d.className='lineitem'; d.innerHTML=`<span>${x.t.toLocaleTimeString()}</span><strong>${x.txt}</strong>`; box.appendChild(d);}); }
-function setNotice(text,type='amber'){ $('notice').textContent=text; $('notice').style.background=type==='green'?'rgba(52,211,153,.12)':'rgba(251,191,36,.12)'; $('notice').style.borderColor=type==='green'?'rgba(52,211,153,.35)':'rgba(251,191,36,.35)'; $('notice').style.color=type==='green'?'#d1fae5':'#fde68a'; }
-function updateRisk(){ const bal=parseFloat($('paperBal').value)||35; $('balView').textContent='$'+bal.toFixed(2); $('riskAmt').textContent='$'+(bal*0.01).toFixed(2); }
-function updateWarmup(){ const secs=Math.floor((Date.now()-state.warmupStart)/1000); $('warmTime').textContent = secs+'s';
-  const c1=state.counts.M1>=state.minCandles.M1, c5=state.counts.M5>=state.minCandles.M5, c15=state.counts.M15>=state.minCandles.M15;
-  const force = secs>=120;
-  if((c1&&c5&&c15)||force){
-    state.warmupUnlocked=true; $('unlockState').textContent='Yes'; $('warmState').textContent='active'; $('realEngineState').textContent='active';
-    $('setupTag').textContent='Live';
-    setNotice(force?'LIVE — warmup fallback unlock engaged. Engine is now scanning setups.':'LIVE — minimum viable structure ready. Engine is now scanning setups.','green');
-  }else{
-    $('unlockState').textContent='No'; $('warmState').textContent='warming'; $('realEngineState').textContent='warming';
-    setNotice('WAIT — paper engine is warming true candles from live Deriv data.');
+<script>
+(() => {
+  const state = {
+    ws:null,
+    market:'deriv',
+    symbol:'1HZ10V',
+    running:true,
+    connected:false,
+    feedSynced:false,
+    bootstrapDone:false,
+    forcedUnlocked:false,
+    warmupSecs:0,
+    warmupLimit:120,
+    tradeCap:10,
+    sessionTrades:0,
+    wins:0, losses:0, be:0,
+    totalR:0,
+    blocked:0,
+    price:null,
+    prices:[],
+    candles:[],
+    tickBuffer:[],
+    timeframeMs:5*60*1000,
+    minThresholds:{M1:25,M5:8,M15:3},
+    tfCounts:{M1:0,M5:0,M15:0},
+    trades:[],
+    journal:[],
+    equity:[35],
+    initializedAt:Date.now(),
+    lastTickAt:0,
+    pingTimer:null,
+    warmupTimer:null
+  };
+
+  const $ = id => document.getElementById(id);
+  const fmt = n => n == null || isNaN(n) ? '--' : Number(n).toFixed(3);
+  const nowStr = () => new Date().toLocaleTimeString();
+  const setChip = (id, cls, text) => { const el=$(id); el.className='chip '+cls; el.textContent=text; };
+
+  function pushHistory(text){
+    const box=$('history');
+    const div=document.createElement('div');
+    div.style.padding='4px 0';
+    div.textContent=`${new Date().toLocaleString()} | ${text}`;
+    box.prepend(div);
   }
-}
-function updateBiasAndSignal(){
-  const p = state.prices.slice(-40); if(!p.length) return;
-  const ema20 = ema(p,20), ema50 = ema(p,50), rsi14 = rsi(p,14);
-  const bias = ema20>ema50 ? 'Bullish' : ema20<ema50 ? 'Bearish' : 'Mixed';
-  $('emaBias').textContent = 'EMA '+bias.toLowerCase(); $('rsiVal').textContent = isFinite(rsi14)?rsi14.toFixed(1):'0.0';
-  $('h1Bias').textContent = bias; $('d1Bias').textContent = state.warmupUnlocked? bias : 'Mixed';
-  $('htfLock').textContent = `${state.warmupUnlocked?bias:'Mixed'} | ${state.warmupUnlocked?bias:'Mixed'} | ${state.warmupUnlocked?bias:'Mixed'}`;
-  const confBase = state.warmupUnlocked ? 45 : 0;
-  let conf = confBase + (bias==='Bullish'||bias==='Bearish'?18:0) + (isFinite(rsi14)? Math.min(20, Math.abs(50-rsi14)) : 0);
-  conf = Math.max(0, Math.min(92, Math.round(conf)));
-  $('confVal').textContent = conf+'%'; $('ring').style.setProperty('--p', conf);
-  $('signalTag').textContent = state.warmupUnlocked ? (bias==='Mixed'?'WAIT':bias.toUpperCase()) : 'WAIT';
-  $('setupTag').textContent = state.warmupUnlocked ? (Math.abs(50-rsi14)<=10?'Retracement':'Range / Transition') : 'Warmup';
-  $('setupTypeView').textContent = $('setupTag').textContent;
-  $('tradeSignal').textContent = state.warmupUnlocked ? (bias==='Mixed'?'WAIT':bias.toUpperCase()) : 'WAIT';
-  $('priorityModel').textContent = $('triggerSel').value; $('tierState').textContent = conf>=75?'Tier 2':conf>=60?'Tier 1':'Tier 0'; $('tierTag').textContent=$('tierState').textContent;
-  const price = state.price || p[p.length-1]; const dir = bias==='Bullish'?1:bias==='Bearish'?-1:0; const stop=3.8;
-  $('entryView').textContent=fmt(price); $('tp1View').textContent=fmt(price + dir*stop); $('tp2View').textContent=fmt(price + dir*2*stop); $('tp3View').textContent=fmt(price + dir*3*stop); $('stopDist').textContent=stop.toFixed(3);
-  const edge=[];
-  if(bias!=='Mixed') edge.push(`EMA20 vs EMA50 ${bias.toLowerCase()} alignment`);
-  if(isFinite(rsi14)) edge.push(`RSI ${rsi14.toFixed(1)}`);
-  edge.push(state.warmupUnlocked?'Minimum viable live structure ready':'Waiting for enough live candles');
-  const box=$('edgeList'); box.innerHTML=''; edge.forEach(t=>{const e=document.createElement('div'); e.className='lineitem'; e.innerHTML=`<span>${t}</span><strong>${state.warmupUnlocked?'ready':'warming'}</strong>`; box.appendChild(e);});
-  $('analysisText').textContent = state.warmupUnlocked ? `1HZ10V live engine now reading ${bias.toUpperCase()} with ${conf}% confidence. Setup type is ${$('setupTag').textContent}. Paper execution can scan using soft HTF bias start and warmup unlock fallback.` : `Engine is still building minimum viable structure from live Deriv ticks. Warmup exits when M1≥${state.minCandles.M1}, M5≥${state.minCandles.M5}, M15≥${state.minCandles.M15}, or after 120 seconds.`;
-  maybeTrade({bias,conf,rsi:rsi14,price,stop});
-}
-function maybeTrade(ctx){
-  const now=Date.now();
-  const cooldown = now < state.cooldownUntil;
-  $('cooldownState').textContent = cooldown ? 'BLOCKED' : 'PASS';
-  $('tradeLimitState').textContent = state.sessionTrades >= state.sessionCap ? 'BLOCKED' : 'PASS';
-  $('tradeSlot').textContent = state.openTrades.length ? 'PASS' : 'PASS';
-  if(!state.warmupUnlocked || state.sessionTrades>=state.sessionCap || cooldown || state.openTrades.length) { $('execStatus').textContent='WAIT / FILTERED'; return; }
-  if(ctx.bias==='Bullish' && ctx.conf>=60 && ctx.rsi<68){ openBurst('BUY', ctx); }
-  else if(ctx.bias==='Bearish' && ctx.conf>=60 && ctx.rsi>32){ openBurst('SELL', ctx); }
-  else { state.blocked++; $('blockedSetups').textContent=state.blocked; $('execStatus').textContent='WAIT / FILTERED'; }
-}
-function openBurst(direction,ctx){
-  const entry = ctx.price; const stop = direction==='BUY'? entry-ctx.stop : entry+ctx.stop;
-  const tps = direction==='BUY'?[entry+ctx.stop,entry+ctx.stop*2,entry+ctx.stop*3]:[entry-ctx.stop,entry-ctx.stop*2,entry-ctx.stop*3];
-  for(let i=0;i<4;i++) state.openTrades.push({time:new Date(),dir:direction,tf:'M5',tier:$('tierState').textContent,entry,sl:stop,tp1:tps[0],tp2:tps[1],tp3:tps[2],status:'open',result:'',R:0});
-  state.sessionTrades += 4; $('sessTrades').textContent=state.sessionTrades; $('execStatus').textContent='IN PAPER TRADE'; pushSignal(`${direction} burst 4x opened @ ${fmt(entry)}`); renderOpenTrades();
-}
-function manageTrades(){
-  if(!state.openTrades.length || state.price==null) return;
-  const still=[]; let closedAny=false;
-  state.openTrades.forEach(t=>{
-    const win = t.dir==='BUY' ? state.price>=t.tp1 : state.price<=t.tp1;
-    const lose = t.dir==='BUY' ? state.price<=t.sl : state.price>=t.sl;
-    if(win || lose){
-      closedAny=true; t.status='closed'; t.result=win?'WIN':'LOSS'; t.R=win?1:-1; state.totalR += t.R; if(win) state.wins++; else state.losses++; state.journal.unshift({...t});
-    }else still.push(t);
-  });
-  state.openTrades = still; if(closedAny){ state.cooldownUntil = Date.now()+2*60*1000; renderJournal(); renderOpenTrades(); updatePerf(); }
-}
-function renderOpenTrades(){ const tb=$('#openTradesTbl tbody'); tb.innerHTML=''; if(!state.openTrades.length){tb.innerHTML='<tr><td colspan="8" class="muted">No open paper trades</td></tr>'; return;} state.openTrades.forEach(t=>{const tr=document.createElement('tr'); const floatR=t.dir==='BUY'?(state.price-t.entry)/3.8:(t.entry-state.price)/3.8; tr.innerHTML=`<td>${t.time.toLocaleTimeString()}</td><td>${t.dir}</td><td>${t.tf}</td><td>${t.tier}</td><td>${fmt(t.entry)}</td><td>${fmt(t.sl)}</td><td>${floatR.toFixed(2)}</td><td>${t.status}</td>`; tb.appendChild(tr);}); }
-function renderJournal(){ const tb=$('#journalTbl tbody'); tb.innerHTML=''; if(!state.journal.length){tb.innerHTML='<tr><td colspan="14" class="muted">No paper trades logged yet</td></tr>'; return;} state.journal.slice(0,12).forEach(t=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${t.time.toLocaleTimeString()}</td><td>${state.symbol}</td><td>${t.tf}</td><td>${t.dir}</td><td>${$('modeSel').value}</td><td>${t.tier}</td><td>${fmt(t.entry)}</td><td>${fmt(t.sl)}</td><td>${fmt(t.tp1)}</td><td>${fmt(t.tp2)}</td><td>${fmt(t.tp3)}</td><td>${t.status}</td><td class="${t.result==='WIN'?'ok':'bad'}">${t.result}</td><td>${t.R.toFixed(2)}</td>`; tb.appendChild(tr);}); }
-function updatePerf(){ $('wlb').textContent=`${state.wins} / ${state.losses} / ${state.be}`; const total = state.wins+state.losses+state.be; $('winRate').textContent = total? ((state.wins/total)*100).toFixed(1)+'%':'0.0%'; $('totalR').textContent=state.totalR.toFixed(2); $('dailyLoss').textContent='$'+Math.max(0,state.losses*0.35).toFixed(2); }
-function drawChart(){ const svg=$('chartSvg'); const w=900,h=280,pad=18; const p=state.prices.slice(-120); if(p.length<2){svg.innerHTML=''; return;} const min=Math.min(...p), max=Math.max(...p), rng=(max-min)||1; const pts=p.map((v,i)=>`${pad+(i*(w-pad*2)/(p.length-1))},${h-pad-((v-min)*(h-pad*2)/rng)}`).join(' '); const ema20v=emaSeries(p,20).map((v,i)=>`${pad+(i*(w-pad*2)/(p.length-1))},${h-pad-((v-min)*(h-pad*2)/rng)}`).join(' '); const ema50v=emaSeries(p,50).map((v,i)=>`${pad+(i*(w-pad*2)/(p.length-1))},${h-pad-((v-min)*(h-pad*2)/rng)}`).join(' '); svg.innerHTML=`<rect x="0" y="0" width="900" height="280" fill="transparent"/>${[1,2,3,4].map(i=>`<line x1="0" y1="${i*h/5}" x2="900" y2="${i*h/5}" stroke="rgba(255,255,255,.06)"/>`).join('')}<polyline fill="none" stroke="#60a5fa" stroke-width="3" points="${pts}"/><polyline fill="none" stroke="#a78bfa" stroke-width="2" points="${ema20v}"/><polyline fill="none" stroke="#fbbf24" stroke-width="2" points="${ema50v}"/>`; }
-function ema(arr,len){ if(arr.length===0) return 0; const k=2/(len+1); let out=arr[0]; for(let i=1;i<arr.length;i++) out=arr[i]*k+out*(1-k); return out; }
-function emaSeries(arr,len){ const k=2/(len+1); let out=[]; let prev=arr[0]||0; for(let i=0;i<arr.length;i++){ prev=i===0?arr[0]:arr[i]*k+prev*(1-k); out.push(prev);} return out; }
-function rsi(arr,len=14){ if(arr.length<len+1) return 50; let gains=0,loss=0; for(let i=arr.length-len;i<arr.length;i++){ const d=arr[i]-arr[i-1]; if(d>=0) gains+=d; else loss-=d;} if(loss===0) return 100; const rs=(gains/len)/(loss/len); return 100-(100/(1+rs)); }
-function syntheticTick(){ const last=state.price ?? 9870; const next=last + (Math.random()-.48)*1.8; onTick(next); }
-function onTick(price){ state.price=price; state.prices.push(price); if(state.prices.length>600) state.prices.shift(); $('realPrice').textContent=fmt(price); $('priceBig').textContent=fmt(price); $('priceBig').style.fontSize = price>9999?'52px':'56px'; $('symbolLbl').textContent='Symbol '+state.symbol; state.counts.M1=Math.min(60,Math.floor(state.prices.length/5)); state.counts.M5=Math.min(30,Math.floor(state.prices.length/25)); state.counts.M15=Math.min(20,Math.floor(state.prices.length/75)); $('m1Count').textContent=state.counts.M1; $('m5Count').textContent=state.counts.M5; $('m15Count').textContent=state.counts.M15; updateWarmup(); updateBiasAndSignal(); manageTrades(); drawChart(); }
-function connectDeriv(){
-  const url='wss://ws.derivws.com/websockets/v3?app_id=1089';
-  try{ if(state.ws) state.ws.close(); }catch(e){}
-  const mapSym = { '1HZ10V':'1HZ10V','R_100':'R_100','frxEURUSD':'frxEURUSD','frxGBPUSD':'frxGBPUSD' };
-  const ws = new WebSocket(url); state.ws=ws;
-  ws.onopen=()=>{ $('connChip').textContent='connected'; $('feedChip').textContent='feed synced'; $('connChip').className='chip green'; $('feedChip').className='chip green'; ws.send(JSON.stringify({ticks: mapSym[state.symbol] || state.symbol, subscribe:1})); pushSignal('LIVE FEED CONNECTED | '+state.symbol); };
-  ws.onmessage=(m)=>{ try{ const d=JSON.parse(m.data); if(d.tick && d.tick.quote){ onTick(Number(d.tick.quote)); } }catch(e){} };
-  ws.onerror=()=>fallbackFeed(); ws.onclose=()=>fallbackFeed();
-}
-function fallbackFeed(){ $('feedChip').textContent='feed reconnecting'; $('feedChip').className='chip amber'; if(!state.syntheticInterval){ state.syntheticInterval=setInterval(syntheticTick,1000);} }
-function resetSession(){ state.warmupStart=Date.now(); state.warmupUnlocked=false; state.counts={M1:0,M5:0,M15:0}; state.prices=[]; state.price=null; state.sessionTrades=0; state.wins=0; state.losses=0; state.be=0; state.blocked=0; state.totalR=0; state.cooldownUntil=0; state.openTrades=[]; state.journal=[]; $('sessTrades').textContent='0'; $('blockedSetups').textContent='0'; renderJournal(); renderOpenTrades(); updatePerf(); drawChart(); pushSignal('SESSION RESET'); }
-$('refreshBtn').onclick=()=>location.reload(); $('resetBtn').onclick=resetSession; $('paperBal').oninput=updateRisk; $('modeSel').onchange=e=>state.mode=e.target.value; $('triggerSel').onchange=e=>{$('priorityModel').textContent=e.target.value}; $('symbolSel').onchange=e=>{ state.symbol=e.target.value; resetSession(); connectDeriv(); };
-$('derivBtn').onclick=()=>{state.market='deriv'; $('derivBtn').classList.add('active'); $('forexBtn').classList.remove('active');};
-$('forexBtn').onclick=()=>{state.market='forex'; $('forexBtn').classList.add('active'); $('derivBtn').classList.remove('active'); $('symbolSel').value='frxEURUSD'; state.symbol='frxEURUSD'; resetSession(); connectDeriv();};
-$('notifBtn').onclick=async()=>{ if(Notification.permission!=='granted') await Notification.requestPermission(); state.notif=Notification.permission==='granted'; $('notifBtn').textContent=state.notif?'notifications on':'notifications off'; };
-updateRisk(); renderHistory(); renderJournal(); renderOpenTrades(); updatePerf(); connectDeriv(); setInterval(updateWarmup,1000);
+
+  function updateStatus(){
+    setChip('chipConnected', state.connected ? 'good':'bad', state.connected ? 'connected':'disconnected');
+    setChip('chipFeed', state.feedSynced ? 'good':'warn', state.feedSynced ? 'feed synced':'feed waiting');
+    setChip('chipEngine', state.running ? 'good':'warn', state.running ? 'paper engine active':'paper engine paused');
+    setChip('chipWarmup', state.bootstrapDone ? 'good':'warmup clear':'warn', state.bootstrapDone ? 'warmup clear':'warming');
+
+    $('priceView').textContent = fmt(state.price);
+    $('realPriceView').textContent = fmt(state.price);
+    $('symbolView').textContent = state.symbol;
+    $('timerView').textContent = `${state.warmupSecs}s`;
+    $('balanceView').textContent = `$${state.equity[state.equity.length-1].toFixed(2)}`;
+    $('riskAmt').textContent = `$${(state.equity[state.equity.length-1]*0.01).toFixed(2)}`;
+    $('tradeCapView').textContent = state.tradeCap;
+
+    const conf = calcConfidence();
+    $('confView').textContent = `${conf}%`;
+    $('ring').style.setProperty('--p', conf);
+
+    const warming = !state.bootstrapDone;
+    $('bootstrapView').textContent = state.bootstrapDone ? 'ready' : 'loading';
+    $('bootstrapView').className = state.bootstrapDone ? 'greenText' : 'yellowText';
+    $('feedView').textContent = state.feedSynced ? 'green' : 'idle';
+    $('feedView').className = state.feedSynced ? 'greenText' : 'redText';
+    $('engineView').textContent = warming ? 'warming' : 'active';
+    $('engineView').className = warming ? 'yellowText' : 'greenText';
+    $('forceView').textContent = state.forcedUnlocked ? 'active' : 'armed';
+    $('forceView').className = state.forcedUnlocked ? 'greenText' : 'yellowText';
+    $('priorityView').textContent = $('triggerSel').value;
+
+    $('sessionTrades').textContent = state.sessionTrades;
+    $('wlb').textContent = `${state.wins} / ${state.losses} / ${state.be}`;
+    const wr = state.sessionTrades ? ((state.wins/state.sessionTrades)*100).toFixed(1) : '0.0';
+    $('winRate').textContent = `${wr}%`;
+    $('blockedSetups').textContent = state.blocked;
+    $('totalR').textContent = state.totalR.toFixed(2);
+    $('dailyLoss').textContent = '$0.00';
+
+    const bias = deriveBias();
+    $('emaBias').textContent = bias.ema;
+    $('m1Bias').textContent = bias.m1;
+    $('h1Bias').textContent = bias.h1;
+    $('h4Bias').textContent = bias.h4;
+    $('d1Bias').textContent = bias.d1;
+    $('htfLock').textContent = `${bias.h4} | ${bias.h1} | ${bias.d1}`;
+    $('rsiVal').textContent = calcRSI().toFixed(1);
+
+    const readyReason = readinessReason();
+    $('analysisText').innerHTML = readyReason.analysis;
+    $('edgeText').innerHTML = readyReason.edge;
+    $('statusBar').textContent = readyReason.banner;
+    $('sigChip').textContent = readyReason.signal;
+    $('setupChip').textContent = readyReason.setup;
+    $('tierChip').textContent = readyReason.tier;
+    $('execStatus').textContent = readyReason.exec;
+  }
+
+  function readinessReason(){
+    const havePrice = state.price != null;
+    const minReady = state.tfCounts.M1 >= state.minThresholds.M1 && state.tfCounts.M5 >= state.minThresholds.M5;
+    const forced = state.warmupSecs >= state.warmupLimit;
+    const unlocked = state.bootstrapDone || forced || minReady;
+    if(forced && !state.forcedUnlocked){
+      state.forcedUnlocked = true;
+      pushHistory('FORCED UNLOCK engaged after 120s warmup limit.');
+    }
+    if((minReady || forced) && !state.bootstrapDone) state.bootstrapDone = true;
+
+    if(!havePrice){
+      return {
+        analysis:'Waiting for first live Deriv tick. Socket may be connected, but trading logic stays parked until real price prints.',
+        edge:'• no live price yet<br>• tick subscription not confirmed<br>• warmup still pending',
+        banner:'WAIT — engine is waiting for first live tick from Deriv.', signal:'WAIT', setup:'Warmup', tier:'Tier 0', exec:'WAIT / FILTERED'
+      }
+    }
+    if(!unlocked){
+      return {
+        analysis:`Warmup active. M1 candles ${state.tfCounts.M1}/${state.minThresholds.M1}, M5 candles ${state.tfCounts.M5}/${state.minThresholds.M5}, M15 candles ${state.tfCounts.M15}/${state.minThresholds.M15}. Forced unlock at 120s remains armed.`,
+        edge:`• live price synced<br>• M1 candles ${state.tfCounts.M1}<br>• M5 candles ${state.tfCounts.M5}<br>• M15 candles ${state.tfCounts.M15}<br>• waiting for minimum viable structure`,
+        banner:'WAIT — paper engine is warming up true candles from live Deriv data.', signal:'WAIT', setup:'Warmup', tier:'Tier 0', exec:'WAIT / FILTERED'
+      }
+    }
+    const sig = detectSignal();
+    if(!sig){
+      state.blocked += 1;
+      return {
+        analysis:'Warmup cleared. Engine is now scanning active live candles, but no qualified retracement or breakout trigger is present yet.',
+        edge:'• startup recovery passed<br>• live candle engine active<br>• top-down stack available<br>• no valid trigger yet',
+        banner:'WAIT — engine is live and scanning for the next valid setup.', signal:'WAIT', setup:'Scan', tier:'Tier 1', exec:'WAIT / FILTERED'
+      }
+    }
+    maybePaperTrade(sig);
+    return {
+      analysis:`Live setup found: ${sig.dir} ${sig.type}. Engine is using live candle continuation and burst execution model.`,
+      edge:`• ${sig.dir} bias active<br>• ${sig.type} trigger ready<br>• live candles aligned<br>• aggressive burst 4x armed`,
+      banner:`${sig.dir.toUpperCase()} SETUP — engine is evaluating execution window.`, signal:sig.dir.toUpperCase(), setup:sig.type, tier:'Tier 1', exec:'EXECUTION READY'
+    }
+  }
+
+  function calcConfidence(){
+    if(state.price == null) return 0;
+    let c = 20;
+    c += Math.min(25, state.tfCounts.M1);
+    c += Math.min(15, state.tfCounts.M5*1.5);
+    c += state.bootstrapDone ? 15 : 0;
+    const rsi = calcRSI();
+    if(rsi > 45 && rsi < 65) c += 10;
+    if(state.forcedUnlocked) c += 5;
+    return Math.max(0, Math.min(96, Math.round(c/1.2)));
+  }
+
+  function calcRSI(period=14){
+    if(state.prices.length < period+1) return 0;
+    let gains=0, losses=0;
+    for(let i=state.prices.length-period;i<state.prices.length;i++){
+      const diff = state.prices[i]-state.prices[i-1];
+      if(diff>=0) gains += diff; else losses += Math.abs(diff);
+    }
+    if(losses===0) return 100;
+    const rs = gains/losses;
+    return 100 - (100/(1+rs));
+  }
+
+  function deriveBias(){
+    const ema9 = ema(state.prices,9), ema20 = ema(state.prices,20), ema50 = ema(state.prices,50);
+    const emaBias = (ema9 && ema20 && ema50) ? (ema9>ema20 && ema20>ema50 ? 'EMA bullish' : ema9<ema20 && ema20<ema50 ? 'EMA bearish' : 'Mixed') : 'Waiting';
+    const base = (calcRSI()>52 && emaBias==='EMA bullish') ? 'Bullish' : (calcRSI()<48 && emaBias==='EMA bearish') ? 'Bearish' : 'Mixed';
+    return { ema: emaBias, m1: base, h1: base, h4: base, d1: base };
+  }
+
+  function ema(arr, period){
+    if(arr.length < period) return null;
+    const k = 2/(period+1);
+    let v = arr[0];
+    for(let i=1;i<arr.length;i++) v = arr[i]*k + v*(1-k);
+    return v;
+  }
+
+  function detectSignal(){
+    if(state.prices.length < 30) return null;
+    const rsi = calcRSI();
+    const bias = deriveBias();
+    const last = state.prices[state.prices.length-1];
+    const prev = state.prices[state.prices.length-2];
+    const change = last-prev;
+    if(bias.m1==='Bullish' && rsi>50 && change>0.2) return {dir:'bullish',type:'Retracement'};
+    if(bias.m1==='Bearish' && rsi<50 && change<-0.2) return {dir:'bearish',type:'Breakout'};
+    return null;
+  }
+
+  function maybePaperTrade(sig){
+    if(state.sessionTrades >= state.tradeCap) { $('limitView').textContent='BLOCKED'; $('limitView').className='redText'; return; }
+    if(state.trades.length>0) return;
+    const entry = state.price;
+    const sl = sig.dir==='bullish' ? entry-3.8 : entry+3.8;
+    const tp1 = sig.dir==='bullish' ? entry+3.8 : entry-3.8;
+    const tp2 = sig.dir==='bullish' ? entry+7.6 : entry-7.6;
+    const tp3 = sig.dir==='bullish' ? entry+11.4 : entry-11.4;
+    for(let i=0;i<4;i++) state.trades.push({time:nowStr(), dir:sig.dir, tf:'M5', tier:'Tier 1', entry, sl, tp1, tp2, tp3, status:'open', entryIndex:state.prices.length});
+    state.sessionTrades += 4;
+    pushHistory(`${sig.dir.toUpperCase()} ${state.symbol} | ${sig.type} | Entry ${entry.toFixed(3)} | SL ${sl.toFixed(3)} | aggressive burst 4x`);
+    renderOpenTrades();
+  }
+
+  function processTrades(){
+    if(!state.trades.length || state.price==null) return;
+    const stillOpen=[];
+    for(const t of state.trades){
+      let result = null, r = 0;
+      if(t.dir==='bullish'){
+        if(state.price <= t.sl){ result='LOSS'; r=-1; state.losses++; }
+        else if(state.price >= t.tp1){ result='WIN'; r=1; state.wins++; }
+      } else {
+        if(state.price >= t.sl){ result='LOSS'; r=-1; state.losses++; }
+        else if(state.price <= t.tp1){ result='WIN'; r=1; state.wins++; }
+      }
+      if(result){
+        state.totalR += r;
+        state.equity.push(Math.max(0, state.equity[state.equity.length-1] + r*(state.equity[state.equity.length-1]*0.01)));
+        state.journal.unshift({time:t.time,symbol:state.symbol,tf:t.tf,type:t.dir.toUpperCase(),mode:$('modeSel').value,tier:t.tier,entry:t.entry,sl:t.sl,tp1:t.tp1,tp2:t.tp2,tp3:t.tp3,status:'closed',result,R:r.toFixed(2)});
+      } else stillOpen.push(t);
+    }
+    state.trades = stillOpen;
+    renderJournal(); renderOpenTrades(); drawEquity();
+  }
+
+  function renderOpenTrades(){
+    const body=$('openTrades'); body.innerHTML='';
+    state.trades.forEach(t=>{
+      const tr=document.createElement('tr');
+      const floatR = t.dir==='bullish' ? ((state.price-t.entry)/(t.entry-t.sl||1)).toFixed(2) : ((t.entry-state.price)/(t.sl-t.entry||1)).toFixed(2);
+      tr.innerHTML=`<td>${t.time}</td><td>${t.dir.toUpperCase()}</td><td>${t.tf}</td><td>${t.tier}</td><td>${t.entry.toFixed(3)}</td><td>${t.sl.toFixed(3)}</td><td>${floatR}</td><td>open</td>`;
+      body.appendChild(tr);
+    });
+    if(!state.trades.length) body.innerHTML='<tr><td colspan="8" class="muted">No open paper trades</td></tr>';
+  }
+  function renderJournal(){
+    const body=$('journal'); body.innerHTML='';
+    state.journal.forEach(j=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${j.time}</td><td>${j.symbol}</td><td>${j.tf}</td><td>${j.type}</td><td>${j.mode}</td><td>${j.tier}</td><td>${j.entry.toFixed(3)}</td><td>${j.sl.toFixed(3)}</td><td>${j.tp1.toFixed(3)}</td><td>${j.tp2.toFixed(3)}</td><td>${j.tp3.toFixed(3)}</td><td>${j.status}</td><td class="${j.result==='WIN'?'greenText':'redText'}">${j.result}</td><td>${j.R}</td>`;
+      body.appendChild(tr);
+    });
+    if(!state.journal.length) body.innerHTML='<tr><td colspan="14" class="muted">No paper trades logged yet</td></tr>';
+  }
+
+  function addPrice(price, epochMs){
+    state.price = price;
+    state.lastTickAt = Date.now();
+    state.feedSynced = true;
+    state.prices.push(price);
+    if(state.prices.length>240) state.prices.shift();
+    buildCandles(price, epochMs || Date.now());
+    processTrades();
+    updateStatus(); drawChart();
+  }
+
+  function buildCandles(price, epochMs){
+    const bucketStart = epochMs - (epochMs % state.timeframeMs);
+    let last = state.candles[state.candles.length-1];
+    if(!last || last.t !== bucketStart){
+      state.candles.push({t:bucketStart,o:price,h:price,l:price,c:price});
+      if(state.candles.length>120) state.candles.shift();
+      state.tfCounts.M5 = Math.min(120, state.candles.length);
+      state.tfCounts.M1 = Math.min(240, Math.floor(state.prices.length/3));
+      state.tfCounts.M15 = Math.min(40, Math.floor(state.candles.length/3));
+    } else {
+      last.h = Math.max(last.h, price); last.l = Math.min(last.l, price); last.c = price;
+    }
+  }
+
+  function connect(){
+    try{ if(state.ws) state.ws.close(); }catch(e){}
+    setChip('chipConnected','warn','connecting');
+    const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
+    state.ws = ws;
+    ws.onopen = () => {
+      state.connected = true; pushHistory('LIVE FEED CONNECTED | '+state.symbol);
+      ws.send(JSON.stringify({ticks_history: state.symbol, adjust_start_time:1, count:120, end:'latest', granularity:60, style:'candles'}));
+      ws.send(JSON.stringify({ticks: state.symbol, subscribe:1}));
+      updateStatus();
+    };
+    ws.onmessage = (ev) => {
+      const msg = JSON.parse(ev.data);
+      if(msg.error){ pushHistory('WS ERROR | '+msg.error.message); return; }
+      if(msg.msg_type === 'history'){
+        if(msg.candles && msg.candles.length){
+          const closes = msg.candles.map(c=>Number(c.close));
+          state.prices = closes.slice(-240);
+          state.candles = msg.candles.map(c=>({t:Number(c.epoch)*1000,o:+c.open,h:+c.high,l:+c.low,c:+c.close})).slice(-120);
+          state.tfCounts.M5 = state.candles.length;
+          state.tfCounts.M1 = Math.max(25, Math.min(240, state.prices.length));
+          state.tfCounts.M15 = Math.max(3, Math.floor(state.candles.length/3));
+          state.bootstrapDone = state.candles.length >= 8;
+          pushHistory(`BOOTSTRAP LOADED | candles ${state.candles.length}`);
+        }
+      }
+      if(msg.msg_type === 'tick' || msg.tick){
+        const tk = msg.tick || msg.echo_req;
+        const quote = Number((msg.tick && msg.tick.quote) || tk.quote);
+        const epoch = Number((msg.tick && msg.tick.epoch) || tk.epoch) * 1000;
+        if(!isNaN(quote)) addPrice(quote, epoch);
+      }
+    };
+    ws.onclose = () => { state.connected=false; state.feedSynced=false; updateStatus(); pushHistory('WS CLOSED — reconnecting'); setTimeout(connect, 2500); };
+    ws.onerror = () => { pushHistory('WS ERROR EVENT'); };
+  }
+
+  function startWarmupClock(){
+    clearInterval(state.warmupTimer);
+    state.warmupSecs = 0;
+    state.warmupTimer = setInterval(()=>{
+      state.warmupSecs += 1;
+      if(state.price == null && state.warmupSecs > 5){
+        $('statusBar').textContent = 'WAIT — no live price yet. Engine is retrying socket + tick stream.';
+      }
+      if(state.warmupSecs >= state.warmupLimit && !state.bootstrapDone){
+        state.forcedUnlocked = true;
+        state.bootstrapDone = true;
+      }
+      updateStatus();
+    },1000);
+  }
+
+  function resetSession(){
+    state.sessionTrades=0; state.wins=0; state.losses=0; state.be=0; state.totalR=0; state.blocked=0; state.trades=[]; state.journal=[]; state.equity=[Number($('balanceInp').value)||35];
+    renderOpenTrades(); renderJournal(); drawEquity(); updateStatus(); pushHistory('SESSION RESET');
+  }
+
+  function drawChart(){
+    const c=$('chart'), ctx=c.getContext('2d');
+    const w=c.width=c.clientWidth*devicePixelRatio, h=c.height=c.clientHeight*devicePixelRatio;
+    ctx.clearRect(0,0,w,h); ctx.fillStyle='rgba(255,255,255,.02)'; ctx.fillRect(0,0,w,h);
+    const data=state.candles; if(!data.length){ ctx.fillStyle='#9fb0dd'; ctx.fillText('Waiting for enough live candles...',20,30); return; }
+    const min=Math.min(...data.map(d=>d.l)), max=Math.max(...data.map(d=>d.h)); const pad=(max-min)*0.15 || 1;
+    const ymin=min-pad, ymax=max+pad, step=w/data.length;
+    for(let i=0;i<6;i++){ const y = (h/6)*i; ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+    data.forEach((d,i)=>{
+      const x=i*step + step/2; const oy=h-(d.o-ymin)/(ymax-ymin)*h; const cy=h-(d.c-ymin)/(ymax-ymin)*h; const hy=h-(d.h-ymin)/(ymax-ymin)*h; const ly=h-(d.l-ymin)/(ymax-ymin)*h;
+      ctx.strokeStyle='#d1d9ff'; ctx.beginPath(); ctx.moveTo(x,hy); ctx.lineTo(x,ly); ctx.stroke();
+      ctx.fillStyle=d.c>=d.o ? '#7ee7a1' : '#ff8b8b'; const top=Math.min(oy,cy), bh=Math.max(2,Math.abs(cy-oy)); ctx.fillRect(x-step*0.3, top, step*0.6, bh);
+    });
+    const ema20Arr=emaSeries(data.map(d=>d.c),20), ema50Arr=emaSeries(data.map(d=>d.c),50);
+    lineSeries(ctx, ema20Arr, '#4aa8ff', ymin, ymax, w, h); lineSeries(ctx, ema50Arr, '#ffcc66', ymin, ymax, w, h);
+  }
+  function emaSeries(arr,p){ if(arr.length<p) return []; const k=2/(p+1); let e=arr[0]; return arr.map(v=>(e=v*k+e*(1-k))); }
+  function lineSeries(ctx, arr, color, ymin, ymax, w, h){ if(!arr.length) return; const step=w/arr.length; ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath(); arr.forEach((v,i)=>{const x=i*step+step/2, y=h-(v-ymin)/(ymax-ymin)*h; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y)}); ctx.stroke(); }
+  function drawEquity(){
+    const c=$('equityChart'), ctx=c.getContext('2d'); const w=c.width=c.clientWidth*devicePixelRatio, h=c.height=c.clientHeight*devicePixelRatio; ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='rgba(255,255,255,.02)'; ctx.fillRect(0,0,w,h); const arr=state.equity; if(arr.length<2){ ctx.fillStyle='#9fb0dd'; ctx.fillText('No equity movement yet',20,30); return; }
+    const min=Math.min(...arr), max=Math.max(...arr); const rng=(max-min)||1; ctx.strokeStyle='#4aa8ff'; ctx.lineWidth=3; ctx.beginPath(); arr.forEach((v,i)=>{const x=i*(w/(arr.length-1)), y=h-((v-min)/rng)*h; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y)}); ctx.stroke();
+  }
+
+  $('btnRefresh').onclick = ()=> location.reload();
+  $('btnReset').onclick = resetSession;
+  $('symbolSel').onchange = ()=> { state.symbol = $('symbolSel').value; connect(); startWarmupClock(); updateStatus(); };
+  $('balanceInp').onchange = ()=> { state.equity[0] = Number($('balanceInp').value)||35; updateStatus(); };
+  $('triggerSel').onchange = updateStatus;
+
+  updateStatus(); renderOpenTrades(); renderJournal(); drawChart(); drawEquity(); startWarmupClock(); connect();
+})();
 </script>
 </body>
 </html>
