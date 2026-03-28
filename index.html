@@ -3,183 +3,149 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI Love@Fx Pro — Signal Engine v7.4 Stable Core Rebase</title>
+<title>AI Love@Fx Pro — Signal Engine v7.4.1</title>
 <style>
   :root{
-    --bg:#07111f; --panel:#0d1b2d; --panel2:#11243d; --line:#27476f; --text:#e9f2ff; --muted:#9fb3d1;
+    --bg:#07111f; --panel:#0d1b2d; --line:#27476f; --text:#e9f2ff; --muted:#9fb3d1;
     --green:#2fd07f; --red:#ff6b6b; --amber:#f0b44d; --blue:#48a8ff; --chip:#162b48;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
-  .wrap{max-width:1450px;margin:0 auto;padding:14px}
-  .topbar,.grid,.minirow{display:grid;gap:12px}
-  .topbar{grid-template-columns:2.2fr 1fr 1fr 1fr 1fr 1fr}
+  .wrap{max-width:1480px;margin:0 auto;padding:14px}
+  .row,.grid,.mini{display:grid;gap:12px}
+  .row{grid-template-columns:2fr repeat(5,1fr)}
+  .grid{grid-template-columns:1.3fr 1fr 1fr}
+  .main{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:12px}
   .card{background:rgba(13,27,45,.96);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
   .brand{display:flex;gap:12px;align-items:center}
   .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}
   .title{font-size:30px;font-weight:800;line-height:1}
-  .subtitle{color:var(--muted);font-size:12px;margin-top:4px}
-  .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;font-weight:700}
+  .sub{font-size:12px;color:var(--muted)}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;font-weight:800}
   .dot{width:10px;height:10px;border-radius:50%}
-  .g{background:var(--green)} .r{background:var(--red)} .a{background:var(--amber)} .b{background:var(--blue)}
-  .btn, select, input{
-    background:#0f2138;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600
-  }
+  .g{background:var(--green)} .r{background:var(--red)} .a{background:var(--amber)}
+  .btn, select, input{width:100%;background:#0f2138;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:700}
   .btn{cursor:pointer}
-  .btn:hover{filter:brightness(1.08)}
-  .btn.primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}
-  .btn.good{background:linear-gradient(135deg,#157f4a,#2fd07f)}
-  .btn.warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}
-  .controls{margin-top:12px}
-  .controls,.grid{grid-template-columns:1.25fr 1.15fr 1.1fr}
-  .minirow{grid-template-columns:repeat(6,1fr);margin-top:12px}
+  .btn:hover{filter:brightness(1.06)}
+  .good{background:linear-gradient(135deg,#157f4a,#2fd07f)}
+  .primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}
+  .warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}
+  .mini{grid-template-columns:repeat(6,1fr);margin-top:10px}
   .chip{padding:8px 10px;border-radius:12px;background:var(--chip);border:1px solid var(--line);text-align:center;font-size:12px;font-weight:700}
-  .signal-strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:800}
-  .headline{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-  .price{font-size:54px;font-weight:900;line-height:1;margin:10px 0 6px}
-  .muted{color:var(--muted)}
+  .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .price{font-size:52px;font-weight:900;margin:8px 0 4px}
   .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
   .kpi .card{padding:10px}
-  .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-  .value{font-size:22px;font-weight:800;margin-top:4px}
-  .main{display:grid;grid-template-columns:1.35fr 1fr;gap:12px;margin-top:12px}
-  .chartbox{height:360px}
+  .value{font-size:22px;font-weight:900;margin-top:4px}
+  .strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:900}
+  .chartbox{height:390px}
   canvas{width:100%;height:100%}
-  .rightgrid{display:grid;gap:12px}
   .tablewrap{max-height:260px;overflow:auto;border-radius:12px;border:1px solid var(--line)}
   table{width:100%;border-collapse:collapse}
   th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left}
-  th{position:sticky;top:0;background:#132743;z-index:1}
-  .win{color:var(--green);font-weight:800}
-  .loss{color:var(--red);font-weight:800}
-  .be{color:var(--amber);font-weight:800}
-  textarea{width:100%;min-height:96px;resize:vertical;background:#0f2138;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}
-  .small{font-size:11px}
+  th{position:sticky;top:0;background:#132743}
+  .win{color:var(--green);font-weight:900}
+  .loss{color:var(--red);font-weight:900}
+  .be{color:var(--amber);font-weight:900}
+  textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}
   @media(max-width:1100px){
-    .topbar,.controls,.grid,.main{grid-template-columns:1fr}
-    .minirow,.kpi{grid-template-columns:repeat(2,1fr)}
-    .price{font-size:42px}
+    .row,.grid,.main{grid-template-columns:1fr}
+    .mini,.kpi{grid-template-columns:repeat(2,1fr)}
+    .price{font-size:40px}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar">
+  <div class="row">
     <div class="card">
       <div class="brand">
         <div class="logo">◆</div>
         <div>
           <div class="title">AI Love@Fx Pro</div>
-          <div class="subtitle">Live Deriv + Forex Intelligence | Signal Engine v7.4 — Stable Core Rebase</div>
+          <div class="sub">Signal Engine v7.4.1 — Live Price Alignment + Candlestick Toggle</div>
         </div>
       </div>
     </div>
     <div class="card"><div id="connBadge" class="badge"><span class="dot a"></span><span>feed standby</span></div></div>
     <div class="card"><div id="coreBadge" class="badge"><span class="dot g"></span><span>core running</span></div></div>
-    <div class="card"><div id="paperBadge" class="badge"><span class="dot g"></span><span>paper engine active</span></div></div>
-    <div class="card"><button id="refreshBtn" class="btn primary" style="width:100%">Refresh</button></div>
-    <div class="card"><button id="resetBtn" class="btn warn" style="width:100%">Reset Session</button></div>
+    <div class="card"><div id="syncBadge" class="badge"><span class="dot a"></span><span>sync pending</span></div></div>
+    <div class="card"><button id="refreshBtn" class="btn primary">Refresh</button></div>
+    <div class="card"><button id="resetBtn" class="btn warn">Reset Session</button></div>
   </div>
 
-  <div class="controls">
-    <div class="card">
-      <div class="label">Market</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
-        <button id="marketDeriv" class="btn good">Deriv Volatility</button>
-        <button id="marketForex" class="btn">Forex</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <div>
-          <div class="label">Symbol</div>
-          <select id="symbolSelect" style="width:100%;margin-top:6px">
+  <div class="card" style="margin-top:12px">
+    <div class="grid">
+      <div>
+        <div class="label">Market</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+          <button id="marketDeriv" class="btn good">Deriv Volatility</button>
+          <button id="marketForex" class="btn">Forex</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <select id="symbolSelect">
             <option value="R_10">V10 (1s)</option>
             <option value="frxEURUSD">EURUSD</option>
             <option value="frxGBPUSD">GBPUSD</option>
             <option value="frxUSDJPY">USDJPY</option>
           </select>
-        </div>
-        <div>
-          <div class="label">Mode</div>
-          <select id="modeSelect" style="width:100%;margin-top:6px">
+          <select id="modeSelect">
             <option>Balanced</option>
             <option>Aggressive</option>
             <option>Conservative</option>
           </select>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <div>
-          <div class="label">Trigger Model</div>
-          <select id="triggerSelect" style="width:100%;margin-top:6px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+          <select id="triggerSelect">
             <option>Retracement first</option>
             <option>Hybrid</option>
             <option>Breakout first</option>
           </select>
+          <input id="balanceInput" type="number" min="1" step="1" value="35">
+          <select id="chartMode">
+            <option value="candles">Candlesticks</option>
+            <option value="line">Line</option>
+          </select>
         </div>
-        <div>
-          <div class="label">Paper Balance</div>
-          <input id="balanceInput" type="number" value="35" step="1" min="1" style="width:100%;margin-top:6px">
+      </div>
+      <div>
+        <div class="label">Top-Down TF Stack</div>
+        <div class="mini" style="margin-top:8px">
+          <div class="chip">D1</div><div class="chip">H4</div><div class="chip">H1</div><div class="chip">M15</div><div class="chip">M5</div><div class="chip">M1</div>
+        </div>
+        <div class="mini">
+          <div class="chip">auto paper trade</div><div class="chip">cap 10</div><div class="chip">4x burst</div><div class="chip">auto reset</div><div class="chip">stable core</div><div class="chip">live sync</div>
         </div>
       </div>
-      <div class="minirow">
-        <div class="chip">D1</div><div class="chip">H4</div><div class="chip">H1</div><div class="chip">M15</div><div class="chip">M5</div><div class="chip">M1</div>
+      <div>
+        <div class="label">Data Bridge</div>
+        <div class="mini" style="grid-template-columns:repeat(2,1fr);margin-top:8px">
+          <div class="chip">source <span id="sourceLbl">Fallback</span></div>
+          <div class="chip">chart mode <span id="chartModeLbl">Candles</span></div>
+        </div>
+        <div class="mini" style="grid-template-columns:repeat(2,1fr)">
+          <div class="chip">last tick <span id="lastTickLbl">--</span></div>
+          <div class="chip">delta <span id="deltaLbl">--</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <button id="connectBtn" class="btn">Connect Live Feed</button>
+          <button id="disconnectBtn" class="btn">Disconnect Feed</button>
+        </div>
       </div>
-    </div>
-
-    <div class="card">
-      <div class="label">Execution Profile</div>
-      <div class="minirow" style="grid-template-columns:repeat(4,1fr);margin-top:8px">
-        <div class="chip">auto paper trade</div>
-        <div class="chip">session cap <span id="sessionCapLbl">10</span></div>
-        <div class="chip">4x 1 lot burst</div>
-        <div class="chip">auto reset enabled</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <button id="aggrBurstBtn" class="btn primary">Aggressive Burst 4x</button>
-        <button id="notifBtn" class="btn">Notifications Off</button>
-      </div>
-      <div class="minirow" style="grid-template-columns:repeat(2,1fr)">
-        <div class="chip">live sync optional</div>
-        <div class="chip">stable core first</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="label">Data Bridge</div>
-      <div class="minirow" style="grid-template-columns:repeat(2,1fr);margin-top:8px">
-        <div class="chip">source <span id="sourceLbl">Fallback</span></div>
-        <div class="chip">real price <span id="realPriceTop">--</span></div>
-      </div>
-      <div class="minirow" style="grid-template-columns:repeat(2,1fr)">
-        <div class="chip">warmup <span id="warmupLbl">fast-start</span></div>
-        <div class="chip">state <span id="stateLbl">scan mode</span></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <button id="connectBtn" class="btn">Connect Live Feed</button>
-        <button id="disconnectBtn" class="btn">Disconnect Feed</button>
-      </div>
-      <div class="small muted" style="margin-top:10px">Core engine must keep running even if live feed fails. No permanent warmup deadlock.</div>
     </div>
   </div>
 
-  <div id="signalStrip" class="signal-strip">WAIT — stable core is scanning for the next valid setup.</div>
+  <div id="strip" class="strip">WAIT — stable core is scanning for the next valid setup.</div>
 
   <div class="grid">
     <div class="card">
-      <div class="headline">
-        <div>
-          <div class="label">Live Price</div>
-          <div id="priceEl" class="price">--</div>
-          <div class="muted">Symbol: <span id="symbolLbl">1HZ10V</span></div>
-        </div>
-        <div style="min-width:200px">
-          <div class="label">Confidence</div>
-          <div style="height:22px;background:#10233d;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:8px">
-            <div id="confidenceBar" style="height:100%;width:0%;background:linear-gradient(90deg,#2fd07f,#48a8ff)"></div>
-          </div>
-          <div id="confidenceTxt" style="font-weight:800;margin-top:8px">0%</div>
-        </div>
+      <div class="label">Live Price</div>
+      <div id="priceEl" class="price">--</div>
+      <div class="sub">Symbol: <span id="symbolLbl">1HZ10V</span></div>
+      <div style="height:22px;background:#10233d;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:10px">
+        <div id="confBar" style="height:100%;width:0%;background:linear-gradient(90deg,#2fd07f,#48a8ff)"></div>
       </div>
+      <div id="confTxt" style="font-weight:900;margin-top:8px">0%</div>
       <div class="kpi">
         <div class="card"><div class="label">EMA Bias</div><div id="emaBias" class="value">Waiting</div></div>
         <div class="card"><div class="label">RSI</div><div id="rsiVal" class="value">0.0</div></div>
@@ -187,34 +153,42 @@
         <div class="card"><div class="label">D1 Bias</div><div id="d1Bias" class="value">Mixed</div></div>
       </div>
     </div>
-
     <div class="card">
       <div class="label">Execution Control</div>
       <div class="tablewrap" style="max-height:none;margin-top:8px">
-        <table>
-          <tbody>
-            <tr><td>Engine</td><td id="enginePass">PASS</td></tr>
-            <tr><td>Trade Slot</td><td id="tradeSlot">PASS</td></tr>
-            <tr><td>Cooldown</td><td id="cooldownPass">PASS</td></tr>
-            <tr><td>Trade Limit</td><td id="tradeLimitPass">PASS</td></tr>
-            <tr><td>Daily Cap</td><td id="dailyCapPass">PASS</td></tr>
-            <tr><td>Execution Status</td><td id="execStatus">WAIT / FILTERED</td></tr>
-            <tr><td>Priority Model</td><td id="priorityLbl">Retracement first</td></tr>
-            <tr><td>Countertrend Block</td><td id="counterLbl">ACTIVE</td></tr>
-            <tr><td>Burst Model</td><td id="burstLbl">4x 1 lot</td></tr>
-          </tbody>
-        </table>
+        <table><tbody>
+          <tr><td>Engine</td><td id="enginePass">PASS</td></tr>
+          <tr><td>Trade Slot</td><td id="tradeSlot">PASS</td></tr>
+          <tr><td>Cooldown</td><td id="cooldownPass">PASS</td></tr>
+          <tr><td>Trade Limit</td><td id="tradeLimitPass">PASS</td></tr>
+          <tr><td>Daily Cap</td><td id="dailyCapPass">PASS</td></tr>
+          <tr><td>Sync Lock</td><td id="syncLock">ACTIVE</td></tr>
+          <tr><td>Execution Status</td><td id="execStatus">WAIT / FILTERED</td></tr>
+          <tr><td>Priority Model</td><td id="priorityLbl">Retracement first</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">Risk Engine</div>
+      <div class="tablewrap" style="max-height:none;margin-top:8px">
+        <table><tbody>
+          <tr><td>Paper Balance</td><td id="balanceLbl">$35.00</td></tr>
+          <tr><td>Risk % / Trade</td><td>1</td></tr>
+          <tr><td>Max Trades / Session</td><td id="capLbl">10</td></tr>
+          <tr><td>Cooldown Min</td><td>2</td></tr>
+          <tr><td>Risk Amount / Trade</td><td id="riskLbl">$0.35</td></tr>
+          <tr><td>Suggested Lot</td><td>1 x 4 burst</td></tr>
+        </tbody></table>
       </div>
     </div>
   </div>
 
   <div class="main">
     <div class="card chartbox">
-      <div class="label">Live Price Action</div>
-      <canvas id="chartCanvas"></canvas>
+      <div class="label">Price Action</div>
+      <canvas id="chart"></canvas>
     </div>
-
-    <div class="rightgrid">
+    <div>
       <div class="card">
         <div class="label">Trade Map</div>
         <div class="tablewrap" style="max-height:none;margin-top:8px">
@@ -228,30 +202,14 @@
           </tbody></table>
         </div>
       </div>
-
-      <div class="card">
-        <div class="label">Risk Engine</div>
-        <div class="tablewrap" style="max-height:none;margin-top:8px">
-          <table><tbody>
-            <tr><td>Paper Balance</td><td id="paperBalanceLbl">$35.00</td></tr>
-            <tr><td>Risk % / Trade</td><td>1</td></tr>
-            <tr><td>Max Trades / Session</td><td id="sessionCap2">10</td></tr>
-            <tr><td>Cooldown Min</td><td id="cooldownMin">2</td></tr>
-            <tr><td>Risk Amount / Trade</td><td id="riskAmt">$0.35</td></tr>
-            <tr><td>Suggested Lot</td><td>1 x 4 burst</td></tr>
-          </tbody></table>
-        </div>
+      <div class="card" style="margin-top:12px">
+        <div class="label">AI Analysis & Reasoning</div>
+        <div id="reasoning" style="margin-top:8px;line-height:1.55">Stable core is active. Waiting for enough context to classify retracement or breakout. Live sync will block execution when price alignment is off.</div>
       </div>
     </div>
   </div>
 
   <div class="grid" style="margin-top:12px">
-    <div class="card">
-      <div class="label">AI Analysis & Reasoning</div>
-      <div id="reasoningBox" style="margin-top:8px;line-height:1.55">
-        Stable core is active. Waiting for enough context to classify trend / retracement / breakout without freezing the engine.
-      </div>
-    </div>
     <div class="card">
       <div class="label">Performance Tracking</div>
       <div class="tablewrap" style="max-height:none;margin-top:8px">
@@ -267,492 +225,402 @@
     </div>
     <div class="card">
       <div class="label">Open Paper Trades</div>
-      <div class="tablewrap"><table id="openTradesTable">
+      <div class="tablewrap"><table id="openTrades">
         <thead><tr><th>Time</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP1</th><th>Float</th><th>Status</th></tr></thead>
-        <tbody></tbody>
-      </table></div>
-    </div>
-  </div>
-
-  <div class="grid" style="margin-top:12px">
-    <div class="card">
-      <div class="label">Auto Trade Journal</div>
-      <div class="tablewrap"><table id="journalTable">
-        <thead><tr><th>Time</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead>
         <tbody></tbody>
       </table></div>
     </div>
     <div class="card">
       <div class="label">Signal History</div>
-      <div id="signalHistory" class="tablewrap" style="padding:10px;max-height:240px"></div>
+      <div id="signalHistory" class="tablewrap" style="padding:10px;max-height:220px"></div>
+      <textarea style="margin-top:10px" placeholder="Type your trade note, execution comment, mistake, or lesson here..."></textarea>
     </div>
-    <div class="card">
-      <div class="label">Journal Notes</div>
-      <textarea placeholder="Type your trade note, execution comment, mistake, or lesson here..."></textarea>
-      <div class="small muted" style="margin-top:8px">v7.4 Stable Core Rebase: v6.6-style behavior first, live data optional, no permanent warmup blocker.</div>
-    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="label">Auto Trade Journal</div>
+    <div class="tablewrap"><table id="journal">
+      <thead><tr><th>Time</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
   </div>
 </div>
 
 <script>
 (() => {
   const state = {
-    market: 'Deriv',
-    symbol: 'R_10',
-    symbolLabel: '1HZ10V',
-    mode: 'Balanced',
-    trigger: 'Retracement first',
-    price: null,
-    source: 'Fallback',
-    sessionCap: 10,
-    cooldownMin: 2,
-    lastTradeTs: 0,
-    blocked: 0,
-    wins: 0, losses: 0, be: 0, sessionTrades: 0, totalR: 0, dailyLoss: 0,
-    paperBalance: 35,
-    openTrades: [],
-    candlesM1: [], candlesM5: [], candlesM15: [], candlesH1: [], candlesH4: [], candlesD1: [],
-    signalHistory: [],
-    useLive: false,
-    ws: null,
-    fallbackTimer: null,
-    tradeCheckTimer: null,
+    market:'Deriv', symbol:'R_10', symbolLabel:'1HZ10V', mode:'Balanced', trigger:'Retracement first',
+    paperBalance:35, sessionCap:10, cooldownMin:2,
+    source:'Fallback', useLive:false, ws:null, fallbackTimer:null,
+    displayedPrice:null, livePrice:null, localPrice:null, lastTickTime:null, syncDelta:null,
+    candlesM1:[], candlesM5:[], candlesM15:[], candlesH1:[], candlesH4:[], candlesD1:[],
+    openTrades:[], journalRows:[], signalHistory:[],
+    wins:0, losses:0, be:0, sessionTrades:0, totalR:0, dailyLoss:0, blocked:0, lastTradeTs:0,
+    chartMode:'candles'
   };
 
   const $ = id => document.getElementById(id);
-  const fmt = (n, d=3) => (n===null || n===undefined || Number.isNaN(n)) ? '--' : Number(n).toFixed(d);
-  const nowTime = () => new Date().toLocaleTimeString();
+  const fmt = (n,d=3)=> (n===null||n===undefined||Number.isNaN(n)) ? '--' : Number(n).toFixed(d);
+  const nowTime = ()=> new Date().toLocaleTimeString();
   const tfMs = {M1:60000, M5:300000, M15:900000, H1:3600000, H4:14400000, D1:86400000};
 
-  function pushHistory(msg){
+  function history(msg){
     state.signalHistory.unshift(`${nowTime()} | ${msg}`);
-    state.signalHistory = state.signalHistory.slice(0, 100);
+    state.signalHistory = state.signalHistory.slice(0,120);
     $('signalHistory').innerHTML = state.signalHistory.map(x=>`<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">${x}</div>`).join('');
   }
 
-  function updateBadges(){
-    $('connBadge').innerHTML = `<span class="dot ${state.useLive ? 'g' : 'a'}"></span><span>${state.useLive ? 'connected' : 'feed standby'}</span>`;
-    $('sourceLbl').textContent = state.source;
-    $('realPriceTop').textContent = fmt(state.price);
-    $('paperBalanceLbl').textContent = '$' + state.paperBalance.toFixed(2);
-    $('riskAmt').textContent = '$' + Math.max(0.01, state.paperBalance * 0.01).toFixed(2);
-    $('sessionCapLbl').textContent = state.sessionCap;
-    $('sessionCap2').textContent = state.sessionCap;
+  function ui(){
+    $('symbolLbl').textContent = state.symbolLabel;
     $('priorityLbl').textContent = state.trigger;
-    $('burstLbl').textContent = '4x 1 lot';
+    $('balanceLbl').textContent = '$' + state.paperBalance.toFixed(2);
+    $('riskLbl').textContent = '$' + Math.max(0.01,state.paperBalance*0.01).toFixed(2);
+    $('capLbl').textContent = state.sessionCap;
+    $('sourceLbl').textContent = state.source;
+    $('chartModeLbl').textContent = state.chartMode === 'candles' ? 'Candles' : 'Line';
+    $('priceEl').textContent = fmt(state.displayedPrice);
+    $('lastTickLbl').textContent = state.lastTickTime ? new Date(state.lastTickTime).toLocaleTimeString() : '--';
+    $('deltaLbl').textContent = state.syncDelta == null ? '--' : fmt(state.syncDelta);
+    $('connBadge').innerHTML = `<span class="dot ${state.useLive?'g':'a'}"></span><span>${state.useLive?'connected':'feed standby'}</span>`;
+
+    const aligned = isAligned();
+    $('syncBadge').innerHTML = `<span class="dot ${aligned?'g':(state.livePrice==null?'a':'r')}"></span><span>${aligned?'sync locked':(state.livePrice==null?'sync pending':'sync blocked')}</span>`;
+    $('syncLock').textContent = aligned ? 'CLEAR' : 'ACTIVE';
   }
+
+  function isAligned(){
+    if(state.livePrice == null) return false;
+    if(state.displayedPrice == null) return false;
+    const tol = state.market === 'Deriv' ? 1.2 : 0.00035;
+    return Math.abs(state.displayedPrice - state.livePrice) <= tol;
+  }
+
+  function genBasePrice(){
+    return state.market === 'Deriv' ? 9942 + Math.random()*8 : 1.08 + Math.random()*0.02;
+  }
+
+  function bucket(arr, tf, price, ts){
+    const ms = tfMs[tf], t = Math.floor(ts/ms)*ms;
+    let c = arr[arr.length-1];
+    if(!c || c.t !== t){
+      c = {t,o:price,h:price,l:price,c:price};
+      arr.push(c);
+      if(arr.length>240) arr.shift();
+    } else {
+      c.h = Math.max(c.h, price); c.l = Math.min(c.l, price); c.c = price;
+    }
+  }
+
+  function ema(vals,p){
+    const k = 2/(p+1); let prev = vals[0] ?? 0; const out=[];
+    for(const v of vals){ prev = v*k + prev*(1-k); out.push(prev); }
+    return out;
+  }
+
+  function rsi(vals,period=14){
+    if(vals.length < period+1) return 50;
+    let gains=0, losses=0;
+    for(let i=vals.length-period;i<vals.length;i++){
+      const d = vals[i]-vals[i-1];
+      if(d>=0) gains += d; else losses -= d;
+    }
+    if(losses===0) return 100;
+    const rs = gains/losses;
+    return 100 - 100/(1+rs);
+  }
+
+  function bias(arr){
+    if(arr.length < 25) return 'Mixed';
+    const c = arr.map(x=>x.c), e20=ema(c,20).at(-1), e50=ema(c,50).at(-1), last=c.at(-1);
+    if(last>e20 && e20>e50) return 'Bullish';
+    if(last<e20 && e20<e50) return 'Bearish';
+    return 'Mixed';
+  }
+
+  function setStrip(text){ $('strip').textContent = text; }
+
+  function detect(){
+    const c1=state.candlesM1, c5=state.candlesM5, c15=state.candlesM15, h1=state.candlesH1, h4=state.candlesH4, d1=state.candlesD1;
+    if(c1.length<25 || c5.length<8){
+      $('confBar').style.width='0%'; $('confTxt').textContent='0%';
+      $('execStatus').textContent='WAIT / FILTERED';
+      $('reasoning').textContent='Stable core is active. Waiting for enough M1/M5 structure. Live sync will block execution when price alignment is off.';
+      return null;
+    }
+    const b1=bias(c1), b5=bias(c5), b15=bias(c15), bh1=bias(h1), bh4=bias(h4), bd1=bias(d1);
+    $('h1Bias').textContent = bh1; $('d1Bias').textContent = bd1;
+    const closes=c1.map(x=>x.c), last=closes.at(-1), e20=ema(closes,20).at(-1), e50=ema(closes,50).at(-1), rr=rsi(closes,14);
+    $('rsiVal').textContent = rr.toFixed(1);
+    $('emaBias').textContent = last>e20 && e20>e50 ? 'EMA bullish' : last<e20 && e20<e50 ? 'EMA bearish' : 'Mixed';
+
+    const bulls=[b1,b5,b15,bh1,bh4,bd1].filter(x=>x==='Bullish').length;
+    const bears=[b1,b5,b15,bh1,bh4,bd1].filter(x=>x==='Bearish').length;
+    let dir='WAIT', type='Range / Transition', confidence=42;
+    if(bulls>=3 && last>=e20*0.9995 && rr>50){ dir='BULLISH'; type='Retracement'; confidence=Math.min(92,50+bulls*7+(rr-50)*0.35); }
+    else if(bears>=3 && last<=e20*1.0005 && rr<50){ dir='BEARISH'; type='Retracement'; confidence=Math.min(92,50+bears*7+(50-rr)*0.35); }
+    else if(last>Math.max(...closes.slice(-12,-1)) && bulls>=2){ dir='BULLISH'; type='Breakout'; confidence=60+bulls*5; }
+    else if(last<Math.min(...closes.slice(-12,-1)) && bears>=2){ dir='BEARISH'; type='Breakout'; confidence=60+bears*5; }
+
+    $('confBar').style.width = Math.max(0,Math.min(100,confidence))+'%';
+    $('confTxt').textContent = Math.round(confidence)+'%';
+    $('signalDir').textContent = dir;
+    $('setupType').textContent = type;
+
+    const stopDist = state.market==='Deriv' ? 3.8 : 0.0015;
+    const entry=last;
+    const sl = dir==='BULLISH' ? entry-stopDist : dir==='BEARISH' ? entry+stopDist : entry;
+    const tp1 = dir==='BULLISH' ? entry+stopDist : dir==='BEARISH' ? entry-stopDist : entry;
+    const tp2 = dir==='BULLISH' ? entry+stopDist*2 : dir==='BEARISH' ? entry-stopDist*2 : entry;
+    const tp3 = dir==='BULLISH' ? entry+stopDist*3 : dir==='BEARISH' ? entry-stopDist*3 : entry;
+    $('entryPx').textContent = fmt(entry); $('tp1Px').textContent = fmt(tp1); $('tp2Px').textContent = fmt(tp2); $('tp3Px').textContent = fmt(tp3);
+
+    const aligned = isAligned();
+    $('execStatus').textContent = !aligned ? 'SYNC BLOCKED' : (dir==='WAIT' ? 'WAIT / FILTERED' : 'READY');
+    $('reasoning').innerHTML = `Top-down stable core reads <b>${dir}</b> with <b>${Math.round(confidence)}%</b> confidence. Setup type is <b>${type}</b>. M1=${b1}, M5=${b5}, M15=${b15}, H1=${bh1}, H4=${bh4}, D1=${bd1}. EMA structure is <b>${$('emaBias').textContent}</b>, RSI=<b>${rr.toFixed(1)}</b>. ${aligned ? 'Price alignment is clean.' : 'Price alignment is off, so execution stays blocked.'}`;
+    return {dir,type,confidence,entry,sl,tp1,tp2,tp3,stopDist};
+  }
+
+  function renderPerf(){
+    $('sessionTrades').textContent = state.sessionTrades;
+    $('wlb').textContent = `${state.wins} / ${state.losses} / ${state.be}`;
+    const total = state.wins+state.losses+state.be;
+    $('winRate').textContent = total ? ((state.wins/total)*100).toFixed(1)+'%' : '0.0%';
+    $('blockedSetups').textContent = state.blocked;
+    $('totalR').textContent = state.totalR.toFixed(2);
+    $('dailyLoss').textContent = '$'+state.dailyLoss.toFixed(2);
+    $('tradeLimitPass').textContent = `PASS (${state.sessionTrades}/${state.sessionCap})`;
+  }
+
+  function renderOpen(){
+    const body = $('openTrades').querySelector('tbody');
+    body.innerHTML = state.openTrades.map(t => `<tr><td>${t.time}</td><td>${t.dir}</td><td>${fmt(t.entry)}</td><td>${fmt(t.sl)}</td><td>${fmt(t.tp1)}</td><td>${t.floatR.toFixed(2)}</td><td>${t.status}</td></tr>`).join('') || '<tr><td colspan="7" style="color:#9fb3d1">No open paper trades</td></tr>';
+  }
+
+  function renderJournal(){
+    const body = $('journal').querySelector('tbody');
+    body.innerHTML = state.journalRows.map(r => `<tr><td>${r.time}</td><td>${r.tf}</td><td>${r.type}</td><td>${r.mode}</td><td>${r.tier}</td><td>${fmt(r.entry)}</td><td>${fmt(r.sl)}</td><td>${fmt(r.tp1)}</td><td>${fmt(r.tp2)}</td><td>${fmt(r.tp3)}</td><td>${r.status}</td><td class="${r.result==='WIN'?'win':r.result==='LOSS'?'loss':'be'}">${r.result}</td><td>${r.r.toFixed(2)}</td></tr>`).join('') || '<tr><td colspan="13" style="color:#9fb3d1">No paper trades logged yet</td></tr>';
+  }
+
+  function maybeOpen(signal){
+    if(!signal || signal.dir==='WAIT') return;
+    if(!isAligned()){ state.blocked++; renderPerf(); setStrip('SYNC BLOCKED — price mismatch detected. No trade opened.'); return; }
+    if(state.sessionTrades >= state.sessionCap){ state.blocked++; renderPerf(); setStrip('TRADE LIMIT REACHED — no new paper trade.'); return; }
+    if(Date.now()-state.lastTradeTs < state.cooldownMin*60000){ return; }
+    if(state.openTrades.length) return;
+
+    const tier = state.mode==='Aggressive' ? 'Tier 1' : state.mode==='Balanced' ? 'Tier 2' : 'Tier 3';
+    for(let i=0;i<4;i++){
+      state.openTrades.push({time:nowTime(), dir:signal.dir, entry:signal.entry, sl:signal.sl, tp1:signal.tp1, tp2:signal.tp2, tp3:signal.tp3, tf:'M1', type:signal.type, mode:state.mode, tier, floatR:0, status:'open'});
+    }
+    state.lastTradeTs = Date.now();
+    history(`${signal.dir} ${state.symbolLabel} | ${signal.type} | 4x burst | Entry ${fmt(signal.entry)} | SL ${fmt(signal.sl)}`);
+    setStrip(`${signal.dir} CONFIRMED — 4x burst paper trade opened @ ${fmt(signal.entry)}`);
+    renderOpen();
+  }
+
+  function updateOpenTrades(){
+    if(!state.openTrades.length || state.displayedPrice==null) return;
+    const closed=[];
+    for(const t of state.openTrades){
+      const mult = t.dir==='BULLISH' ? 1 : -1;
+      t.floatR = ((state.displayedPrice - t.entry) * mult) / Math.abs(t.entry - t.sl || 1);
+      if((t.dir==='BULLISH' && state.displayedPrice <= t.sl) || (t.dir==='BEARISH' && state.displayedPrice >= t.sl)){
+        t.result='LOSS'; t.r=-1; t.status='closed'; closed.push(t);
+      } else if((t.dir==='BULLISH' && state.displayedPrice >= t.tp2) || (t.dir==='BEARISH' && state.displayedPrice <= t.tp2)){
+        t.result='WIN'; t.r=2; t.status='closed'; closed.push(t);
+      } else if((t.dir==='BULLISH' && state.displayedPrice >= t.tp1) || (t.dir==='BEARISH' && state.displayedPrice <= t.tp1)){
+        t.result='BE'; t.r=0.5; t.status='closed'; closed.push(t);
+      }
+    }
+    if(closed.length){
+      state.openTrades = state.openTrades.filter(x=>x.status==='open');
+      for(const t of closed){
+        state.sessionTrades++;
+        if(t.result==='WIN') state.wins++;
+        else if(t.result==='LOSS'){ state.losses++; state.dailyLoss += state.paperBalance*0.01; }
+        else state.be++;
+        state.totalR += t.r;
+        state.journalRows.unshift({...t});
+      }
+      state.journalRows = state.journalRows.slice(0,200);
+      renderPerf(); renderJournal(); renderOpen();
+    } else renderOpen();
+  }
+
+  function draw(){
+    const canvas = $('chart');
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * devicePixelRatio;
+    canvas.height = rect.height * devicePixelRatio;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    ctx.clearRect(0,0,rect.width,rect.height);
+
+    const arr = state.candlesM1.slice(-70);
+    if(arr.length < 2){ ctx.fillStyle='#9fb3d1'; ctx.font='14px Segoe UI'; ctx.fillText('Waiting for enough candles...',20,30); return; }
+
+    const highs=arr.map(x=>x.h), lows=arr.map(x=>x.l), closes=arr.map(x=>x.c);
+    const min=Math.min(...lows), max=Math.max(...highs), padX=14, padY=18, w=rect.width-padX*2, h=rect.height-padY*2;
+    const X=i=>padX+(i/(arr.length-1))*w, Y=v=>padY+(1-(v-min)/(max-min||1))*h;
+
+    ctx.strokeStyle='rgba(255,255,255,.08)';
+    for(let i=0;i<5;i++){ const yy=padY+i*h/4; ctx.beginPath(); ctx.moveTo(padX,yy); ctx.lineTo(padX+w,yy); ctx.stroke(); }
+
+    const e20=ema(closes,20), e50=ema(closes,50);
+    ctx.lineWidth=2;
+    ctx.strokeStyle='#48a8ff'; ctx.beginPath(); e20.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
+    ctx.strokeStyle='#f0b44d'; ctx.beginPath(); e50.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
+
+    if(state.chartMode === 'line'){
+      ctx.strokeStyle='#dff1ff'; ctx.beginPath();
+      closes.forEach((v,i)=> i ? ctx.lineTo(X(i),Y(v)) : ctx.moveTo(X(i),Y(v)));
+      ctx.stroke();
+    } else {
+      const cw = Math.max(4, w/arr.length*0.6);
+      arr.forEach((c,i)=>{
+        const x = X(i), yo=Y(c.o), yc=Y(c.c), yh=Y(c.h), yl=Y(c.l);
+        ctx.strokeStyle = c.c >= c.o ? '#9ee7c0' : '#ff8f8f';
+        ctx.beginPath(); ctx.moveTo(x,yh); ctx.lineTo(x,yl); ctx.stroke();
+        ctx.fillStyle = c.c >= c.o ? '#9ee7c0' : '#ff8f8f';
+        const top = Math.min(yo,yc), body = Math.max(2,Math.abs(yc-yo));
+        ctx.fillRect(x-cw/2, top, cw, body);
+      });
+    }
+  }
+
+  function onTick(price, fromLive=false){
+    const ts = Date.now();
+    if(fromLive){
+      state.livePrice = price;
+      state.lastTickTime = ts;
+    } else {
+      state.localPrice = price;
+    }
+
+    if(fromLive){
+      state.displayedPrice = state.livePrice;
+      state.source = 'Live';
+    } else if(state.livePrice == null){
+      state.displayedPrice = state.localPrice;
+      state.source = 'Fallback';
+    } else {
+      state.displayedPrice = state.livePrice;
+      state.source = 'Mixed';
+    }
+
+    state.syncDelta = (state.livePrice != null && state.localPrice != null) ? Math.abs(state.livePrice - state.localPrice) : null;
+
+    bucket(state.candlesM1,'M1',state.displayedPrice,ts);
+    bucket(state.candlesM5,'M5',state.displayedPrice,ts);
+    bucket(state.candlesM15,'M15',state.displayedPrice,ts);
+    bucket(state.candlesH1,'H1',state.displayedPrice,ts);
+    bucket(state.candlesH4,'H4',state.displayedPrice,ts);
+    bucket(state.candlesD1,'D1',state.displayedPrice,ts);
+
+    ui();
+    const sig = detect();
+    updateOpenTrades();
+    maybeOpen(sig);
+    draw();
+
+    if(!isAligned() && state.livePrice != null) setStrip('SYNC BLOCKED — price mismatch detected. No execution until alignment clears.');
+    else if(sig && sig.dir==='WAIT') setStrip('WAIT — stable core is scanning for the next valid setup.');
+  }
+
+  function startFallback(){
+    clearInterval(state.fallbackTimer);
+    if(state.localPrice == null) state.localPrice = genBasePrice();
+    let drift = 0;
+    state.fallbackTimer = setInterval(()=>{
+      if(state.useLive) return;
+      const vol = state.market==='Deriv' ? 0.9 : 0.0002;
+      drift += (Math.random()-0.5)*vol*0.2;
+      state.localPrice += (Math.random()-0.5)*vol + drift*0.03;
+      onTick(state.localPrice,false);
+    },1000);
+  }
+
+  function connectLive(){
+    disconnectLive(false);
+    state.useLive = true;
+    ui();
+    history('LIVE FEED CONNECT REQUEST');
+    try{
+      const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+      state.ws = ws;
+      ws.onopen = ()=>{
+        history('LIVE FEED CONNECTED');
+        ws.send(JSON.stringify({ticks: state.symbol, subscribe: 1}));
+      };
+      ws.onmessage = (e)=>{
+        const msg = JSON.parse(e.data);
+        if(msg.error){
+          history('LIVE FEED ERROR: '+msg.error.message);
+          disconnectLive();
+          return;
+        }
+        if(msg.tick && typeof msg.tick.quote === 'number') onTick(msg.tick.quote,true);
+      };
+      ws.onerror = ()=>{ history('LIVE FEED SOCKET ERROR'); disconnectLive(); };
+      ws.onclose = ()=>{ history('LIVE FEED CLOSED'); disconnectLive(); };
+      setTimeout(()=>{
+        if(state.livePrice == null && state.useLive){
+          history('NO LIVE TICK RECEIVED — FALLBACK RETAINED');
+          disconnectLive();
+        }
+      },5000);
+    }catch(err){
+      history('LIVE FEED EXCEPTION');
+      disconnectLive();
+    }
+  }
+
+  function disconnectLive(restartFallback=true){
+    state.useLive = false;
+    if(state.ws){ try{state.ws.close();}catch(e){} state.ws=null; }
+    state.livePrice = null;
+    if(restartFallback) startFallback();
+    ui();
+  }
+
+  function seed(){
+    let p = genBasePrice();
+    state.localPrice = p;
+    state.displayedPrice = p;
+    for(let i=120;i>=1;i--){
+      const ts = Date.now() - i*60000;
+      p += (Math.random()-0.5)*(state.market==='Deriv'?1.2:0.00035);
+      bucket(state.candlesM1,'M1',p,ts); bucket(state.candlesM5,'M5',p,ts); bucket(state.candlesM15,'M15',p,ts);
+      bucket(state.candlesH1,'H1',p,ts); bucket(state.candlesH4,'H4',p,ts); bucket(state.candlesD1,'D1',p,ts);
+    }
+    state.localPrice = p; state.displayedPrice = p;
+    ui(); detect(); draw();
+  }
+
+  $('marketDeriv').onclick = ()=>{ state.market='Deriv'; state.symbol='R_10'; state.symbolLabel='1HZ10V'; $('symbolSelect').value='R_10'; setMarketButtons(); history('MARKET SWITCHED TO DERIV'); };
+  $('marketForex').onclick = ()=>{ state.market='Forex'; state.symbol='frxEURUSD'; state.symbolLabel='EURUSD'; $('symbolSelect').value='frxEURUSD'; setMarketButtons(); history('MARKET SWITCHED TO FOREX'); };
+  $('symbolSelect').onchange = e => { state.symbol=e.target.value; state.symbolLabel = state.symbol==='R_10' ? '1HZ10V' : state.symbol.replace('frx',''); ui(); history('SYMBOL SWITCHED TO '+state.symbolLabel); };
+  $('modeSelect').onchange = e => state.mode = e.target.value;
+  $('triggerSelect').onchange = e => { state.trigger = e.target.value; ui(); };
+  $('balanceInput').onchange = e => { state.paperBalance = Number(e.target.value)||35; ui(); };
+  $('chartMode').onchange = e => { state.chartMode = e.target.value; ui(); draw(); };
+  $('refreshBtn').onclick = ()=>location.reload();
+  $('resetBtn').onclick = ()=>{ state.wins=0;state.losses=0;state.be=0;state.sessionTrades=0;state.totalR=0;state.dailyLoss=0;state.blocked=0;state.openTrades=[];state.journalRows=[]; renderPerf(); renderOpen(); renderJournal(); history('SESSION RESET'); };
+  $('connectBtn').onclick = connectLive;
+  $('disconnectBtn').onclick = ()=>disconnectLive();
 
   function setMarketButtons(){
     $('marketDeriv').className = 'btn' + (state.market==='Deriv' ? ' good' : '');
     $('marketForex').className = 'btn' + (state.market==='Forex' ? ' good' : '');
   }
 
-  function resetSession(){
-    state.wins=0; state.losses=0; state.be=0; state.sessionTrades=0; state.totalR=0; state.dailyLoss=0; state.blocked=0;
-    state.openTrades=[]; state.lastTradeTs=0;
-    renderOpenTrades(); renderJournal(); renderPerf();
-    pushHistory('SESSION RESET');
-  }
-
-  function renderPerf(){
-    $('sessionTrades').textContent = state.sessionTrades;
-    $('wlb').textContent = `${state.wins} / ${state.losses} / ${state.be}`;
-    const denom = state.wins + state.losses + state.be;
-    $('winRate').textContent = denom ? ((state.wins/denom)*100).toFixed(1)+'%' : '0.0%';
-    $('blockedSetups').textContent = state.blocked;
-    $('totalR').textContent = state.totalR.toFixed(2);
-    $('dailyLoss').textContent = '$' + state.dailyLoss.toFixed(2);
-    $('tradeLimitPass').textContent = `PASS (${state.sessionTrades}/${state.sessionCap})`;
-  }
-
-  function renderJournal(){
-    const body = $('journalTable').querySelector('tbody');
-    body.innerHTML = state.journalRows?.map(r => `<tr>
-      <td>${r.time}</td><td>${r.tf}</td><td>${r.type}</td><td>${r.mode}</td><td>${r.tier}</td>
-      <td>${fmt(r.entry)}</td><td>${fmt(r.sl)}</td><td>${fmt(r.tp1)}</td><td>${fmt(r.tp2)}</td><td>${fmt(r.tp3)}</td>
-      <td>${r.status}</td><td class="${r.result==='WIN'?'win':r.result==='LOSS'?'loss':'be'}">${r.result}</td><td>${r.r.toFixed(2)}</td>
-    </tr>`).join('') || '<tr><td colspan="13" class="muted">No paper trades logged yet</td></tr>';
-  }
-
-  function renderOpenTrades(){
-    const body = $('openTradesTable').querySelector('tbody');
-    body.innerHTML = state.openTrades.map(t => `<tr>
-      <td>${t.time}</td><td>${t.dir}</td><td>${fmt(t.entry)}</td><td>${fmt(t.sl)}</td><td>${fmt(t.tp1)}</td><td>${t.floatR.toFixed(2)}</td><td>${t.status}</td>
-    </tr>`).join('') || '<tr><td colspan="7" class="muted">No open paper trades</td></tr>';
-  }
-
-  function setSignal(text){ $('signalStrip').textContent = text; }
-
-  function genBasePrice(){
-    return state.market === 'Deriv' ? 9870 + Math.random()*10 : 1.08 + Math.random()*0.02;
-  }
-
-  function startFallback(){
-    clearInterval(state.fallbackTimer);
-    if(state.price == null) state.price = genBasePrice();
-    state.source = state.useLive ? 'Deriv WebSocket' : 'Fallback';
-    let drift = 0;
-    state.fallbackTimer = setInterval(() => {
-      if(state.useLive) return;
-      const vol = state.market === 'Deriv' ? 0.8 : 0.0002;
-      drift += (Math.random()-0.5) * vol * 0.2;
-      state.price += (Math.random()-0.5)*vol + drift*0.02;
-      onTick(state.price);
-    }, 1000);
-  }
-
-  function connectLive(){
-    disconnectLive();
-    state.useLive = true;
-    state.source = 'Deriv WebSocket';
-    updateBadges();
-    pushHistory('LIVE FEED CONNECT REQUEST');
-    try{
-      const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
-      state.ws = ws;
-      ws.onopen = () => {
-        pushHistory('LIVE FEED CONNECTED');
-        ws.send(JSON.stringify({ticks: state.symbol, subscribe: 1}));
-      };
-      ws.onmessage = (e) => {
-        const msg = JSON.parse(e.data);
-        if(msg.error){
-          pushHistory('LIVE FEED ERROR: '+msg.error.message);
-          disconnectLive();
-          return;
-        }
-        if(msg.tick && typeof msg.tick.quote === 'number'){
-          state.price = msg.tick.quote;
-          onTick(state.price);
-        }
-      };
-      ws.onerror = () => {
-        pushHistory('LIVE FEED SOCKET ERROR');
-        disconnectLive();
-      };
-      ws.onclose = () => {
-        pushHistory('LIVE FEED CLOSED');
-        disconnectLive();
-      };
-      setTimeout(() => {
-        if(state.price == null && state.useLive){
-          pushHistory('NO LIVE TICK RECEIVED — FALLBACK ACTIVE');
-          disconnectLive();
-        }
-      }, 5000);
-    }catch(err){
-      pushHistory('LIVE FEED EXCEPTION');
-      disconnectLive();
-    }
-  }
-
-  function disconnectLive(){
-    state.useLive = false;
-    if(state.ws){
-      try{ state.ws.close(); }catch(e){}
-      state.ws = null;
-    }
-    state.source = 'Fallback';
-    updateBadges();
-    startFallback();
-  }
-
-  function bucketCandle(arr, tfKey, price, ts){
-    const ms = tfMs[tfKey];
-    const bucket = Math.floor(ts/ms)*ms;
-    let c = arr[arr.length-1];
-    if(!c || c.t !== bucket){
-      c = {t: bucket, o: price, h: price, l: price, c: price};
-      arr.push(c);
-      if(arr.length > 220) arr.shift();
-    } else {
-      c.h = Math.max(c.h, price);
-      c.l = Math.min(c.l, price);
-      c.c = price;
-    }
-  }
-
-  function ema(values, p){
-    const k = 2/(p+1);
-    let out = [], prev = values[0] ?? 0;
-    for(const v of values){ prev = v*k + prev*(1-k); out.push(prev); }
-    return out;
-  }
-
-  function rsi(values, period=14){
-    if(values.length < period+1) return 50;
-    let gains=0, losses=0;
-    for(let i=values.length-period;i<values.length;i++){
-      const d = values[i]-values[i-1];
-      if(d>=0) gains += d; else losses -= d;
-    }
-    if(losses===0) return 100;
-    const rs = gains / losses;
-    return 100 - (100/(1+rs));
-  }
-
-  function biasFromCandles(arr){
-    if(arr.length < 25) return 'Mixed';
-    const closes = arr.map(x=>x.c);
-    const e20 = ema(closes,20).slice(-1)[0];
-    const e50 = ema(closes,50).slice(-1)[0];
-    const last = closes[closes.length-1];
-    if(last > e20 && e20 > e50) return 'Bullish';
-    if(last < e20 && e20 < e50) return 'Bearish';
-    return 'Mixed';
-  }
-
-  function detectSetup(){
-    const c1 = state.candlesM1, c5 = state.candlesM5, c15 = state.candlesM15, h1 = state.candlesH1, h4=state.candlesH4, d1=state.candlesD1;
-    const last1 = c1[c1.length-1];
-    if(!last1 || c1.length < 25 || c5.length < 8){
-      $('stateLbl').textContent = 'scan mode';
-      $('warmupLbl').textContent = 'fast-start';
-      $('confidenceTxt').textContent = '0%';
-      $('confidenceBar').style.width='0%';
-      $('execStatus').textContent = 'WAIT / FILTERED';
-      $('reasoningBox').textContent = 'Stable core is active. Waiting for enough M1/M5 structure to classify retracement or breakout without freezing startup.';
-      return null;
-    }
-
-    const bM1 = biasFromCandles(c1), bM5 = biasFromCandles(c5), bM15=biasFromCandles(c15), bH1=biasFromCandles(h1), bH4=biasFromCandles(h4), bD1=biasFromCandles(d1);
-    $('h1Bias').textContent = bH1;
-    $('d1Bias').textContent = bD1;
-
-    const closes = c1.map(x=>x.c);
-    const e20 = ema(closes,20).slice(-1)[0], e50 = ema(closes,50).slice(-1)[0];
-    const last = closes[closes.length-1];
-    const rrsi = rsi(closes,14);
-    $('rsiVal').textContent = rrsi.toFixed(1);
-    $('emaBias').textContent = last > e20 && e20 > e50 ? 'EMA bullish' : last < e20 && e20 < e50 ? 'EMA bearish' : 'Mixed';
-
-    let bullVotes = [bM1,bM5,bM15,bH1,bH4,bD1].filter(x=>x==='Bullish').length;
-    let bearVotes = [bM1,bM5,bM15,bH1,bH4,bD1].filter(x=>x==='Bearish').length;
-    let dir='WAIT', type='Range / Transition', confidence=42;
-
-    if(bullVotes >= 3 && last >= e20*0.9995 && rrsi > 50){
-      dir='BULLISH'; type='Retracement';
-      confidence = Math.min(92, 50 + bullVotes*8 + Math.max(0, rrsi-50)*0.4);
-    } else if(bearVotes >= 3 && last <= e20*1.0005 && rrsi < 50){
-      dir='BEARISH'; type='Retracement';
-      confidence = Math.min(92, 50 + bearVotes*8 + Math.max(0, 50-rrsi)*0.4);
-    } else if(last > Math.max(...closes.slice(-12,-1)) && bullVotes >= 2){
-      dir='BULLISH'; type='Breakout'; confidence = 60 + bullVotes*5;
-    } else if(last < Math.min(...closes.slice(-12,-1)) && bearVotes >= 2){
-      dir='BEARISH'; type='Breakout'; confidence = 60 + bearVotes*5;
-    }
-
-    $('setupType').textContent = type;
-    $('signalDir').textContent = dir;
-    $('confidenceTxt').textContent = Math.round(confidence) + '%';
-    $('confidenceBar').style.width = Math.max(0, Math.min(100, confidence)) + '%';
-    $('execStatus').textContent = dir==='WAIT' ? 'WAIT / FILTERED' : 'READY';
-    $('stateLbl').textContent = 'active scan';
-
-    const stopDist = state.market==='Deriv' ? 3.8 : 0.0015;
-    let entry = last;
-    let sl = dir==='BULLISH' ? entry-stopDist : dir==='BEARISH' ? entry+stopDist : entry;
-    let tp1 = dir==='BULLISH' ? entry+stopDist : dir==='BEARISH' ? entry-stopDist : entry;
-    let tp2 = dir==='BULLISH' ? entry+stopDist*2 : dir==='BEARISH' ? entry-stopDist*2 : entry;
-    let tp3 = dir==='BULLISH' ? entry+stopDist*3 : dir==='BEARISH' ? entry-stopDist*3 : entry;
-
-    $('entryPx').textContent = fmt(entry);
-    $('tp1Px').textContent = fmt(tp1);
-    $('tp2Px').textContent = fmt(tp2);
-    $('tp3Px').textContent = fmt(tp3);
-
-    $('counterLbl').textContent = ((dir==='BULLISH' && bearVotes>bullVotes) || (dir==='BEARISH' && bullVotes>bearVotes)) ? 'ACTIVE' : 'NO';
-
-    $('reasoningBox').innerHTML =
-      `Top-down stable core reads <b>${dir}</b> with <b>${Math.round(confidence)}%</b> confidence. ` +
-      `Setup type is <b>${type}</b>. M1=${bM1}, M5=${bM5}, M15=${bM15}, H1=${bH1}, H4=${bH4}, D1=${bD1}. ` +
-      `EMA20/EMA50 structure = <b>${$('emaBias').textContent}</b>, RSI = <b>${rrsi.toFixed(1)}</b>. ` +
-      `This build prioritizes response and reliability over over-strict warmup gating.`;
-
-    return {dir, type, confidence, entry, sl, tp1, tp2, tp3, stopDist};
-  }
-
-  function openBurst(signal){
-    if(signal.dir==='WAIT') return;
-    const now = Date.now();
-    if(state.sessionTrades >= state.sessionCap){ state.blocked++; renderPerf(); return; }
-    if(now - state.lastTradeTs < state.cooldownMin*60000){ state.blocked++; renderPerf(); return; }
-
-    const tier = state.mode === 'Aggressive' ? 'Tier 1' : state.mode === 'Balanced' ? 'Tier 2' : 'Tier 3';
-    const count = 4;
-    for(let i=0;i<count;i++){
-      state.openTrades.push({
-        id: Math.random().toString(36).slice(2),
-        time: nowTime(),
-        dir: signal.dir,
-        tf: 'M1',
-        type: signal.type,
-        mode: state.mode,
-        tier,
-        entry: signal.entry,
-        sl: signal.sl,
-        tp1: signal.tp1,
-        tp2: signal.tp2,
-        tp3: signal.tp3,
-        stopDist: signal.stopDist,
-        floatR: 0,
-        status: 'open'
-      });
-    }
-    state.lastTradeTs = now;
-    pushHistory(`${signal.dir} ${state.symbolLabel} | ${signal.type} | 4x burst | Entry ${fmt(signal.entry)} | SL ${fmt(signal.sl)}`);
-    setSignal(`${signal.dir} CONFIRMED — 4x burst paper trade opened @ ${fmt(signal.entry)} | SL ${fmt(signal.sl)}`);
-    renderOpenTrades();
-  }
-
-  function updateOpenTrades(){
-    if(!state.openTrades.length || state.price == null) return;
-    const closed = [];
-    for(const t of state.openTrades){
-      const dirMult = t.dir==='BULLISH' ? 1 : -1;
-      t.floatR = ((state.price - t.entry) * dirMult) / Math.abs(t.entry - t.sl || 1);
-      if((t.dir==='BULLISH' && state.price <= t.sl) || (t.dir==='BEARISH' && state.price >= t.sl)){
-        t.status='closed'; t.result='LOSS'; t.r = -1.0; closed.push(t);
-      } else if((t.dir==='BULLISH' && state.price >= t.tp2) || (t.dir==='BEARISH' && state.price <= t.tp2)){
-        t.status='closed'; t.result='WIN'; t.r = 2.0; closed.push(t);
-      } else if((t.dir==='BULLISH' && state.price >= t.tp1) || (t.dir==='BEARISH' && state.price <= t.tp1)){
-        t.status='closed'; t.result='BE'; t.r = 0.5; closed.push(t);
-      }
-    }
-    if(closed.length){
-      state.openTrades = state.openTrades.filter(t=>t.status==='open');
-      state.journalRows = state.journalRows || [];
-      closed.forEach(t => {
-        state.sessionTrades++;
-        if(t.result==='WIN') state.wins++;
-        else if(t.result==='LOSS'){ state.losses++; state.dailyLoss += state.paperBalance*0.01; }
-        else state.be++;
-        state.totalR += t.r;
-        state.journalRows.unshift({
-          time:t.time, tf:t.tf, type:t.type, mode:t.mode, tier:t.tier,
-          entry:t.entry, sl:t.sl, tp1:t.tp1, tp2:t.tp2, tp3:t.tp3,
-          status:'closed', result:t.result, r:t.r
-        });
-      });
-      state.journalRows = state.journalRows.slice(0,200);
-      renderJournal(); renderPerf(); renderOpenTrades();
-    } else {
-      renderOpenTrades();
-    }
-  }
-
-  function onTick(price){
-    const ts = Date.now();
-    state.price = price;
-    $('priceEl').textContent = fmt(price);
-    $('realPriceTop').textContent = fmt(price);
-    bucketCandle(state.candlesM1,'M1',price,ts);
-    bucketCandle(state.candlesM5,'M5',price,ts);
-    bucketCandle(state.candlesM15,'M15',price,ts);
-    bucketCandle(state.candlesH1,'H1',price,ts);
-    bucketCandle(state.candlesH4,'H4',price,ts);
-    bucketCandle(state.candlesD1,'D1',price,ts);
-    drawChart();
-    const sig = detectSetup();
-    if(sig && sig.dir !== 'WAIT'){
-      if(state.openTrades.length === 0) openBurst(sig);
-    } else {
-      if(sig?.dir === 'WAIT') setSignal('WAIT — stable core is scanning for the next valid setup.');
-    }
-    updateOpenTrades();
-    updateBadges();
-  }
-
-  function drawChart(){
-    const c = $('chartCanvas');
-    const rect = c.getBoundingClientRect();
-    c.width = rect.width * devicePixelRatio;
-    c.height = rect.height * devicePixelRatio;
-    const ctx = c.getContext('2d');
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-    ctx.clearRect(0,0,rect.width,rect.height);
-
-    const arr = state.candlesM1.slice(-80);
-    if(arr.length < 2){
-      ctx.fillStyle='#9fb3d1'; ctx.font='14px Segoe UI';
-      ctx.fillText('Waiting for enough live candles...',20,30);
-      return;
-    }
-    const closes = arr.map(x=>x.c);
-    const highs = arr.map(x=>x.h), lows = arr.map(x=>x.l);
-    const min = Math.min(...lows), max = Math.max(...highs);
-    const padX=12, padY=18, w=rect.width-padX*2, h=rect.height-padY*2;
-    const x = i => padX + (i/(arr.length-1))*w;
-    const y = v => padY + (1-(v-min)/(max-min||1))*h;
-
-    ctx.strokeStyle='rgba(255,255,255,.08)';
-    for(let i=0;i<5;i++){ const yy=padY+i*h/4; ctx.beginPath(); ctx.moveTo(padX,yy); ctx.lineTo(padX+w,yy); ctx.stroke(); }
-
-    const e20 = ema(closes,20), e50 = ema(closes,50);
-    ctx.lineWidth=2;
-
-    ctx.strokeStyle='#48a8ff'; ctx.beginPath();
-    e20.forEach((v,i)=> i? ctx.lineTo(x(i),y(v)) : ctx.moveTo(x(i),y(v))); ctx.stroke();
-
-    ctx.strokeStyle='#f0b44d'; ctx.beginPath();
-    e50.forEach((v,i)=> i? ctx.lineTo(x(i),y(v)) : ctx.moveTo(x(i),y(v))); ctx.stroke();
-
-    ctx.strokeStyle='#cfe7ff'; ctx.beginPath();
-    closes.forEach((v,i)=> i? ctx.lineTo(x(i),y(v)) : ctx.moveTo(x(i),y(v))); ctx.stroke();
-  }
-
-  function initSeed(){
-    state.price = genBasePrice();
-    for(let i=120;i>=1;i--){
-      const ts = Date.now() - i*60000;
-      state.price += (Math.random()-0.5)*(state.market==='Deriv'?1.2:0.00035);
-      bucketCandle(state.candlesM1,'M1',state.price,ts);
-      bucketCandle(state.candlesM5,'M5',state.price,ts);
-      bucketCandle(state.candlesM15,'M15',state.price,ts);
-      bucketCandle(state.candlesH1,'H1',state.price,ts);
-      bucketCandle(state.candlesH4,'H4',state.price,ts);
-      bucketCandle(state.candlesD1,'D1',state.price,ts);
-    }
-    updateBadges();
-    detectSetup();
-    drawChart();
-  }
-
-  $('marketDeriv').onclick = () => {
-    state.market='Deriv'; state.symbol='R_10'; state.symbolLabel='1HZ10V'; $('symbolSelect').value='R_10';
-    setMarketButtons(); pushHistory('MARKET SWITCHED TO DERIV'); disconnectLive();
-  };
-  $('marketForex').onclick = () => {
-    state.market='Forex'; state.symbol='frxEURUSD'; state.symbolLabel='EURUSD'; $('symbolSelect').value='frxEURUSD';
-    setMarketButtons(); pushHistory('MARKET SWITCHED TO FOREX'); disconnectLive();
-  };
-  $('symbolSelect').onchange = (e) => {
-    state.symbol = e.target.value;
-    state.symbolLabel = e.target.value==='R_10' ? '1HZ10V' : e.target.value.replace('frx','');
-    $('symbolLbl').textContent = state.symbolLabel;
-    disconnectLive();
-    pushHistory(`SYMBOL SWITCHED TO ${state.symbolLabel}`);
-  };
-  $('modeSelect').onchange = e => state.mode = e.target.value;
-  $('triggerSelect').onchange = e => { state.trigger = e.target.value; $('priorityLbl').textContent = state.trigger; };
-  $('balanceInput').onchange = e => { state.paperBalance = Number(e.target.value)||35; updateBadges(); };
-  $('refreshBtn').onclick = () => location.reload();
-  $('resetBtn').onclick = resetSession;
-  $('connectBtn').onclick = connectLive;
-  $('disconnectBtn').onclick = disconnectLive;
-  $('notifBtn').onclick = async () => {
-    try{
-      if(Notification.permission !== 'granted') await Notification.requestPermission();
-      $('notifBtn').textContent = Notification.permission === 'granted' ? 'Notifications On' : 'Notifications Off';
-    }catch(e){}
-  };
-
   setMarketButtons();
-  $('symbolLbl').textContent = state.symbolLabel;
-  initSeed();
+  seed();
   startFallback();
-  state.tradeCheckTimer = setInterval(() => { detectSetup(); updateOpenTrades(); }, 1500);
-  renderPerf(); renderJournal(); renderOpenTrades(); pushHistory('STABLE CORE READY');
+  renderPerf();
+  renderOpen();
+  renderJournal();
+  history('STABLE CORE READY');
 })();
 </script>
 </body>
