@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signal Engine v7.8.2 — v7.4.1 Live Core Rebase</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Signal Engine v8.0 — Live + Structure Intelligence Fusion</title>
 <style>
-:root{--bg:#07111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--chip:#162b48}
+:root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--chip:#162b48}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
-.wrap{max-width:1480px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.mid{grid-template-columns:1.25fr 1fr 1fr}.main{grid-template-columns:1.45fr 1fr}
-.card{background:rgba(13,27,45,.96);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+.wrap{max-width:1500px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.mid{grid-template-columns:1.2fr 1fr 1fr}.main{grid-template-columns:1.45fr 1fr}.card{background:rgba(13,27,45,.96);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
 .brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}
 .title{font-size:30px;font-weight:800}.sub{font-size:12px;color:var(--muted)}
 .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;font-weight:800}.dot{width:10px;height:10px;border-radius:50%}.g{background:var(--green)}.a{background:var(--amber)}.r{background:var(--red)}.b{background:var(--blue)}
@@ -16,17 +15,18 @@
 .mini{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:10px}.chip{padding:8px 10px;border-radius:12px;background:var(--chip);border:1px solid var(--line);text-align:center;font-size:12px;font-weight:700}
 .label{font-size:12px;color:var(--muted);text-transform:uppercase}.price{font-size:54px;font-weight:900;margin:8px 0 4px}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}.kpi .card{padding:10px}.value{font-size:20px;font-weight:900;margin-top:4px}
 .strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:900}
-.chartbox{height:420px}canvas{width:100%;height:100%}
+.chartbox{height:430px}canvas{width:100%;height:100%}
 .tablewrap{max-height:280px;overflow:auto;border-radius:12px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left}th{position:sticky;top:0;background:#132743}
 .win{color:var(--green);font-weight:900}.loss{color:var(--red);font-weight:900}.be{color:var(--amber);font-weight:900}
 textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}
+.small{font-size:11px;color:var(--muted)} .score{font-size:28px;font-weight:900}
 @media(max-width:1100px){.top,.mid,.main{grid-template-columns:1fr}.mini,.kpi{grid-template-columns:repeat(2,1fr)}.price{font-size:40px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro</div><div class="sub">Signal Engine v7.8.2 — v7.4.1 Live Core Rebase + Correct Symbol Lock + Trade Unlock</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro</div><div class="sub">Signal Engine v8.0 — Live + Structure Intelligence Fusion</div></div></div></div>
     <div class="card"><div id="feedBadge" class="badge"><span class="dot a"></span><span>feed standby</span></div></div>
     <div class="card"><div id="coreBadge" class="badge"><span class="dot g"></span><span>core running</span></div></div>
     <div class="card"><div id="warmBadge" class="badge"><span class="dot a"></span><span>warmup pending</span></div></div>
@@ -45,7 +45,7 @@ textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
           <select id="symbolSelect">
             <option value="1HZ10V" selected>V10 (1s) / 1HZ10V</option>
-            <option value="R_10">V10 (non-1s) / R_10</option>
+            <option value="R_10">V10 / R_10</option>
             <option value="frxEURUSD">EURUSD</option>
             <option value="frxGBPUSD">GBPUSD</option>
             <option value="frxUSDJPY">USDJPY</option>
@@ -61,13 +61,13 @@ textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:
       <div>
         <div class="label">Top-Down TF Stack</div>
         <div class="mini"><div class="chip">D1</div><div class="chip">H4</div><div class="chip">H1</div><div class="chip">M15</div><div class="chip">M5</div><div class="chip">M1</div></div>
-        <div class="mini"><div class="chip">v7.4.1 core</div><div class="chip">symbol lock</div><div class="chip">warm unlock</div><div class="chip">trade unlock</div><div class="chip">4x burst</div><div class="chip">cap 10</div></div>
+        <div class="mini"><div class="chip">Expansion</div><div class="chip">Pullback</div><div class="chip">CRT</div><div class="chip">Golden Zone</div><div class="chip">M1 Trigger</div><div class="chip">Re-entry</div></div>
       </div>
       <div>
         <div class="label">Data Bridge</div>
         <div class="mini" style="grid-template-columns:repeat(2,1fr)">
           <div class="chip">source <span id="sourceLbl">Fallback</span></div>
-          <div class="chip">chart mode <span id="chartModeLbl">Candles</span></div>
+          <div class="chip">chart <span id="chartModeLbl">Candles</span></div>
         </div>
         <div class="mini" style="grid-template-columns:repeat(2,1fr)">
           <div class="chip">requested <span id="requestedLbl">1HZ10V</span></div>
@@ -89,7 +89,7 @@ textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:
     </div>
   </div>
 
-  <div id="strip" class="strip">WAIT — v7.8.2 rebase is initializing.</div>
+  <div id="strip" class="strip">WAIT — v8.0 is initializing.</div>
 
   <div class="grid mid">
     <div class="card">
@@ -125,15 +125,17 @@ textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:
     </div>
 
     <div class="card">
-      <div class="label">Risk Engine</div>
-      <div class="tablewrap" style="max-height:none;margin-top:8px">
+      <div class="label">v8 Score Engine</div>
+      <div class="score" id="scoreVal">0</div>
+      <div class="small">Aggressive fires at 55, Balanced at 65, Conservative at 75</div>
+      <div class="tablewrap" style="max-height:none;margin-top:10px">
         <table><tbody>
-          <tr><td>Paper Balance</td><td id="balanceLbl">$35.00</td></tr>
-          <tr><td>Risk % / Trade</td><td>1</td></tr>
-          <tr><td>Max Trades / Session</td><td id="capLbl">10</td></tr>
-          <tr><td>Cooldown Min</td><td>2</td></tr>
-          <tr><td>Risk Amount / Trade</td><td id="riskLbl">$0.35</td></tr>
-          <tr><td>Suggested Lot</td><td>4 x 1 lot burst</td></tr>
+          <tr><td>Expansion</td><td id="scoreExpansion">0</td></tr>
+          <tr><td>Golden Zone</td><td id="scoreGz">0</td></tr>
+          <tr><td>CRT Reclaim</td><td id="scoreCrt">0</td></tr>
+          <tr><td>M1 Trigger</td><td id="scoreM1">0</td></tr>
+          <tr><td>M5 / M15 Support</td><td id="scoreMid">0</td></tr>
+          <tr><td>HTF Bias Weight</td><td id="scoreHtf">0</td></tr>
         </tbody></table>
       </div>
     </div>
@@ -158,7 +160,7 @@ textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:
       </div>
       <div class="card" style="margin-top:12px">
         <div class="label">AI Analysis & Reasoning</div>
-        <div id="reasoning" style="margin-top:8px;line-height:1.55">v7.8.2 keeps the lighter v7.4.1 live core, adds strict symbol confirmation, then unlocks warmup and execution only after correct live data is flowing.</div>
+        <div id="reasoning" style="margin-top:8px;line-height:1.55">v8.0 fuses live connectivity with expansion, pullback, golden-zone, CRT reclaim, and weighted MTF execution logic.</div>
       </div>
     </div>
   </div>
@@ -180,10 +182,7 @@ textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:
     <div class="card">
       <div class="label">Open Paper Trades</div>
       <div class="tablewrap">
-        <table id="openTrades">
-          <thead><tr><th>Time</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP1</th><th>FloatR</th><th>Status</th></tr></thead>
-          <tbody></tbody>
-        </table>
+        <table id="openTrades"><thead><tr><th>Time</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP1</th><th>FloatR</th><th>Status</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
     <div class="card">
@@ -196,45 +195,40 @@ textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:
   <div class="card" style="margin-top:12px">
     <div class="label">Auto Trade Journal</div>
     <div class="tablewrap">
-      <table id="journal">
-        <thead><tr><th>Time</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <table id="journal"><thead><tr><th>Time</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead><tbody></tbody></table>
     </div>
   </div>
 </div>
 
 <script>
 (() => {
+const tfMs={M1:60000,M5:300000,M15:900000,H1:3600000,H4:14400000,D1:86400000};
 const state={
-  market:'Deriv', symbol:'1HZ10V', symbolLabel:'1HZ10V', mode:'Balanced', trigger:'Retracement first',
+  market:'Deriv', symbol:'1HZ10V', symbolLabel:'1HZ10V', mode:'Balanced', trigger:'Retracement first', chartMode:'candles',
   paperBalance:35, sessionCap:10, cooldownMin:2,
   feedState:'fallback', source:'Fallback', ws:null, socketState:'idle',
-  displayedPrice:null, livePrice:null, fallbackPrice:null, lastTickTime:null,
   requestedSymbol:'1HZ10V', returnedSymbol:null, symbolMismatch:false,
-  warmStart:null, minReadyCandles:10, chartMode:'candles',
+  displayedPrice:null, livePrice:null, fallbackPrice:null, warmStart:null, minReadyCandles:10,
   candlesM1:[], candlesM5:[], candlesM15:[], candlesH1:[], candlesH4:[], candlesD1:[],
   openTrades:[], journalRows:[], signalHistory:[],
   wins:0, losses:0, be:0, sessionTrades:0, totalR:0, dailyLoss:0, blocked:0, lastTradeTs:0
 };
-
 const $=id=>document.getElementById(id);
 const fmt=(n,d=3)=>(n===null||n===undefined||Number.isNaN(n))?'--':Number(n).toFixed(d);
 const nowTime=()=>new Date().toLocaleTimeString();
-const tfMs={M1:60000,M5:300000,M15:900000,H1:3600000,H4:14400000,D1:86400000};
 
-function history(msg){
+function hist(msg){
   state.signalHistory.unshift(`${nowTime()} | ${msg}`);
-  state.signalHistory=state.signalHistory.slice(0,180);
+  state.signalHistory=state.signalHistory.slice(0,200);
   $('signalHistory').innerHTML=state.signalHistory.map(x=>`<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">${x}</div>`).join('');
 }
 function bucket(arr,tf,price,ts){
   const ms=tfMs[tf], t=Math.floor(ts/ms)*ms;
   let c=arr[arr.length-1];
-  if(!c||c.t!==t){ c={t,o:price,h:price,l:price,c:price}; arr.push(c); if(arr.length>260)arr.shift(); }
+  if(!c||c.t!==t){ c={t,o:price,h:price,l:price,c:price}; arr.push(c); if(arr.length>300)arr.shift(); }
   else { c.h=Math.max(c.h,price); c.l=Math.min(c.l,price); c.c=price; }
 }
-function clearAllCandles(){ state.candlesM1=[]; state.candlesM5=[]; state.candlesM15=[]; state.candlesH1=[]; state.candlesH4=[]; state.candlesD1=[]; }
+function clearCandles(){ ['M1','M5','M15','H1','H4','D1'].forEach(tf=>state['candles'+tf]=[]); }
 function ema(vals,p){ if(!vals.length)return[]; const k=2/(p+1); let prev=vals[0]; const out=[]; for(const v of vals){ prev=v*k+prev*(1-k); out.push(prev);} return out; }
 function rsi(vals,period=14){
   if(vals.length<period+1)return 50;
@@ -250,12 +244,6 @@ function bias(arr){
   if(last<e20&&e20<e50)return'Bearish';
   return'Mixed';
 }
-function genBasePrice(){
-  if(state.market==='Forex')return 1.08+Math.random()*0.02;
-  if(state.symbol==='1HZ10V')return 10000+Math.random()*8;
-  if(state.symbol==='R_10')return 5120+Math.random()*8;
-  return 9990+Math.random()*10;
-}
 function warmReady(){
   if(!state.warmStart) return false;
   const elapsed=Math.floor((Date.now()-state.warmStart)/1000);
@@ -263,34 +251,32 @@ function warmReady(){
   $('minCandlesLbl').textContent=`${state.candlesM1.length} / ${state.minReadyCandles}`;
   return state.candlesM1.length>=state.minReadyCandles;
 }
-function symbolLockClear(){ return !state.symbolMismatch && !!state.returnedSymbol && state.returnedSymbol===state.requestedSymbol; }
-function feedLockClear(){ return state.feedState==='live' && symbolLockClear() && state.livePrice!=null; }
+function symbolClear(){ return !!state.returnedSymbol && state.returnedSymbol===state.requestedSymbol && !state.symbolMismatch; }
+function feedClear(){ return state.feedState==='live' && symbolClear() && state.livePrice!=null; }
 function setBadge(el,color,text){ el.innerHTML=`<span class="dot ${color}"></span><span>${text}</span>`; }
 function setStrip(text){ $('strip').textContent=text; }
-
 function updateBadges(){
   if(state.feedState==='live') setBadge($('feedBadge'),'g','feed live');
   else if(state.feedState==='connecting') setBadge($('feedBadge'),'b','feed connecting');
-  else if(state.feedState==='error') setBadge($('feedBadge'),'r','feed error');
-  else setBadge($('feedBadge'),'a','feed fallback');
+  else setBadge($('feedBadge'),'a','feed standby');
   setBadge($('coreBadge'),'g','core running');
-  setBadge($('warmBadge'), warmReady()?'g':'a', warmReady()?'warmup cleared':'warmup pending');
+  setBadge($('warmBadge'),warmReady()?'g':'a',warmReady()?'warmup cleared':'warmup pending');
 }
 function ui(){
   $('symbolLbl').textContent=state.symbolLabel;
-  $('balanceLbl').textContent='$'+state.paperBalance.toFixed(2);
-  $('riskLbl').textContent='$'+Math.max(0.01,state.paperBalance*0.01).toFixed(2);
-  $('capLbl').textContent=state.sessionCap;
   $('sourceLbl').textContent=state.source;
   $('chartModeLbl').textContent=state.chartMode==='candles'?'Candles':'Line';
   $('requestedLbl').textContent=state.requestedSymbol;
   $('returnedLbl').textContent=state.returnedSymbol||'--';
   $('socketLbl').textContent=state.socketState;
-  $('symbolLockChip').textContent=symbolLockClear()?'clear':'blocked';
+  $('symbolLockChip').textContent=symbolClear()?'clear':'blocked';
   $('priceEl').textContent=fmt(state.displayedPrice);
-  $('feedLock').textContent=feedLockClear()?'CLEAR':'BLOCKED';
+  $('balanceLbl').textContent='$'+state.paperBalance.toFixed(2);
+  $('riskLbl').textContent='$'+Math.max(0.01,state.paperBalance*0.01).toFixed(2);
+  $('capLbl').textContent=state.sessionCap;
+  $('feedLock').textContent=feedClear()?'CLEAR':'BLOCKED';
   $('warmLock').textContent=warmReady()?'CLEAR':'ACTIVE';
-  $('symbolLock').textContent=symbolLockClear()?'CLEAR':'BLOCKED';
+  $('symbolLock').textContent=symbolClear()?'CLEAR':'BLOCKED';
   $('tradeLimitPass').textContent=`PASS (${state.sessionTrades}/${state.sessionCap})`;
   updateBadges();
 }
@@ -311,242 +297,171 @@ function renderJournal(){
   const body=$('journal').querySelector('tbody');
   body.innerHTML=state.journalRows.map(r=>`<tr><td>${r.time}</td><td>${r.tf}</td><td>${r.type}</td><td>${r.mode}</td><td>${r.tier}</td><td>${fmt(r.entry)}</td><td>${fmt(r.sl)}</td><td>${fmt(r.tp1)}</td><td>${fmt(r.tp2)}</td><td>${fmt(r.tp3)}</td><td>${r.status}</td><td class="${r.result==='WIN'?'win':r.result==='LOSS'?'loss':'be'}">${r.result}</td><td>${r.r.toFixed(2)}</td></tr>`).join('')||'<tr><td colspan="13" style="color:#9fb3d1">No paper trades logged yet</td></tr>';
 }
-function bootstrapSeed(price){
-  clearAllCandles();
-  let p=price;
-  const now=Date.now();
-  for(let i=60;i>=1;i--){
+function seed(price){
+  clearCandles();
+  let p=price; const now=Date.now();
+  for(let i=120;i>=1;i--){
     const ts=now-i*60000;
-    p += (Math.random()-0.5)*(state.market==='Forex'?0.0002:0.9);
+    p += (Math.random()-0.5)*(state.market==='Forex'?0.00015:1.2);
     ['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,p,ts));
   }
-  ['M1','M5','M15','H1','H4','D1'].forEach(tf=>{
-    const arr=state['candles'+tf];
-    const c=arr[arr.length-1];
-    c.c=price; c.h=Math.max(c.h,price); c.l=Math.min(c.l,price);
-  });
   state.warmStart=Date.now();
-  history(`BOOTSTRAP SEEDED @ ${fmt(price)}`);
+  hist(`BOOTSTRAP SEEDED @ ${fmt(price)}`);
 }
 function connectLive(){
-  disconnectSocketOnly();
-  state.feedState='connecting';
-  state.source='Connecting';
-  state.socketState='opening';
-  state.returnedSymbol=null;
-  state.symbolMismatch=false;
-  state.requestedSymbol=state.symbol;
-  ui();
-  history(`LIVE FEED CONNECT REQUEST (${state.requestedSymbol})`);
+  disconnectSocket();
+  state.feedState='connecting'; state.source='Connecting'; state.socketState='opening';
+  state.requestedSymbol=state.symbol; state.returnedSymbol=null; state.symbolMismatch=false;
+  ui(); hist(`LIVE FEED CONNECT REQUEST (${state.requestedSymbol})`);
   try{
-    const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
-    state.ws = ws;
-    ws.onopen = () => {
-      state.socketState='open';
-      ui();
-      history('SOCKET OPEN');
-      ws.send(JSON.stringify({ticks:state.requestedSymbol, subscribe:1}));
-      history(`SUBSCRIBE SENT (${state.requestedSymbol})`);
-      setTimeout(()=>{
-        if(state.feedState==='connecting' && !state.returnedSymbol){
-          state.feedState='error';
-          state.socketState='timeout';
-          ui();
-          history('NO LIVE TICK RECEIVED WITHIN 8S');
-          fallbackOnly();
-        }
-      },8000);
-    };
-    ws.onmessage = (e) => {
-      const msg = JSON.parse(e.data);
-      if(msg.error){
-        state.feedState='error';
-        state.socketState='error';
-        ui();
-        history('LIVE FEED ERROR: '+msg.error.message);
-        fallbackOnly();
-        return;
-      }
-      if(msg.tick && typeof msg.tick.quote === 'number'){
-        const returned = msg.tick.symbol || null;
-        state.returnedSymbol = returned;
-        if(returned !== state.requestedSymbol){
-          state.symbolMismatch = true;
-          state.feedState='live';
-          state.source='Live';
-          state.socketState='live-mismatch';
-          state.livePrice = msg.tick.quote;
-          state.displayedPrice = msg.tick.quote;
-          history(`SYMBOL MISMATCH: REQUESTED ${state.requestedSymbol}, RETURNED ${returned}`);
-          ui();
-          detectSignal();
-          drawChart();
-          setStrip(`CONNECTED BUT WRONG SYMBOL — requested ${state.requestedSymbol}, returned ${returned}. Execution blocked.`);
-          return;
-        }
-        state.symbolMismatch = false;
-        state.feedState='live';
-        state.source='Live';
-        state.socketState='live';
-        state.livePrice = msg.tick.quote;
-        state.displayedPrice = msg.tick.quote;
-        state.lastTickTime = Date.now();
-        if(!state.warmStart) bootstrapSeed(msg.tick.quote);
+    const ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+    state.ws=ws;
+    ws.onopen=()=>{ state.socketState='open'; ui(); hist('SOCKET OPEN'); ws.send(JSON.stringify({ticks:state.requestedSymbol,subscribe:1})); hist(`SUBSCRIBE SENT (${state.requestedSymbol})`); };
+    ws.onmessage=e=>{
+      const msg=JSON.parse(e.data);
+      if(msg.error){ hist('LIVE FEED ERROR: '+msg.error.message); fallbackOnly(); return; }
+      if(msg.tick && typeof msg.tick.quote==='number'){
+        state.returnedSymbol=msg.tick.symbol||null;
+        state.symbolMismatch=state.returnedSymbol!==state.requestedSymbol;
+        state.feedState='live'; state.source='Live'; state.socketState=state.symbolMismatch?'live-mismatch':'live';
+        state.livePrice=msg.tick.quote; state.displayedPrice=msg.tick.quote;
+        if(!state.warmStart) seed(msg.tick.quote);
         ['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,msg.tick.quote,Date.now()));
         ui();
-        const signal=detectSignal();
+        const sig=evaluate();
         updateOpenTrades();
-        maybeOpenTrade(signal);
-        drawChart();
+        maybeTrade(sig);
+        draw();
       }
     };
-    ws.onerror = () => {
-      state.feedState='error';
-      state.socketState='error';
-      ui();
-      history('SOCKET ERROR');
-      fallbackOnly();
-    };
-    ws.onclose = () => {
-      if(state.feedState==='connecting' || state.feedState==='live'){
-        history('SOCKET CLOSED');
-        fallbackOnly();
-      }
-    };
-  }catch(err){
-    state.feedState='error';
-    state.socketState='exception';
-    ui();
-    history('LIVE FEED EXCEPTION');
-    fallbackOnly();
-  }
+    ws.onerror=()=>{ hist('SOCKET ERROR'); fallbackOnly(); };
+    ws.onclose=()=>{ if(state.feedState!=='fallback'){ hist('SOCKET CLOSED'); fallbackOnly(); } };
+  }catch(err){ hist('LIVE FEED EXCEPTION'); fallbackOnly(); }
 }
-function disconnectSocketOnly(){
-  if(state.ws){
-    try{ state.ws.onopen=null; state.ws.onmessage=null; state.ws.onerror=null; state.ws.onclose=null; state.ws.close(); }catch(e){}
-  }
-  state.ws=null;
+function disconnectSocket(){ if(state.ws){ try{state.ws.close()}catch(e){} } state.ws=null; }
+function fallbackOnly(){ disconnectSocket(); state.feedState='fallback'; state.source='Fallback'; state.socketState='idle'; state.returnedSymbol=null; state.symbolMismatch=false; ui(); }
+function basePrice(){
+  if(state.market==='Forex') return 1.08+Math.random()*0.015;
+  if(state.symbol==='1HZ10V') return 10000+Math.random()*10;
+  if(state.symbol==='R_10') return 5120+Math.random()*8;
+  return 1.1;
 }
-function fallbackOnly(){
-  disconnectSocketOnly();
-  state.feedState='fallback';
-  state.source='Fallback';
-  state.socketState='idle';
-  state.returnedSymbol=null;
-  state.symbolMismatch=false;
-  ui();
-}
-function applyFallbackTick(){
-  if(state.feedState==='live' || state.feedState==='connecting') return;
-  state.fallbackPrice += (Math.random()-0.5)*(state.market==='Forex'?0.0002:0.8);
-  state.displayedPrice = state.fallbackPrice;
+function fallbackTick(){
+  if(state.feedState!=='fallback') return;
+  state.fallbackPrice += (Math.random()-0.5)*(state.market==='Forex'?0.0002:1.0);
+  state.displayedPrice=state.fallbackPrice;
   ['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,state.displayedPrice,Date.now()));
-  ui();
-  detectSignal();
-  drawChart();
+  ui(); evaluate(); draw();
 }
-function detectSignal(){
-  const c1=state.candlesM1,c5=state.candlesM5,c15=state.candlesM15,h1=state.candlesH1,h4=state.candlesH4,d1=state.candlesD1;
-  if(!c1.length) return null;
+function evaluate(){
+  const c1=state.candlesM1, c5=state.candlesM5, c15=state.candlesM15, h1=state.candlesH1, h4=state.candlesH4, d1=state.candlesD1;
+  if(c1.length<5) return null;
 
   if(!warmReady()){
-    $('confBar').style.width='0%';
-    $('confTxt').textContent='0%';
-    $('execStatus').textContent='WARMUP';
-    $('setupState').textContent='Warmup';
-    $('reasoning').textContent='v7.8.2 is waiting for minimum viable live candles before strategy activation.';
-    $('signalDir').textContent='WAIT';
-    $('setupType').textContent='Range / Transition';
-    if(!symbolLockClear() && state.returnedSymbol){
-      setStrip(`CONNECTED BUT WRONG SYMBOL — requested ${state.requestedSymbol}, returned ${state.returnedSymbol}. Execution blocked.`);
-    } else if(feedLockClear()){
-      setStrip('LIVE FEED CONFIRMED — warmup building true candles.');
-    } else if(state.feedState==='connecting'){
-      setStrip('CONNECTING — waiting for first live tick.');
-    } else {
-      setStrip('WAIT — v7.8.2 is initializing.');
-    }
-    return null;
+    $('confBar').style.width='0%'; $('confTxt').textContent='0%'; $('setupState').textContent='Warmup'; $('execStatus').textContent='WARMUP'; setStrip('WAIT — building enough live candles.'); return null;
   }
 
   const b1=bias(c1), b5=bias(c5), b15=bias(c15), bh1=bias(h1), bh4=bias(h4), bd1=bias(d1);
   $('h1Bias').textContent=bh1; $('d1Bias').textContent=bd1;
-  const closes=c1.map(x=>x.c), last=closes.at(-1), e20=ema(closes,20).at(-1), e50=ema(closes,50).at(-1), r=rsi(closes,14);
-  $('rsiVal').textContent=r.toFixed(1);
-  let emaState='Mixed';
-  if(last>e20&&e20>e50) emaState='EMA bullish';
-  else if(last<e20&&e20<e50) emaState='EMA bearish';
-  $('emaBias').textContent=emaState;
+  const closes=c1.map(x=>x.c), last=closes.at(-1), prev=closes.at(-2)??last, e20=ema(closes,20).at(-1), e50=ema(closes,50).at(-1), r=rsi(closes,14);
+  const emaState=(last>e20&&e20>e50)?'EMA bullish':(last<e20&&e20<e50)?'EMA bearish':'EMA mixed';
+  $('emaBias').textContent=emaState; $('rsiVal').textContent=r.toFixed(1);
 
-  const bulls=[b1,b5,b15,bh1,bh4,bd1].filter(x=>x==='Bullish').length;
-  const bears=[b1,b5,b15,bh1,bh4,bd1].filter(x=>x==='Bearish').length;
-  let dir='WAIT', type='Range / Transition', conf=38;
+  const recentHigh=Math.max(...c1.slice(-20).map(x=>x.h));
+  const recentLow=Math.min(...c1.slice(-20).map(x=>x.l));
+  const range=Math.max(0.0001,recentHigh-recentLow);
+  const fib50=recentHigh-range*0.5;
+  const fib618=recentHigh-range*0.618;
+  const fib382=recentHigh-range*0.382;
 
-  if(bulls>=3 && emaState==='EMA bullish' && r>=52){ dir='BULLISH'; type='Confirmed Retest'; conf=Math.min(88,52+bulls*5+(r-50)*0.5); }
-  else if(bears>=3 && emaState==='EMA bearish' && r<=48){ dir='BEARISH'; type='Confirmed Retest'; conf=Math.min(88,52+bears*5+((50-r)*0.5)); }
+  const bullishExpansion=(last>prev && last>c1.slice(-8)[0].c && (last-recentLow) > range*0.35);
+  const bearishExpansion=(last<prev && last<c1.slice(-8)[0].c && (recentHigh-last) > range*0.35);
 
-  $('confBar').style.width=`${Math.round(conf)}%`;
-  $('confTxt').textContent=`${Math.round(conf)}%`;
-  $('signalDir').textContent=dir;
-  $('setupType').textContent=type;
+  const bullishPullback= last<=fib50 && last>=fib618 && emaState!=='EMA bearish';
+  const bearishPullback= last>=fib50 && last<=fib382 && emaState!=='EMA bullish';
+
+  const crtBull = c1.length>4 && c1.at(-3).l < c1.at(-4).l && c1.at(-1).c > c1.at(-2).h;
+  const crtBear = c1.length>4 && c1.at(-3).h > c1.at(-4).h && c1.at(-1).c < c1.at(-2).l;
+
+  const m1BullTrigger = c1.length>3 && c1.at(-1).c > c1.at(-1).o && c1.at(-1).c > c1.at(-2).h;
+  const m1BearTrigger = c1.length>3 && c1.at(-1).c < c1.at(-1).o && c1.at(-1).c < c1.at(-2).l;
+
+  const midBull = (b5!=='Bearish'?12:0) + (b15!=='Bearish'?8:0);
+  const midBear = (b5!=='Bullish'?12:0) + (b15!=='Bullish'?8:0);
+
+  const htfBull = (bh1==='Bullish'?10:bh1==='Mixed'?5:0)+(bh4==='Bullish'?8:bh4==='Mixed'?4:0)+(bd1==='Bullish'?5:bd1==='Mixed'?2:0);
+  const htfBear = (bh1==='Bearish'?10:bh1==='Mixed'?5:0)+(bh4==='Bearish'?8:bh4==='Mixed'?4:0)+(bd1==='Bearish'?5:bd1==='Mixed'?2:0);
+
+  let bullScore=0, bearScore=0;
+  if(bullishExpansion) bullScore+=18;
+  if(bearishExpansion) bearScore+=18;
+  if(bullishPullback) bullScore+=16;
+  if(bearishPullback) bearScore+=16;
+  if(crtBull) bullScore+=14;
+  if(crtBear) bearScore+=14;
+  if(m1BullTrigger) bullScore+=18;
+  if(m1BearTrigger) bearScore+=18;
+  if(emaState==='EMA bullish') bullScore+=10;
+  if(emaState==='EMA bearish') bearScore+=10;
+  if(r>=52) bullScore+=8; if(r<=48) bearScore+=8;
+  bullScore+=midBull+htfBull; bearScore+=midBear+htfBear;
+
+  $('scoreExpansion').textContent=Math.max(bullishExpansion?18:0,bearishExpansion?18:0);
+  $('scoreGz').textContent=Math.max(bullishPullback?16:0,bearishPullback?16:0);
+  $('scoreCrt').textContent=Math.max(crtBull?14:0,crtBear?14:0);
+  $('scoreM1').textContent=Math.max(m1BullTrigger?18:0,m1BearTrigger?18:0);
+  $('scoreMid').textContent=Math.max(midBull,midBear);
+  $('scoreHtf').textContent=Math.max(htfBull,htfBear);
+
+  const threshold=state.mode==='Aggressive'?55:state.mode==='Balanced'?65:75;
+  let dir='WAIT', setup='Range / Transition', score=Math.max(bullScore,bearScore);
+  if(bullScore>=threshold && bullScore>bearScore+6){ dir='BULLISH'; setup=(bullishPullback?'Golden Zone Pullback':'Expansion Continuation')+(crtBull?' + CRT Reclaim':''); }
+  else if(bearScore>=threshold && bearScore>bullScore+6){ dir='BEARISH'; setup=(bearishPullback?'Golden Zone Pullback':'Expansion Continuation')+(crtBear?' + CRT Reclaim':''); }
+
+  $('scoreVal').textContent=Math.round(score);
+  $('confBar').style.width=Math.min(100,Math.round(score))+'%';
+  $('confTxt').textContent=Math.min(100,Math.round(score))+'%';
   $('setupState').textContent=dir==='WAIT'?'Wait':'Ready';
+  $('signalDir').textContent=dir;
+  $('setupType').textContent=setup;
 
-  const stopDist=state.market==='Forex'?0.0015:3.2;
-  const entry=last;
-  const sl=dir==='BULLISH'?entry-stopDist:dir==='BEARISH'?entry+stopDist:entry;
-  const tp1=dir==='BULLISH'?entry+stopDist:dir==='BEARISH'?entry-stopDist:entry;
-  const tp2=dir==='BULLISH'?entry+stopDist*2:dir==='BEARISH'?entry-stopDist*2:entry;
-  const tp3=dir==='BULLISH'?entry+stopDist*3:dir==='BEARISH'?entry-stopDist*3:entry;
+  const stop=state.market==='Forex'?0.0015:3.2;
+  const entry=last, sl=dir==='BULLISH'?entry-stop:dir==='BEARISH'?entry+stop:entry, tp1=dir==='BULLISH'?entry+stop:dir==='BEARISH'?entry-stop:entry, tp2=dir==='BULLISH'?entry+stop*2:dir==='BEARISH'?entry-stop*2:entry, tp3=dir==='BULLISH'?entry+stop*3:dir==='BEARISH'?entry-stop*3:entry;
   $('entryPx').textContent=fmt(entry); $('slPx').textContent=fmt(sl); $('tp1Px').textContent=fmt(tp1); $('tp2Px').textContent=fmt(tp2); $('tp3Px').textContent=fmt(tp3);
 
-  if(!feedLockClear()){
-    $('execStatus').textContent='WAIT / BLOCKED';
-  } else if(!symbolLockClear()){
-    $('execStatus').textContent='WAIT / SYMBOL';
-  } else if(dir==='WAIT'){
-    $('execStatus').textContent='WAIT / FILTERED';
-  } else {
-    $('execStatus').textContent='READY';
-  }
+  let status='WAIT / FILTERED';
+  if(!feedClear()) status='WAIT / BLOCKED';
+  else if(dir!=='WAIT') status='READY';
+  $('execStatus').textContent=status;
 
-  $('reasoning').innerHTML=`v7.8.2 read: M1=${b1}, M5=${b5}, M15=${b15}, H1=${bh1}, H4=${bh4}, D1=${bd1}. EMA=${emaState}, RSI=${r.toFixed(1)}. This build keeps the lighter v7.4.1 live core and only unlocks trading when the returned live symbol exactly matches ${state.requestedSymbol}.`;
+  $('reasoning').innerHTML=`v8.0 read: M1=${b1}, M5=${b5}, M15=${b15}, H1=${bh1}, H4=${bh4}, D1=${bd1}. EMA=${emaState}, RSI=${r.toFixed(1)}. BullScore=${Math.round(bullScore)}, BearScore=${Math.round(bearScore)}. Engine now weights expansion, pullback, golden-zone reaction, CRT reclaim, mid-frame support, and HTF bias instead of waiting for perfect alignment.`;
 
-  if(!symbolLockClear() && state.returnedSymbol){
-    setStrip(`CONNECTED BUT WRONG SYMBOL — requested ${state.requestedSymbol}, returned ${state.returnedSymbol}. Execution blocked.`);
-  } else if(feedLockClear() && dir!=='WAIT'){
-    setStrip(`${dir} ${type} detected — v7.8.2 unlocked.`);
-  } else if(feedLockClear()){
-    setStrip('WAIT — live core is scanning for the next valid setup.');
-  }
+  if(!feedClear()) setStrip('WAIT — live feed must stay locked before execution.');
+  else if(dir==='WAIT') setStrip('WAIT — live core is scanning for the next valid structure setup.');
+  else setStrip(`${dir} ${setup} detected — v8.0 trade logic armed.`);
 
-  return {dir,type,conf,entry,sl,tp1,tp2,tp3};
+  return {dir, setup, score, entry, sl, tp1, tp2, tp3};
 }
-function maybeOpenTrade(signal){
-  if(!signal || signal.dir==='WAIT') return;
-  if(!feedLockClear() || !symbolLockClear() || !warmReady() || state.sessionTrades>=state.sessionCap){ state.blocked++; renderPerf(); return; }
-  if(state.openTrades.length) return;
+function maybeTrade(sig){
+  if(!sig || sig.dir==='WAIT') return;
+  if(!feedClear() || !warmReady() || state.sessionTrades>=state.sessionCap){ state.blocked++; renderPerf(); return; }
   if(Date.now()-state.lastTradeTs<state.cooldownMin*60000) return;
-  const threshold=state.mode==='Aggressive'?55:state.mode==='Balanced'?60:68;
-  if(signal.conf<threshold) return;
+  if(state.openTrades.length) return;
 
   const tier=state.mode==='Aggressive'?'Tier 1':state.mode==='Balanced'?'Tier 2':'Tier 3';
   for(let i=0;i<4;i++){
-    state.openTrades.push({
-      time:nowTime(), dir:signal.dir, entry:signal.entry, sl:signal.sl,
-      tp1:signal.tp1, tp2:signal.tp2, tp3:signal.tp3,
-      tf:'M1', type:signal.type, mode:state.mode, tier:tier, floatR:0, status:'open'
-    });
+    state.openTrades.push({time:nowTime(),dir:sig.dir,entry:sig.entry,sl:sig.sl,tp1:sig.tp1,tp2:sig.tp2,tp3:sig.tp3,tf:'M1',type:sig.setup,mode:state.mode,tier:tier,floatR:0,status:'open'});
   }
   state.lastTradeTs=Date.now();
-  history(`${signal.dir} ${state.symbolLabel} | ${signal.type} | 4x burst | ${fmt(signal.entry)}`);
+  hist(`${sig.dir} ${state.symbolLabel} | ${sig.setup} | 4x burst | ${fmt(sig.entry)}`);
   renderOpen();
 }
 function updateOpenTrades(){
   if(!state.openTrades.length || state.displayedPrice==null) return;
   const closed=[];
   for(const t of state.openTrades){
-    const mult=t.dir==='BULLISH'?1:-1;
-    t.floatR=((state.displayedPrice-t.entry)*mult)/Math.max(0.0001,Math.abs(t.entry-t.sl));
+    const m=t.dir==='BULLISH'?1:-1;
+    t.floatR=((state.displayedPrice-t.entry)*m)/Math.max(0.0001,Math.abs(t.entry-t.sl));
     if((t.dir==='BULLISH'&&state.displayedPrice<=t.sl)||(t.dir==='BEARISH'&&state.displayedPrice>=t.sl)){ t.result='LOSS'; t.r=-1; t.status='closed'; closed.push(t); }
     else if((t.dir==='BULLISH'&&state.displayedPrice>=t.tp2)||(t.dir==='BEARISH'&&state.displayedPrice<=t.tp2)){ t.result='WIN'; t.r=2; t.status='closed'; closed.push(t); }
     else if((t.dir==='BULLISH'&&state.displayedPrice>=t.tp1)||(t.dir==='BEARISH'&&state.displayedPrice<=t.tp1)){ t.result='BE'; t.r=0.5; t.status='closed'; closed.push(t); }
@@ -561,11 +476,11 @@ function updateOpenTrades(){
     state.totalR+=t.r;
     state.journalRows.unshift({...t});
   }
-  state.journalRows=state.journalRows.slice(0,200);
-  if(state.sessionTrades>=state.sessionCap){ history('SESSION CAP REACHED — auto reset armed'); setTimeout(resetSession,3000); }
+  state.journalRows=state.journalRows.slice(0,250);
+  if(state.sessionTrades>=state.sessionCap){ hist('SESSION CAP REACHED — auto reset armed'); setTimeout(resetSession,3000); }
   renderPerf(); renderOpen(); renderJournal();
 }
-function drawChart(){
+function draw(){
   const canvas=$('chart'), rect=canvas.getBoundingClientRect();
   canvas.width=rect.width*devicePixelRatio; canvas.height=rect.height*devicePixelRatio;
   const ctx=canvas.getContext('2d'); ctx.scale(devicePixelRatio,devicePixelRatio); ctx.clearRect(0,0,rect.width,rect.height);
@@ -576,77 +491,49 @@ function drawChart(){
   ctx.strokeStyle='rgba(255,255,255,.08)';
   for(let i=0;i<5;i++){ const yy=padY+i*h/4; ctx.beginPath(); ctx.moveTo(padX,yy); ctx.lineTo(padX+w,yy); ctx.stroke(); }
   const e20=ema(closes,20), e50=ema(closes,50);
-  ctx.lineWidth=2;
-  ctx.strokeStyle='#48a8ff'; ctx.beginPath(); e20.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
+  ctx.lineWidth=2; ctx.strokeStyle='#48a8ff'; ctx.beginPath(); e20.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
   ctx.strokeStyle='#f0b44d'; ctx.beginPath(); e50.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
-
   if(state.chartMode==='line'){
     ctx.strokeStyle='#fff'; ctx.beginPath(); closes.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
   } else {
     const cw=Math.max(4,w/arr.length*0.55);
     arr.forEach((c,i)=>{
       const x=X(i), yo=Y(c.o), yc=Y(c.c), yh=Y(c.h), yl=Y(c.l), up=c.c>=c.o;
-      ctx.strokeStyle=up?'#9ee7c0':'#ff8f8f';
-      ctx.beginPath(); ctx.moveTo(x,yh); ctx.lineTo(x,yl); ctx.stroke();
-      ctx.fillStyle=up?'#9ee7c0':'#ff8f8f';
-      const top=Math.min(yo,yc), body=Math.max(2,Math.abs(yc-yo));
-      ctx.fillRect(x-cw/2,top,cw,body);
+      ctx.strokeStyle=up?'#9ee7c0':'#ff8f8f'; ctx.beginPath(); ctx.moveTo(x,yh); ctx.lineTo(x,yl); ctx.stroke();
+      ctx.fillStyle=up?'#9ee7c0':'#ff8f8f'; const top=Math.min(yo,yc), body=Math.max(2,Math.abs(yc-yo)); ctx.fillRect(x-cw/2,top,cw,body);
     });
   }
 }
 function resetSession(){
   state.wins=0; state.losses=0; state.be=0; state.sessionTrades=0; state.totalR=0; state.dailyLoss=0; state.blocked=0; state.openTrades=[]; state.journalRows=[]; state.lastTradeTs=0;
-  renderPerf(); renderOpen(); renderJournal(); history('SESSION RESET');
+  renderPerf(); renderOpen(); renderJournal(); hist('SESSION RESET');
 }
-function startFallbackLoop(){
-  setInterval(()=>{ applyFallbackTick(); },1000);
-}
-function resetFeedState(){
-  disconnectSocketOnly();
-  state.feedState='fallback';
-  state.source='Fallback';
-  state.socketState='idle';
-  state.returnedSymbol=null;
-  state.symbolMismatch=false;
-  state.warmStart=null;
-  clearAllCandles();
-  state.fallbackPrice=genBasePrice();
-  state.displayedPrice=state.fallbackPrice;
-  ui(); detectSignal(); drawChart();
-}
-function disconnectSocketOnly(){
-  if(state.ws){
-    try{ state.ws.onopen=null; state.ws.onmessage=null; state.ws.onerror=null; state.ws.onclose=null; state.ws.close(); }catch(e){}
-  }
-  state.ws=null;
+function resetFeed(){
+  disconnectSocket(); state.feedState='fallback'; state.source='Fallback'; state.socketState='idle'; state.returnedSymbol=null; state.symbolMismatch=false; state.warmStart=null; clearCandles();
+  state.fallbackPrice=basePrice(); state.displayedPrice=state.fallbackPrice;
+  let p=state.fallbackPrice, now=Date.now();
+  for(let i=120;i>=1;i--){ const ts=now-i*60000; p+=(Math.random()-0.5)*(state.market==='Forex'?0.00015:1.2); ['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,p,ts)); }
+  ui(); evaluate(); draw();
 }
 function setMarketButtons(){
   $('marketDeriv').className='btn'+(state.market==='Deriv'?' good':'');
   $('marketForex').className='btn'+(state.market==='Forex'?' good':'');
 }
 
-$('marketDeriv').onclick=()=>{ state.market='Deriv'; state.symbol='1HZ10V'; state.symbolLabel='1HZ10V'; $('symbolSelect').value='1HZ10V'; setMarketButtons(); resetFeedState(); history('MARKET SWITCHED TO DERIV'); };
-$('marketForex').onclick=()=>{ state.market='Forex'; state.symbol='frxEURUSD'; state.symbolLabel='EURUSD'; $('symbolSelect').value='frxEURUSD'; setMarketButtons(); resetFeedState(); history('MARKET SWITCHED TO FOREX'); };
-$('symbolSelect').onchange=e=>{ state.symbol=e.target.value; state.symbolLabel=state.symbol.startsWith('frx')?state.symbol.replace('frx',''):state.symbol; resetFeedState(); history('SYMBOL SWITCHED TO '+state.symbolLabel); };
+$('marketDeriv').onclick=()=>{ state.market='Deriv'; state.symbol='1HZ10V'; state.symbolLabel='1HZ10V'; $('symbolSelect').value='1HZ10V'; setMarketButtons(); resetFeed(); hist('MARKET SWITCHED TO DERIV'); };
+$('marketForex').onclick=()=>{ state.market='Forex'; state.symbol='frxEURUSD'; state.symbolLabel='EURUSD'; $('symbolSelect').value='frxEURUSD'; setMarketButtons(); resetFeed(); hist('MARKET SWITCHED TO FOREX'); };
+$('symbolSelect').onchange=e=>{ state.symbol=e.target.value; state.symbolLabel=state.symbol.startsWith('frx')?state.symbol.replace('frx',''):state.symbol; resetFeed(); hist('SYMBOL SWITCHED TO '+state.symbolLabel); };
 $('modeSelect').onchange=e=>{ state.mode=e.target.value; };
 $('triggerSelect').onchange=e=>{ state.trigger=e.target.value; };
 $('balanceInput').onchange=e=>{ state.paperBalance=Number(e.target.value)||35; ui(); };
-$('chartMode').onchange=e=>{ state.chartMode=e.target.value; ui(); drawChart(); };
+$('chartMode').onchange=e=>{ state.chartMode=e.target.value; ui(); draw(); };
 $('refreshBtn').onclick=()=>location.reload();
 $('resetBtn').onclick=resetSession;
 $('connectBtn').onclick=connectLive;
-$('disconnectBtn').onclick=()=>{ disconnectSocketOnly(); state.feedState='fallback'; state.source='Fallback'; state.socketState='idle'; state.returnedSymbol=null; state.symbolMismatch=false; state.warmStart=null; setStrip('LIVE FEED DISCONNECTED — fallback charting only.'); ui(); };
+$('disconnectBtn').onclick=()=>{ disconnectSocket(); state.feedState='fallback'; state.source='Fallback'; state.socketState='idle'; state.returnedSymbol=null; state.symbolMismatch=false; setStrip('LIVE FEED DISCONNECTED — fallback charting only.'); ui(); };
 
-setMarketButtons();
-state.fallbackPrice=genBasePrice();
-state.displayedPrice=state.fallbackPrice;
-let p=state.fallbackPrice, now=Date.now();
-for(let i=60;i>=1;i--){
-  const ts=now-i*60000;
-  p += (Math.random()-0.5)*(state.market==='Forex'?0.0002:0.8);
-  ['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,p,ts));
-}
-ui(); renderPerf(); renderOpen(); renderJournal(); drawChart(); history('V7.8.2 LIVE CORE REBASE READY'); startFallbackLoop();
+setMarketButtons(); resetFeed(); hist('V8.0 LIVE + STRUCTURE FUSION READY'); renderPerf(); renderOpen(); renderJournal(); draw();
+setInterval(()=>fallbackTick(),1000);
 })();
 </script>
 </body>
