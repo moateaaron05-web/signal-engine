@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signal Engine v8.1</title>
+<title>Signal Engine v8.3 — AI Context Scoring + Adaptive Threshold Control</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--chip:#162b48}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
-.wrap{max-width:1500px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.mid{grid-template-columns:1.2fr 1fr 1fr}.main{grid-template-columns:1.45fr 1fr}.card{background:rgba(13,27,45,.96);border:1px solid var(--line);border-radius:16px;padding:14px}
+.wrap{max-width:1580px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2.1fr repeat(5,1fr)}.mid{grid-template-columns:1.25fr 1fr 1fr}.main{grid-template-columns:1.45fr 1fr}.triple{grid-template-columns:1fr 1fr 1fr}
+.card{background:rgba(13,27,45,.96);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
 .brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}
 .title{font-size:28px;font-weight:800}.sub{font-size:12px;color:var(--muted)}
 .badge{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;font-weight:800}.dot{width:10px;height:10px;border-radius:50%}.g{background:var(--green)}.a{background:var(--amber)}.r{background:var(--red)}.b{background:var(--blue)}
@@ -16,155 +17,220 @@
 .label{font-size:12px;color:var(--muted);text-transform:uppercase}.price{font-size:54px;font-weight:900;margin:8px 0 4px}.kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px}.kpi .card{padding:10px}.value{font-size:20px;font-weight:900;margin-top:4px}
 .strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:900}
 .chartbox{height:430px}canvas{width:100%;height:100%}
-.tablewrap{max-height:280px;overflow:auto;border-radius:12px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left}th{position:sticky;top:0;background:#132743}
-.win{color:var(--green);font-weight:900}.loss{color:var(--red);font-weight:900}.be{color:var(--amber);font-weight:900}.small{font-size:11px;color:var(--muted)} .score{font-size:28px;font-weight:900}
+.tablewrap{max-height:300px;overflow:auto;border-radius:12px;border:1px solid var(--line)}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left}th{position:sticky;top:0;background:#132743}
+.win{color:var(--green);font-weight:900}.loss{color:var(--red);font-weight:900}.be{color:var(--amber);font-weight:900}.small{font-size:11px;color:var(--muted)} .score{font-size:28px;font-weight:900}.bigscore{font-size:62px;font-weight:900;line-height:1}
 textarea{width:100%;min-height:90px;background:#0f2138;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}
-@media(max-width:1100px){.top,.mid,.main{grid-template-columns:1fr}.mini,.kpi{grid-template-columns:repeat(2,1fr)}.price{font-size:40px}}
+.grade{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid var(--line);background:var(--chip)}
+@media(max-width:1200px){.top,.mid,.main,.triple{grid-template-columns:1fr}.mini,.kpi{grid-template-columns:repeat(2,1fr)}.price,.bigscore{font-size:40px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="grid top">
-<div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro</div><div class="sub">Signal Engine v8.1 — Expansion Exhaustion Filter + Smart Pullback Entry</div></div></div></div>
-<div class="card"><div id="feedBadge" class="badge"><span class="dot a"></span><span>feed standby</span></div></div>
-<div class="card"><div id="coreBadge" class="badge"><span class="dot g"></span><span>core running</span></div></div>
-<div class="card"><div id="warmBadge" class="badge"><span class="dot a"></span><span>warmup seeded</span></div></div>
-<div class="card"><button id="refreshBtn" class="btn primary">Refresh</button></div>
-<div class="card"><button id="resetBtn" class="btn warn">Reset Session</button></div>
-</div>
+  <div class="grid top">
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro</div><div class="sub">Signal Engine v8.3 — AI Context Scoring + Adaptive Threshold Control</div></div></div></div>
+    <div class="card"><div id="feedBadge" class="badge"><span class="dot a"></span><span>feed standby</span></div></div>
+    <div class="card"><div id="coreBadge" class="badge"><span class="dot g"></span><span>core running</span></div></div>
+    <div class="card"><div id="warmBadge" class="badge"><span class="dot a"></span><span>warmup seeded</span></div></div>
+    <div class="card"><button id="refreshBtn" class="btn primary">Refresh</button></div>
+    <div class="card"><button id="resetBtn" class="btn warn">Reset Session</button></div>
+  </div>
 
-<div class="card" style="margin-top:12px">
-<div class="grid mid">
-<div>
-<div class="label">Market</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
-<button id="marketDeriv" class="btn good">Deriv Volatility</button>
-<button id="marketForex" class="btn">Forex</button>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-<select id="symbolSelect">
-<option value="1HZ10V" selected>V10 (1s) / 1HZ10V</option>
-<option value="R_10">V10 / R_10</option>
-<option value="frxEURUSD">EURUSD</option>
-<option value="frxGBPUSD">GBPUSD</option>
-<option value="frxUSDJPY">USDJPY</option>
-</select>
-<select id="modeSelect"><option>Aggressive</option><option selected>Balanced</option><option>Conservative</option></select>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
-<select id="triggerSelect"><option selected>Retracement first</option><option>Hybrid</option><option>Breakout first</option></select>
-<input id="balanceInput" type="number" min="1" step="1" value="35">
-<select id="chartMode"><option value="candles" selected>Candlesticks</option><option value="line">Line</option></select>
-</div>
-</div>
-<div>
-<div class="label">Top-Down TF Stack</div>
-<div class="mini"><div class="chip">D1</div><div class="chip">H4</div><div class="chip">H1</div><div class="chip">M15</div><div class="chip">M5</div><div class="chip">M1</div></div>
-<div class="mini"><div class="chip">Bootstrap</div><div class="chip">Expansion</div><div class="chip">Pullback</div><div class="chip">CRT</div><div class="chip">Trigger</div><div class="chip">Re-entry</div></div>
-</div>
-<div>
-<div class="label">Data Bridge</div>
-<div class="mini" style="grid-template-columns:repeat(2,1fr)"><div class="chip">source <span id="sourceLbl">Fallback</span></div><div class="chip">chart <span id="chartModeLbl">Candles</span></div></div>
-<div class="mini" style="grid-template-columns:repeat(2,1fr)"><div class="chip">requested <span id="requestedLbl">1HZ10V</span></div><div class="chip">returned <span id="returnedLbl">--</span></div></div>
-<div class="mini" style="grid-template-columns:repeat(2,1fr)"><div class="chip">socket <span id="socketLbl">idle</span></div><div class="chip">symbol lock <span id="symbolLockChip">blocked</span></div></div>
-<div class="mini" style="grid-template-columns:repeat(2,1fr)"><div class="chip">warmup <span id="warmupLbl">0s</span></div><div class="chip">min candles <span id="minCandlesLbl">0 / 10</span></div></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><button id="connectBtn" class="btn good">Connect Live Feed</button><button id="disconnectBtn" class="btn danger">Disconnect Feed</button></div>
-</div>
-</div>
-</div>
+  <div class="card" style="margin-top:12px">
+    <div class="grid mid">
+      <div>
+        <div class="label">Market</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+          <button id="marketDeriv" class="btn good">Deriv Volatility</button>
+          <button id="marketForex" class="btn">Forex</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <select id="symbolSelect">
+            <option value="1HZ10V" selected>V10 (1s) / 1HZ10V</option>
+            <option value="R_10">V10 / R_10</option>
+            <option value="frxEURUSD">EURUSD</option>
+            <option value="frxGBPUSD">GBPUSD</option>
+            <option value="frxUSDJPY">USDJPY</option>
+          </select>
+          <select id="modeSelect"><option>Aggressive</option><option selected>Balanced</option><option>Conservative</option></select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">
+          <select id="triggerSelect"><option selected>Retracement first</option><option>Hybrid</option><option>Breakout first</option></select>
+          <input id="balanceInput" type="number" min="1" step="1" value="35">
+          <select id="chartMode"><option value="candles" selected>Candlesticks</option><option value="line">Line</option></select>
+        </div>
+      </div>
+      <div>
+        <div class="label">Top-Down TF Stack</div>
+        <div class="mini"><div class="chip">D1</div><div class="chip">H4</div><div class="chip">H1</div><div class="chip">M15</div><div class="chip">M5</div><div class="chip">M1</div></div>
+        <div class="mini"><div class="chip">Bootstrap</div><div class="chip">Expansion</div><div class="chip">Pullback</div><div class="chip">CRT</div><div class="chip">Trigger</div><div class="chip">Re-entry</div></div>
+      </div>
+      <div>
+        <div class="label">Data Bridge</div>
+        <div class="mini" style="grid-template-columns:repeat(2,1fr)">
+          <div class="chip">source <span id="sourceLbl">Fallback</span></div>
+          <div class="chip">chart <span id="chartModeLbl">Candles</span></div>
+        </div>
+        <div class="mini" style="grid-template-columns:repeat(2,1fr)">
+          <div class="chip">requested <span id="requestedLbl">1HZ10V</span></div>
+          <div class="chip">returned <span id="returnedLbl">--</span></div>
+        </div>
+        <div class="mini" style="grid-template-columns:repeat(2,1fr)">
+          <div class="chip">socket <span id="socketLbl">idle</span></div>
+          <div class="chip">symbol lock <span id="symbolLockChip">blocked</span></div>
+        </div>
+        <div class="mini" style="grid-template-columns:repeat(2,1fr)">
+          <div class="chip">warmup <span id="warmupLbl">0s</span></div>
+          <div class="chip">min candles <span id="minCandlesLbl">0 / 10</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+          <button id="connectBtn" class="btn good">Connect Live Feed</button>
+          <button id="disconnectBtn" class="btn danger">Disconnect Feed</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div id="strip" class="strip">BOOTSTRAP READY — v8.1 blocks late expansion and prefers smart pullback entries.</div>
+  <div id="strip" class="strip">BOOTSTRAP READY — v8.3 scores context and adapts the pass mark to current conditions.</div>
 
-<div class="grid mid">
-<div class="card">
-<div class="label">Live Price</div>
-<div id="priceEl" class="price">--</div>
-<div class="sub">Symbol: <span id="symbolLbl">1HZ10V</span></div>
-<div style="height:22px;background:#10233d;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:10px"><div id="confBar" style="height:100%;width:0%;background:linear-gradient(90deg,#2fd07f,#48a8ff)"></div></div>
-<div id="confTxt" style="font-weight:900;margin-top:8px">0%</div>
-<div class="kpi">
-<div class="card"><div class="label">EMA Bias</div><div id="emaBias" class="value">Waiting</div></div>
-<div class="card"><div class="label">RSI</div><div id="rsiVal" class="value">0.0</div></div>
-<div class="card"><div class="label">H1 Bias</div><div id="h1Bias" class="value">Mixed</div></div>
-<div class="card"><div class="label">D1 Bias</div><div id="d1Bias" class="value">Mixed</div></div>
-<div class="card"><div class="label">Setup</div><div id="setupState" class="value">Warmup</div></div>
-<div class="card"><div class="label">Entry Bias</div><div id="entryBias" class="value">Wait</div></div>
-</div>
-</div>
+  <div class="grid triple">
+    <div class="card">
+      <div class="label">Live Price</div>
+      <div id="priceEl" class="price">--</div>
+      <div class="sub">Symbol: <span id="symbolLbl">1HZ10V</span></div>
+      <div style="height:22px;background:#10233d;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:10px"><div id="confBar" style="height:100%;width:0%;background:linear-gradient(90deg,#2fd07f,#48a8ff)"></div></div>
+      <div id="confTxt" style="font-weight:900;margin-top:8px">0%</div>
+      <div class="kpi">
+        <div class="card"><div class="label">EMA Bias</div><div id="emaBias" class="value">Waiting</div></div>
+        <div class="card"><div class="label">RSI</div><div id="rsiVal" class="value">0.0</div></div>
+        <div class="card"><div class="label">H1 Bias</div><div id="h1Bias" class="value">Mixed</div></div>
+        <div class="card"><div class="label">D1 Bias</div><div id="d1Bias" class="value">Mixed</div></div>
+        <div class="card"><div class="label">Regime</div><div id="regimeLbl" class="value">Unknown</div></div>
+        <div class="card"><div class="label">Entry Bias</div><div id="entryBias" class="value">Wait</div></div>
+      </div>
+    </div>
 
-<div class="card">
-<div class="label">Execution Control</div>
-<div class="tablewrap" style="max-height:none;margin-top:8px"><table><tbody>
-<tr><td>Engine</td><td id="enginePass">PASS</td></tr>
-<tr><td>Trade Slot</td><td id="tradeSlot">PASS</td></tr>
-<tr><td>Cooldown</td><td id="cooldownPass">PASS</td></tr>
-<tr><td>Trade Limit</td><td id="tradeLimitPass">PASS</td></tr>
-<tr><td>Daily Cap</td><td id="dailyCapPass">PASS</td></tr>
-<tr><td>Feed Lock</td><td id="feedLock">BLOCKED</td></tr>
-<tr><td>Warmup Lock</td><td id="warmLock">CLEAR</td></tr>
-<tr><td>Symbol Lock</td><td id="symbolLock">BLOCKED</td></tr>
-<tr><td>Exhaustion Lock</td><td id="exhaustLock">CLEAR</td></tr>
-<tr><td>Pullback Zone</td><td id="pbZone">NO</td></tr>
-<tr><td>Execution Status</td><td id="execStatus">WAIT / BLOCKED</td></tr>
-</tbody></table></div>
-</div>
+    <div class="card">
+      <div class="label">Adaptive Threshold Control</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end;margin-top:8px">
+        <div><div class="small">Final Score</div><div id="scoreVal" class="bigscore">0</div></div>
+        <div><div class="small">Adaptive Threshold</div><div id="adaptiveThreshold" class="bigscore">65</div></div>
+      </div>
+      <div style="margin-top:12px"><span id="gradeLbl" class="grade">D / Blocked</span></div>
+      <div class="small" style="margin-top:8px">A+ 85+ | A 75–84 | B 65–74 | C 55–64 | D &lt; 55</div>
+      <div class="tablewrap" style="max-height:none;margin-top:10px">
+        <table><tbody>
+          <tr><td>Base Threshold</td><td id="baseThreshold">65</td></tr>
+          <tr><td>HTF Bonus</td><td id="adjHtf">0</td></tr>
+          <tr><td>First-Touch Bonus</td><td id="adjFirstTouch">0</td></tr>
+          <tr><td>Clean Reclaim Bonus</td><td id="adjReclaim">0</td></tr>
+          <tr><td>Mixed Bias Penalty</td><td id="adjMixed">0</td></tr>
+          <tr><td>Exhaustion Penalty</td><td id="adjExhaust">0</td></tr>
+          <tr><td>Re-entry Penalty</td><td id="adjReentry">0</td></tr>
+          <tr><td>Loss-Streak Penalty</td><td id="adjLossStreak">0</td></tr>
+        </tbody></table>
+      </div>
+    </div>
 
-<div class="card">
-<div class="label">v8.1 Score Engine</div>
-<div class="score" id="scoreVal">0</div>
-<div class="small">Aggressive 55 | Balanced 65 | Conservative 75</div>
-<div class="tablewrap" style="max-height:none;margin-top:10px"><table><tbody>
-<tr><td>Expansion</td><td id="scoreExpansion">0</td></tr>
-<tr><td>Golden Zone</td><td id="scoreGz">0</td></tr>
-<tr><td>CRT Reclaim</td><td id="scoreCrt">0</td></tr>
-<tr><td>M1 Trigger</td><td id="scoreM1">0</td></tr>
-<tr><td>M5 / M15 Support</td><td id="scoreMid">0</td></tr>
-<tr><td>HTF Bias Weight</td><td id="scoreHtf">0</td></tr>
-<tr><td>Exhaustion Penalty</td><td id="scoreExhaust">0</td></tr>
-</tbody></table></div>
-</div>
-</div>
+    <div class="card">
+      <div class="label">Execution Control</div>
+      <div class="tablewrap" style="max-height:none;margin-top:8px">
+        <table><tbody>
+          <tr><td>Engine</td><td id="enginePass">PASS</td></tr>
+          <tr><td>Trade Slot</td><td id="tradeSlot">PASS</td></tr>
+          <tr><td>Cooldown</td><td id="cooldownPass">PASS</td></tr>
+          <tr><td>Trade Limit</td><td id="tradeLimitPass">PASS</td></tr>
+          <tr><td>Daily Cap</td><td id="dailyCapPass">PASS</td></tr>
+          <tr><td>Feed Lock</td><td id="feedLock">BLOCKED</td></tr>
+          <tr><td>Warmup Lock</td><td id="warmLock">CLEAR</td></tr>
+          <tr><td>Symbol Lock</td><td id="symbolLock">BLOCKED</td></tr>
+          <tr><td>Exhaustion Lock</td><td id="exhaustLock">CLEAR</td></tr>
+          <tr><td>Quality Gate</td><td id="qualityGate">BLOCKED</td></tr>
+          <tr><td>Leg Lock</td><td id="legLock">CLEAR</td></tr>
+          <tr><td>Defensive Mode</td><td id="defensiveModeLbl">OFF</td></tr>
+          <tr><td>Execution Status</td><td id="execStatus">WAIT / BLOCKED</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
 
-<div class="grid main" style="margin-top:12px">
-<div class="card chartbox"><div class="label">Price Action</div><canvas id="chart"></canvas></div>
-<div>
-<div class="card"><div class="label">Trade Map</div>
-<div class="tablewrap" style="max-height:none;margin-top:8px"><table><tbody>
-<tr><td>Entry</td><td id="entryPx">--</td></tr>
-<tr><td>SL</td><td id="slPx">--</td></tr>
-<tr><td>TP1</td><td id="tp1Px">--</td></tr>
-<tr><td>TP2</td><td id="tp2Px">--</td></tr>
-<tr><td>TP3</td><td id="tp3Px">--</td></tr>
-<tr><td>Signal</td><td id="signalDir">WAIT</td></tr>
-<tr><td>Setup Type</td><td id="setupType">Range / Transition</td></tr>
-</tbody></table></div></div>
-<div class="card" style="margin-top:12px"><div class="label">AI Analysis & Reasoning</div><div id="reasoning" style="margin-top:8px;line-height:1.55">v8.1 adds an expansion exhaustion filter so strong trend continuation only triggers after pullback quality improves.</div></div>
-</div>
-</div>
+  <div class="grid main" style="margin-top:12px">
+    <div class="card chartbox"><div class="label">Price Action</div><canvas id="chart"></canvas></div>
+    <div>
+      <div class="card">
+        <div class="label">AI Context Score Buckets</div>
+        <div class="tablewrap" style="max-height:none;margin-top:8px">
+          <table><tbody>
+            <tr><td>Structure Quality</td><td id="bucketStructure">0</td></tr>
+            <tr><td>Entry Quality</td><td id="bucketEntry">0</td></tr>
+            <tr><td>Risk Quality</td><td id="bucketRisk">0</td></tr>
+            <tr><td>Session Quality</td><td id="bucketSession">0</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="label">Trade Map</div>
+        <div class="tablewrap" style="max-height:none;margin-top:8px">
+          <table><tbody>
+            <tr><td>Entry</td><td id="entryPx">--</td></tr>
+            <tr><td>SL</td><td id="slPx">--</td></tr>
+            <tr><td>TP1</td><td id="tp1Px">--</td></tr>
+            <tr><td>TP2</td><td id="tp2Px">--</td></tr>
+            <tr><td>TP3</td><td id="tp3Px">--</td></tr>
+            <tr><td>Signal</td><td id="signalDir">WAIT</td></tr>
+            <tr><td>Setup Type</td><td id="setupType">Range / Transition</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="label">AI Analysis & Reasoning</div>
+        <div id="reasoning" style="margin-top:8px;line-height:1.55">v8.3 adjusts the pass mark based on context. It trades only when final score beats adaptive threshold.</div>
+      </div>
+    </div>
+  </div>
 
-<div class="grid mid" style="margin-top:12px">
-<div class="card"><div class="label">Performance Tracking</div><div class="tablewrap" style="max-height:none;margin-top:8px"><table><tbody>
-<tr><td>Session Trades</td><td id="sessionTrades">0</td></tr>
-<tr><td>Wins / Losses / BE</td><td id="wlb">0 / 0 / 0</td></tr>
-<tr><td>Win Rate</td><td id="winRate">0.0%</td></tr>
-<tr><td>Blocked Setups</td><td id="blockedSetups">0</td></tr>
-<tr><td>Total R</td><td id="totalR">0.00</td></tr>
-<tr><td>Daily Loss Value</td><td id="dailyLoss">$0.00</td></tr>
-</tbody></table></div></div>
-<div class="card"><div class="label">Open Paper Trades</div><div class="tablewrap"><table id="openTrades"><thead><tr><th>Time</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP1</th><th>FloatR</th><th>Status</th></tr></thead><tbody></tbody></table></div></div>
-<div class="card"><div class="label">Signal History</div><div id="signalHistory" class="tablewrap" style="padding:10px;max-height:220px"></div><textarea style="margin-top:10px" placeholder="Type your trade note, execution comment, mistake, or lesson here..."></textarea></div>
-</div>
+  <div class="grid triple" style="margin-top:12px">
+    <div class="card">
+      <div class="label">Performance Tracking</div>
+      <div class="tablewrap" style="max-height:none;margin-top:8px">
+        <table><tbody>
+          <tr><td>Session Trades</td><td id="sessionTrades">0</td></tr>
+          <tr><td>Wins / Losses / BE</td><td id="wlb">0 / 0 / 0</td></tr>
+          <tr><td>Win Rate</td><td id="winRate">0.0%</td></tr>
+          <tr><td>Consecutive Losses</td><td id="consecLosses">0</td></tr>
+          <tr><td>Blocked Setups</td><td id="blockedSetups">0</td></tr>
+          <tr><td>Total R</td><td id="totalR">0.00</td></tr>
+          <tr><td>Daily Loss Value</td><td id="dailyLoss">$0.00</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">Open Paper Trades</div>
+      <div class="tablewrap">
+        <table id="openTrades"><thead><tr><th>Time</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP1</th><th>FloatR</th><th>Status</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">Signal History</div>
+      <div id="signalHistory" class="tablewrap" style="padding:10px;max-height:220px"></div>
+      <textarea style="margin-top:10px" placeholder="Type your trade note, execution comment, mistake, or lesson here..."></textarea>
+    </div>
+  </div>
 
-<div class="card" style="margin-top:12px"><div class="label">Auto Trade Journal</div><div class="tablewrap"><table id="journal"><thead><tr><th>Time</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead><tbody></tbody></table></div></div>
+  <div class="card" style="margin-top:12px">
+    <div class="label">Auto Trade Journal</div>
+    <div class="tablewrap">
+      <table id="journal"><thead><tr><th>Time</th><th>TF</th><th>Type</th><th>Mode</th><th>Tier</th><th>Entry</th><th>SL</th><th>TP1</th><th>TP2</th><th>TP3</th><th>Status</th><th>Result</th><th>R</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
 </div>
 
 <script>
 (()=> {
 const tfMs={M1:60000,M5:300000,M15:900000,H1:3600000,H4:14400000,D1:86400000};
-const state={market:'Deriv',symbol:'1HZ10V',symbolLabel:'1HZ10V',mode:'Balanced',trigger:'Retracement first',chartMode:'candles',paperBalance:35,sessionCap:10,cooldownMin:2,feedState:'fallback',source:'Fallback',ws:null,socketState:'idle',requestedSymbol:'1HZ10V',returnedSymbol:null,symbolMismatch:false,displayedPrice:null,livePrice:null,fallbackPrice:null,seededAt:null,liveConnectedAt:null,minReadyCandles:10,candlesM1:[],candlesM5:[],candlesM15:[],candlesH1:[],candlesH4:[],candlesD1:[],openTrades:[],journalRows:[],signalHistory:[],wins:0,losses:0,be:0,sessionTrades:0,totalR:0,dailyLoss:0,blocked:0,lastTradeTs:0};
+const state={market:'Deriv',symbol:'1HZ10V',symbolLabel:'1HZ10V',mode:'Balanced',trigger:'Retracement first',chartMode:'candles',paperBalance:35,sessionCap:10,cooldownMin:2,feedState:'fallback',source:'Fallback',ws:null,socketState:'idle',requestedSymbol:'1HZ10V',returnedSymbol:null,symbolMismatch:false,displayedPrice:null,livePrice:null,fallbackPrice:null,seededAt:null,liveConnectedAt:null,minReadyCandles:10,candlesM1:[],candlesM5:[],candlesM15:[],candlesH1:[],candlesH4:[],candlesD1:[],openTrades:[],journalRows:[],signalHistory:[],wins:0,losses:0,be:0,sessionTrades:0,totalR:0,dailyLoss:0,blocked:0,lastTradeTs:0,consecutiveLosses:0,defensiveMode:false,lastLegDir:null,legLocked:false,legAnchorPrice:null};
 const $=id=>document.getElementById(id), fmt=(n,d=3)=>(n===null||n===undefined||Number.isNaN(n))?'--':Number(n).toFixed(d), nowTime=()=>new Date().toLocaleTimeString();
 function hist(msg){state.signalHistory.unshift(`${nowTime()} | ${msg}`);state.signalHistory=state.signalHistory.slice(0,220);$('signalHistory').innerHTML=state.signalHistory.map(x=>`<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">${x}</div>`).join('')}
-function bucket(arr,tf,price,ts){const ms=tfMs[tf],t=Math.floor(ts/ms)*ms;let c=arr[arr.length-1];if(!c||c.t!==t){c={t,o:price,h:price,l:price,c:price};arr.push(c);if(arr.length>300)arr.shift()}else{c.h=Math.max(c.h,price);c.l=Math.min(c.l,price);c.c=price}}
+function bucket(arr,tf,price,ts){const ms=tfMs[tf],t=Math.floor(ts/ms)*ms;let c=arr[arr.length-1];if(!c||c.t!==t){c={t,o:price,h:price,l:price,c:price};arr.push(c);if(arr.length>350)arr.shift()}else{c.h=Math.max(c.h,price);c.l=Math.min(c.l,price);c.c=price}}
 function clearCandles(){['M1','M5','M15','H1','H4','D1'].forEach(tf=>state['candles'+tf]=[])}
 function ema(vals,p){if(!vals.length)return[];const k=2/(p+1);let prev=vals[0];const out=[];for(const v of vals){prev=v*k+prev*(1-k);out.push(prev)}return out}
 function rsi(vals,period=14){if(vals.length<period+1)return 50;let gains=0,losses=0;for(let i=vals.length-period;i<vals.length;i++){const d=vals[i]-vals[i-1];if(d>=0)gains+=d;else losses-=d}if(losses===0)return 100;const rs=gains/losses;return 100-100/(1+rs)}
@@ -173,68 +239,218 @@ function symbolClear(){return !!state.returnedSymbol&&state.returnedSymbol===sta
 function feedClear(){return state.feedState==='live'&&symbolClear()&&state.livePrice!=null}
 function warmReady(){const s=state.seededAt?Math.floor((Date.now()-state.seededAt)/1000):0;$('warmupLbl').textContent=`${s}s`;$('minCandlesLbl').textContent=`${state.candlesM1.length} / ${state.minReadyCandles}`;return state.candlesM1.length>=state.minReadyCandles}
 function setBadge(el,color,text){el.innerHTML=`<span class="dot ${color}"></span><span>${text}</span>`}
+function gradeLabel(score){if(score>=85)return'A+ sniper';if(score>=75)return'A clean';if(score>=65)return'B acceptable';if(score>=55)return'C weak';return'D / Blocked'}
+function regimeLabel(trend,vol,exh){if(exh)return'Exhaustion';if(trend)return'Trend';if(vol<0.55)return'Compression';return'Range'}
 function setStrip(text){$('strip').textContent=text}
 function updateBadges(){if(state.feedState==='live')setBadge($('feedBadge'),'g','feed live');else if(state.feedState==='connecting')setBadge($('feedBadge'),'b','feed connecting');else if(state.feedState==='timeout')setBadge($('feedBadge'),'r','feed timeout');else setBadge($('feedBadge'),'a','feed standby');setBadge($('coreBadge'),'g','core running');setBadge($('warmBadge'),warmReady()?'g':'a',warmReady()?'warmup cleared':'warmup seeded')}
-function ui(){$('symbolLbl').textContent=state.symbolLabel;$('sourceLbl').textContent=state.source;$('chartModeLbl').textContent=state.chartMode==='candles'?'Candles':'Line';$('requestedLbl').textContent=state.requestedSymbol;$('returnedLbl').textContent=state.returnedSymbol||'--';$('socketLbl').textContent=state.socketState;$('symbolLockChip').textContent=symbolClear()?'clear':'blocked';$('priceEl').textContent=fmt(state.displayedPrice);$('feedLock').textContent=feedClear()?'CLEAR':'BLOCKED';$('warmLock').textContent=warmReady()?'CLEAR':'ACTIVE';$('symbolLock').textContent=symbolClear()?'CLEAR':'BLOCKED';$('tradeLimitPass').textContent=`PASS (${state.sessionTrades}/${state.sessionCap})`;updateBadges()}
-function renderPerf(){$('sessionTrades').textContent=state.sessionTrades;$('wlb').textContent=`${state.wins} / ${state.losses} / ${state.be}`;const total=state.wins+state.losses+state.be;$('winRate').textContent=total?((state.wins/total)*100).toFixed(1)+'%':'0.0%';$('blockedSetups').textContent=state.blocked;$('totalR').textContent=state.totalR.toFixed(2);$('dailyLoss').textContent='$'+state.dailyLoss.toFixed(2)}
+function ui(){$('symbolLbl').textContent=state.symbolLabel;$('sourceLbl').textContent=state.source;$('chartModeLbl').textContent=state.chartMode==='candles'?'Candles':'Line';$('requestedLbl').textContent=state.requestedSymbol;$('returnedLbl').textContent=state.returnedSymbol||'--';$('socketLbl').textContent=state.socketState;$('symbolLockChip').textContent=symbolClear()?'clear':'blocked';$('priceEl').textContent=fmt(state.displayedPrice);$('feedLock').textContent=feedClear()?'CLEAR':'BLOCKED';$('warmLock').textContent=warmReady()?'CLEAR':'ACTIVE';$('symbolLock').textContent=symbolClear()?'CLEAR':'BLOCKED';$('tradeLimitPass').textContent=`PASS (${state.sessionTrades}/${state.sessionCap})`;$('defensiveModeLbl').textContent=state.defensiveMode?'ON':'OFF';$('legLock').textContent=state.legLocked?`LOCKED ${state.lastLegDir||''}`:'CLEAR';updateBadges()}
+function renderPerf(){$('sessionTrades').textContent=state.sessionTrades;$('wlb').textContent=`${state.wins} / ${state.losses} / ${state.be}`;const total=state.wins+state.losses+state.be;$('winRate').textContent=total?((state.wins/total)*100).toFixed(1)+'%':'0.0%';$('blockedSetups').textContent=state.blocked;$('totalR').textContent=state.totalR.toFixed(2);$('dailyLoss').textContent='$'+state.dailyLoss.toFixed(2);$('consecLosses').textContent=state.consecutiveLosses}
 function renderOpen(){const body=$('openTrades').querySelector('tbody');body.innerHTML=state.openTrades.map(t=>`<tr><td>${t.time}</td><td>${t.dir}</td><td>${fmt(t.entry)}</td><td>${fmt(t.sl)}</td><td>${fmt(t.tp1)}</td><td>${t.floatR.toFixed(2)}</td><td>${t.status}</td></tr>`).join('')||'<tr><td colspan="7" style="color:#9fb3d1">No open paper trades</td></tr>'}
 function renderJournal(){const body=$('journal').querySelector('tbody');body.innerHTML=state.journalRows.map(r=>`<tr><td>${r.time}</td><td>${r.tf}</td><td>${r.type}</td><td>${r.mode}</td><td>${r.tier}</td><td>${fmt(r.entry)}</td><td>${fmt(r.sl)}</td><td>${fmt(r.tp1)}</td><td>${fmt(r.tp2)}</td><td>${fmt(r.tp3)}</td><td>${r.status}</td><td class="${r.result==='WIN'?'win':r.result==='LOSS'?'loss':'be'}">${r.result}</td><td>${r.r.toFixed(2)}</td></tr>`).join('')||'<tr><td colspan="13" style="color:#9fb3d1">No paper trades logged yet</td></tr>'}
 function basePrice(){if(state.market==='Forex')return 1.08+Math.random()*0.015;if(state.symbol==='1HZ10V')return 10000+Math.random()*12;if(state.symbol==='R_10')return 5120+Math.random()*8;return 1.1}
-function bootstrapSeed(price){clearCandles();let p=price;const now=Date.now();for(let i=120;i>=1;i--){const ts=now-i*60000;p+=(Math.random()-0.5)*(state.market==='Forex'?0.00015:1.0);['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,p,ts))}state.seededAt=Date.now();state.displayedPrice=price;hist(`BOOTSTRAP SEEDED @ ${fmt(price)}`)}
+function bootstrapSeed(price){clearCandles();let p=price;const now=Date.now();for(let i=140;i>=1;i--){const ts=now-i*60000;p+=(Math.random()-0.5)*(state.market==='Forex'?0.00015:1.0);['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,p,ts))}state.seededAt=Date.now();state.displayedPrice=price;hist(`BOOTSTRAP SEEDED @ ${fmt(price)}`)}
 function fallbackTick(){if(state.feedState==='live'||state.feedState==='connecting')return;state.fallbackPrice+=(Math.random()-0.5)*(state.market==='Forex'?0.0002:0.9);state.displayedPrice=state.fallbackPrice;['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,state.displayedPrice,Date.now()));ui();const sig=evaluate();draw();maybeTrade(sig);updateOpenTrades()}
 function connectLive(){disconnectSocket();state.feedState='connecting';state.source='Connecting';state.socketState='opening';state.requestedSymbol=state.symbol;state.returnedSymbol=null;state.symbolMismatch=false;ui();hist(`LIVE FEED CONNECT REQUEST (${state.requestedSymbol})`);setStrip('CONNECTING — bootstrap is alive, waiting for first live tick.');try{const ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');state.ws=ws;ws.onopen=()=>{state.socketState='open';ui();hist('SOCKET OPEN');ws.send(JSON.stringify({ticks:state.requestedSymbol,subscribe:1}));hist(`SUBSCRIBE SENT (${state.requestedSymbol})`);setTimeout(()=>{if(state.feedState==='connecting'){state.feedState='timeout';state.source='Fallback';state.socketState='timeout';ui();hist('NO LIVE TICK RECEIVED WITHIN 8S — fallback retained');setStrip('TIMEOUT — fallback remains active, live connect can be retried.')}},8000)};ws.onmessage=e=>{const msg=JSON.parse(e.data);if(msg.error){hist('LIVE FEED ERROR: '+msg.error.message);state.feedState='timeout';state.source='Fallback';state.socketState='error';ui();return}if(msg.tick&&typeof msg.tick.quote==='number'){state.returnedSymbol=msg.tick.symbol||null;state.symbolMismatch=state.returnedSymbol!==state.requestedSymbol;state.livePrice=msg.tick.quote;state.displayedPrice=msg.tick.quote;['M1','M5','M15','H1','H4','D1'].forEach(tf=>bucket(state['candles'+tf],tf,msg.tick.quote,Date.now()));if(symbolClear()){state.feedState='live';state.source='Live';state.socketState='live';if(!state.liveConnectedAt){state.liveConnectedAt=Date.now();hist(`LIVE SYMBOL CONFIRMED (${state.returnedSymbol})`)}}else{state.feedState='connecting';state.source='Connecting';state.socketState='symbol-mismatch';hist(`SYMBOL MISMATCH: requested ${state.requestedSymbol}, returned ${state.returnedSymbol}`)}ui();const sig=evaluate();maybeTrade(sig);updateOpenTrades();draw()}};ws.onerror=()=>{hist('SOCKET ERROR — fallback retained');state.feedState='timeout';state.source='Fallback';state.socketState='error';ui()};ws.onclose=()=>{if(state.feedState==='live'||state.feedState==='connecting'){hist('SOCKET CLOSED — fallback retained');state.feedState='timeout';state.source='Fallback';state.socketState='closed';ui()}}}catch(err){hist('LIVE FEED EXCEPTION — fallback retained');state.feedState='timeout';state.source='Fallback';state.socketState='exception';ui()}}
 function disconnectSocket(){if(state.ws){try{state.ws.close()}catch(e){}}state.ws=null}
+
 function evaluate(){
  const c1=state.candlesM1,c5=state.candlesM5,c15=state.candlesM15,h1=state.candlesH1,h4=state.candlesH4,d1=state.candlesD1;if(c1.length<5)return null;
- if(!warmReady()){$('confBar').style.width='0%';$('confTxt').textContent='0%';$('setupState').textContent='Warmup';$('execStatus').textContent='WARMUP';return null}
+ if(!warmReady()){$('confBar').style.width='0%';$('confTxt').textContent='0%';$('entryBias').textContent='Warmup';$('execStatus').textContent='WARMUP';return null}
  const b1=bias(c1),b5=bias(c5),b15=bias(c15),bh1=bias(h1),bh4=bias(h4),bd1=bias(d1);$('h1Bias').textContent=bh1;$('d1Bias').textContent=bd1;
  const closes=c1.map(x=>x.c),highs=c1.map(x=>x.h),lows=c1.map(x=>x.l),last=closes.at(-1),prev=closes.at(-2)??last,e20s=ema(closes,20),e50s=ema(closes,50),e20=e20s.at(-1),e50=e50s.at(-1),r=rsi(closes,14);
  const emaState=(last>e20&&e20>e50)?'EMA bullish':(last<e20&&e20<e50)?'EMA bearish':'EMA mixed';$('emaBias').textContent=emaState;$('rsiVal').textContent=r.toFixed(1);
  const recentHigh=Math.max(...highs.slice(-20)),recentLow=Math.min(...lows.slice(-20)),range=Math.max(0.0001,recentHigh-recentLow),fib50=recentHigh-range*0.5,fib618=recentHigh-range*0.618,fib382=recentHigh-range*0.382;
- const bullExpansion=(last>prev&&last>c1.slice(-8)[0].c&&(last-recentLow)>range*0.35),bearExpansion=(last<prev&&last<c1.slice(-8)[0].c&&(recentHigh-last)>range*0.35);
- const distEma20=Math.abs(last-e20),avgRange=c1.slice(-12).reduce((s,x)=>s+(x.h-x.l),0)/12,currentBarRange=(c1.at(-1).h-c1.at(-1).l);
+ const avgRange=c1.slice(-12).reduce((s,x)=>s+(x.h-x.l),0)/12, currentBarRange=(c1.at(-1).h-c1.at(-1).l), distEma20=Math.abs(last-e20);
+ const bullExpansion=(last>prev&&last>c1.slice(-8)[0].c&&(last-recentLow)>range*0.35), bearExpansion=(last<prev&&last<c1.slice(-8)[0].c&&(recentHigh-last)>range*0.35);
  const pullbackBull=last<=e20+(avgRange*0.6)&&last>=fib618&&last<=fib50, pullbackBear=last>=e20-(avgRange*0.6)&&last<=fib382&&last>=fib50;
  const crtBull=c1.length>4&&c1.at(-3).l<c1.at(-4).l&&c1.at(-1).c>c1.at(-2).h, crtBear=c1.length>4&&c1.at(-3).h>c1.at(-4).h&&c1.at(-1).c<c1.at(-2).l;
  const m1Bull=c1.length>3&&c1.at(-1).c>c1.at(-1).o&&c1.at(-1).c>c1.at(-2).h, m1Bear=c1.length>3&&c1.at(-1).c<c1.at(-1).o&&c1.at(-1).c<c1.at(-2).l;
- const midBull=(b5!=='Bearish'?12:0)+(b15!=='Bearish'?8:0),midBear=(b5!=='Bullish'?12:0)+(b15!=='Bullish'?8:0);
- const htfBull=(bh1==='Bullish'?10:bh1==='Mixed'?5:0)+(bh4==='Bullish'?8:bh4==='Mixed'?4:0)+(bd1==='Bullish'?5:bd1==='Mixed'?2:0),htfBear=(bh1==='Bearish'?10:bh1==='Mixed'?5:0)+(bh4==='Bearish'?8:bh4==='Mixed'?4:0)+(bd1==='Bearish'?5:bd1==='Mixed'?2:0);
+ const firstTouchBull=pullbackBull&&Math.abs(last-fib618)<avgRange*0.35, firstTouchBear=pullbackBear&&Math.abs(last-fib382)<avgRange*0.35;
+ const cleanReclaimBull=crtBull&&m1Bull, cleanReclaimBear=crtBear&&m1Bear;
  const bullExhaust=bullExpansion&&r>85&&distEma20>(avgRange*2.2)&&currentBarRange>(avgRange*1.8), bearExhaust=bearExpansion&&r<15&&distEma20>(avgRange*2.2)&&currentBarRange>(avgRange*1.8);
- $('exhaustLock').textContent=(bullExhaust||bearExhaust)?'ACTIVE':'CLEAR';$('pbZone').textContent=(pullbackBull||pullbackBear)?'YES':'NO';
- let bullScore=0,bearScore=0,bullPenalty=0,bearPenalty=0;
- if(bullExpansion)bullScore+=18;if(bearExpansion)bearScore+=18;if(pullbackBull)bullScore+=20;if(pullbackBear)bearScore+=20;if(crtBull)bullScore+=14;if(crtBear)bearScore+=14;if(m1Bull)bullScore+=18;if(m1Bear)bearScore+=18;
- if(emaState==='EMA bullish')bullScore+=10;if(emaState==='EMA bearish')bearScore+=10;if(r>=52&&r<=82)bullScore+=8;if(r<=48&&r>=18)bearScore+=8;bullScore+=midBull+htfBull;bearScore+=midBear+htfBear;if(bullExhaust)bullPenalty=26;if(bearExhaust)bearPenalty=26;bullScore-=bullPenalty;bearScore-=bearPenalty;
- $('scoreExpansion').textContent=Math.max(bullExpansion?18:0,bearExpansion?18:0);$('scoreGz').textContent=Math.max(pullbackBull?20:0,pullbackBear?20:0);$('scoreCrt').textContent=Math.max(crtBull?14:0,crtBear?14:0);$('scoreM1').textContent=Math.max(m1Bull?18:0,m1Bear?18:0);$('scoreMid').textContent=Math.max(midBull,midBear);$('scoreHtf').textContent=Math.max(htfBull,htfBear);$('scoreExhaust').textContent='-'+Math.max(bullPenalty,bearPenalty);
- const threshold=state.mode==='Aggressive'?55:state.mode==='Balanced'?65:75;
- let dir='WAIT',setup='Range / Transition',score=Math.max(bullScore,bearScore),entryBias='Wait';
- if(bullScore>=threshold&&bullScore>bearScore+6&&!bullExhaust&&(pullbackBull||state.trigger!=='Retracement first')){dir='BULLISH';setup=(pullbackBull?'Smart Pullback Continuation':'Expansion Continuation')+(crtBull?' + CRT Reclaim':'');entryBias=pullbackBull?'Pullback Buy':'Continuation Buy'}
- else if(bearScore>=threshold&&bearScore>bullScore+6&&!bearExhaust&&(pullbackBear||state.trigger!=='Retracement first')){dir='BEARISH';setup=(pullbackBear?'Smart Pullback Continuation':'Expansion Continuation')+(crtBear?' + CRT Reclaim':'');entryBias=pullbackBear?'Pullback Sell':'Continuation Sell'}
- else if(bullExhaust&&bullScore>=threshold-8){setup='Bullish Exhaustion — wait for pullback';entryBias='Wait Pullback'}
- else if(bearExhaust&&bearScore>=threshold-8){setup='Bearish Exhaustion — wait for pullback';entryBias='Wait Pullback'}
- $('entryBias').textContent=entryBias;$('scoreVal').textContent=Math.round(Math.max(0,score));$('confBar').style.width=Math.min(100,Math.max(0,Math.round(score)))+'%';$('confTxt').textContent=Math.min(100,Math.max(0,Math.round(score)))+'%';$('setupState').textContent=dir==='WAIT'?'Wait':'Ready';$('signalDir').textContent=dir;$('setupType').textContent=setup;
- const stop=state.market==='Forex'?0.0015:3.2,entry=last,sl=dir==='BULLISH'?entry-stop:dir==='BEARISH'?entry+stop:entry,tp1=dir==='BULLISH'?entry+stop:dir==='BEARISH'?entry-stop:entry,tp2=dir==='BULLISH'?entry+stop*2:dir==='BEARISH'?entry-stop*2:entry,tp3=dir==='BULLISH'?entry+stop*3:dir==='BEARISH'?entry-stop*3:entry;
- $('entryPx').textContent=fmt(entry);$('slPx').textContent=fmt(sl);$('tp1Px').textContent=fmt(tp1);$('tp2Px').textContent=fmt(tp2);$('tp3Px').textContent=fmt(tp3);
- if(!feedClear())$('execStatus').textContent='WAIT / BLOCKED';else if((bullExhaust||bearExhaust))$('execStatus').textContent='WAIT / EXHAUSTION';else if(dir==='WAIT')$('execStatus').textContent='WAIT / FILTERED';else $('execStatus').textContent='READY';
- $('reasoning').innerHTML=`v8.1 read: M1=${b1}, M5=${b5}, M15=${b15}, H1=${bh1}, H4=${bh4}, D1=${bd1}. EMA=${emaState}, RSI=${r.toFixed(1)}. BullScore=${Math.round(bullScore)}, BearScore=${Math.round(bearScore)}. Exhaustion penalty blocks late expansion if RSI is stretched, distance from EMA20 is too wide, and bar expansion is extreme. Engine now prefers pullback quality over chasing vertical moves.`;
- if(!feedClear()&&state.feedState==='connecting')setStrip('CONNECTING — bootstrap chart is live while waiting for valid live tick.');
- else if(!feedClear()&&state.feedState==='timeout')setStrip('TIMEOUT — fallback remains active, live trade unlock blocked.');
- else if((bullExhaust||bearExhaust))setStrip(`${setup}. v8.1 is deliberately refusing to chase late expansion.`);
- else if(!feedClear())setStrip('BOOTSTRAP READY — structure running, waiting for live confirmation.');
- else if(dir==='WAIT')setStrip('WAIT — live core is scanning for the next valid pullback structure setup.');
- else setStrip(`${dir} ${setup} detected — v8.1 armed.`);
- return {dir,setup,score,entry,sl,tp1,tp2,tp3,exhausted:(bullExhaust||bearExhaust)}
+ const trendRegime=((bh1==='Bullish'&&bh4!=='Bearish')||(bh1==='Bearish'&&bh4!=='Bullish')) && Math.abs(e20-e50)>avgRange*0.35;
+ const volatilityState=Math.min(1.2,currentBarRange/Math.max(0.0001,avgRange));
+ const regime=regimeLabel(trendRegime,volatilityState, bullExhaust||bearExhaust); $('regimeLbl').textContent=regime;
+ const mixedBias=(bh1==='Mixed'||bh4==='Mixed'||bd1==='Mixed');
+
+ let structureBull=((bh1==='Bullish')?35:(bh1==='Mixed'?15:0))+((bh4==='Bullish')?25:(bh4==='Mixed'?10:0))+((bd1==='Bullish')?15:(bd1==='Mixed'?8:0))+(bullExpansion?10:0);
+ let structureBear=((bh1==='Bearish')?35:(bh1==='Mixed'?15:0))+((bh4==='Bearish')?25:(bh4==='Mixed'?10:0))+((bd1==='Bearish')?15:(bd1==='Mixed'?8:0))+(bearExpansion?10:0);
+ let entryBull=(pullbackBull?28:0)+(firstTouchBull?10:0)+(cleanReclaimBull?18:0)+(m1Bull?14:0)+((b5!=='Bearish')?8:0)+((b15!=='Bearish')?6:0);
+ let entryBear=(pullbackBear?28:0)+(firstTouchBear?10:0)+(cleanReclaimBear?18:0)+(m1Bear?14:0)+((b5!=='Bullish')?8:0)+((b15!=='Bullish')?6:0);
+ let riskBull=100, riskBear=100;
+ if(r>82)riskBull-=25; if(r<18)riskBear-=25;
+ if(distEma20>avgRange*2.2){riskBull-=18; riskBear-=18}
+ if(currentBarRange>avgRange*1.8){riskBull-=14; riskBear-=14}
+ if(bullExhaust)riskBull-=20; if(bearExhaust)riskBear-=20;
+ riskBull=Math.max(0,riskBull); riskBear=Math.max(0,riskBear);
+ let sessionBull=100, sessionBear=100;
+ if(state.defensiveMode){sessionBull-=20; sessionBear-=20}
+ if(state.consecutiveLosses>=1){sessionBull-=10; sessionBear-=10}
+ if(state.consecutiveLosses>=2){sessionBull-=18; sessionBear-=18}
+ if(state.legLocked && state.lastLegDir==='BULLISH')sessionBull-=40;
+ if(state.legLocked && state.lastLegDir==='BEARISH')sessionBear-=40;
+
+ const bullScore = structureBull*0.35 + entryBull*0.30 + riskBull*0.20 + sessionBull*0.15;
+ const bearScore = structureBear*0.35 + entryBear*0.30 + riskBear*0.20 + sessionBear*0.15;
+
+ let baseThreshold = state.mode==='Aggressive'?55:state.mode==='Balanced'?65:75;
+ if(state.defensiveMode) baseThreshold += 10;
+ let htfBonus = (!mixedBias && ((bh1==='Bullish'&&bh4==='Bullish')||(bh1==='Bearish'&&bh4==='Bearish'))) ? -6 : 0;
+ let firstTouchBonus = (firstTouchBull||firstTouchBear) ? -4 : 0;
+ let reclaimBonus = (cleanReclaimBull||cleanReclaimBear) ? -4 : 0;
+ let mixedPenalty = mixedBias ? 8 : 0;
+ let exhaustPenalty = (bullExhaust||bearExhaust) ? 14 : 0;
+ let reentryPenalty = state.legLocked ? 10 : 0;
+ let lossPenalty = state.consecutiveLosses>=2 ? 10 : state.consecutiveLosses===1 ? 5 : 0;
+ const adaptiveThreshold = baseThreshold + mixedPenalty + exhaustPenalty + reentryPenalty + lossPenalty + htfBonus + firstTouchBonus + reclaimBonus;
+
+ $('baseThreshold').textContent=baseThreshold;
+ $('adjHtf').textContent=htfBonus;
+ $('adjFirstTouch').textContent=firstTouchBonus;
+ $('adjReclaim').textContent=reclaimBonus;
+ $('adjMixed').textContent='+'+mixedPenalty;
+ $('adjExhaust').textContent='+'+exhaustPenalty;
+ $('adjReentry').textContent='+'+reentryPenalty;
+ $('adjLossStreak').textContent='+'+lossPenalty;
+ $('adaptiveThreshold').textContent=Math.round(adaptiveThreshold);
+
+ let dir='WAIT', finalScore=Math.max(bullScore,bearScore), setup='Range / Transition', entryBias='Wait';
+ if(bullScore>=adaptiveThreshold && bullScore>bearScore+5 && !bullExhaust){
+   dir='BULLISH'; setup=(pullbackBull?'Smart Pullback Continuation':'Expansion Continuation')+(cleanReclaimBull?' + CRT Reclaim':''); entryBias=pullbackBull?'Pullback Buy':'Continuation Buy'; finalScore=bullScore;
+ }
+ if(bearScore>=adaptiveThreshold && bearScore>bullScore+5 && !bearExhaust){
+   dir='BEARISH'; setup=(pullbackBear?'Smart Pullback Continuation':'Expansion Continuation')+(cleanReclaimBear?' + CRT Reclaim':''); entryBias=pullbackBear?'Pullback Sell':'Continuation Sell'; finalScore=bearScore;
+ } else if(dir==='BULLISH'){ finalScore=bullScore; }
+
+ if((bullExhaust && bullScore>adaptiveThreshold-8) || (bearExhaust && bearScore>adaptiveThreshold-8)){
+   setup=(bullExhaust?'Bullish':'Bearish')+' Exhaustion — wait for pullback'; entryBias='Wait Pullback';
+ }
+ if(state.defensiveMode && dir!=='WAIT' && !setup.includes('Pullback')){
+   dir='WAIT'; setup='Defensive Mode — pullback only'; entryBias='Wait Pullback';
+ }
+
+ $('scoreVal').textContent=Math.round(Math.max(0,finalScore));
+ $('gradeLbl').textContent=gradeLabel(finalScore);
+ $('confBar').style.width=Math.min(100,Math.max(0,Math.round(finalScore)))+'%';
+ $('confTxt').textContent=Math.min(100,Math.max(0,Math.round(finalScore)))+'%';
+ $('entryBias').textContent=entryBias;
+ $('qualityGate').textContent=(finalScore>=adaptiveThreshold)?'PASS':'BLOCKED';
+ $('exhaustLock').textContent=(bullExhaust||bearExhaust)?'ACTIVE':'CLEAR';
+
+ $('bucketStructure').textContent=Math.round(dir==='BEARISH'?structureBear:Math.max(structureBull,structureBear));
+ $('bucketEntry').textContent=Math.round(dir==='BEARISH'?entryBear:Math.max(entryBull,entryBear));
+ $('bucketRisk').textContent=Math.round(dir==='BEARISH'?riskBear:Math.max(riskBull,riskBear));
+ $('bucketSession').textContent=Math.round(dir==='BEARISH'?sessionBear:Math.max(sessionBull,sessionBear));
+
+ $('entryPx').textContent=fmt(last);
+ const stop=state.market==='Forex'?0.0015:3.2, sl=dir==='BULLISH'?last-stop:dir==='BEARISH'?last+stop:last, tp1=dir==='BULLISH'?last+stop:dir==='BEARISH'?last-stop:last, tp2=dir==='BULLISH'?last+stop*2:dir==='BEARISH'?last-stop*2:last, tp3=dir==='BULLISH'?last+stop*3:dir==='BEARISH'?last-stop*3:last;
+ $('slPx').textContent=fmt(sl); $('tp1Px').textContent=fmt(tp1); $('tp2Px').textContent=fmt(tp2); $('tp3Px').textContent=fmt(tp3);
+ $('signalDir').textContent=dir; $('setupType').textContent=setup;
+
+ let exec='WAIT / BLOCKED';
+ if(!feedClear()) exec='WAIT / BLOCKED';
+ else if((bullExhaust||bearExhaust)) exec='WAIT / EXHAUSTION';
+ else if(state.legLocked && state.lastLegDir===dir) exec='WAIT / SAME LEG';
+ else if(finalScore<adaptiveThreshold) exec='WAIT / QUALITY GATE';
+ else if(dir==='WAIT') exec='WAIT / FILTERED';
+ else exec='READY';
+ $('execStatus').textContent=exec;
+
+ $('reasoning').innerHTML=`v8.3 read: M1=${b1}, M5=${b5}, M15=${b15}, H1=${bh1}, H4=${bh4}, D1=${bd1}. Regime=${regime}. BullScore=${Math.round(bullScore)}, BearScore=${Math.round(bearScore)}, adaptiveThreshold=${Math.round(adaptiveThreshold)}. This engine grades context, not just candles. It lowers the bar for first-touch reclaim setups and raises it sharply for mixed bias, exhaustion, re-entry risk, and loss streak conditions.`;
+ if(!feedClear()&&state.feedState==='connecting') setStrip('CONNECTING — bootstrap chart is live while waiting for valid live tick.');
+ else if(!feedClear()&&state.feedState==='timeout') setStrip('TIMEOUT — fallback remains active, live trade unlock blocked.');
+ else if(exec==='WAIT / EXHAUSTION') setStrip(setup + '. v8.3 refuses late chase entries.');
+ else if(exec==='WAIT / SAME LEG') setStrip('ONE-LEG-ONE-TRADE active — waiting for a fresh structural reset.');
+ else if(exec==='WAIT / QUALITY GATE') setStrip('QUALITY GATE active — setup is not good enough for this context.');
+ else if(exec==='READY') setStrip(`${dir} ${setup} detected — v8.3 adaptive engine armed.`);
+ else setStrip('WAIT — live core is scanning for the next valid context-qualified setup.');
+
+ return {dir,finalScore,adaptiveThreshold,entry:last,sl,tp1,tp2,tp3,setup,exhausted:(bullExhaust||bearExhaust)};
 }
-function maybeTrade(sig){if(!sig||sig.dir==='WAIT'||sig.exhausted)return;if(!feedClear()||!warmReady()||state.sessionTrades>=state.sessionCap){state.blocked++;renderPerf();return}if(Date.now()-state.lastTradeTs<state.cooldownMin*60000)return;if(state.openTrades.length)return;const tier=state.mode==='Aggressive'?'Tier 1':state.mode==='Balanced'?'Tier 2':'Tier 3';for(let i=0;i<4;i++){state.openTrades.push({time:nowTime(),dir:sig.dir,entry:sig.entry,sl:sig.sl,tp1:sig.tp1,tp2:sig.tp2,tp3:sig.tp3,tf:'M1',type:sig.setup,mode:state.mode,tier:tier,floatR:0,status:'open'})}state.lastTradeTs=Date.now();hist(`${sig.dir} ${state.symbolLabel} | ${sig.setup} | 4x burst | ${fmt(sig.entry)}`);renderOpen()}
-function updateOpenTrades(){if(!state.openTrades.length||state.displayedPrice==null)return;const closed=[];for(const t of state.openTrades){const m=t.dir==='BULLISH'?1:-1;t.floatR=((state.displayedPrice-t.entry)*m)/Math.max(0.0001,Math.abs(t.entry-t.sl));if((t.dir==='BULLISH'&&state.displayedPrice<=t.sl)||(t.dir==='BEARISH'&&state.displayedPrice>=t.sl)){t.result='LOSS';t.r=-1;t.status='closed';closed.push(t)}else if((t.dir==='BULLISH'&&state.displayedPrice>=t.tp2)||(t.dir==='BEARISH'&&state.displayedPrice<=t.tp2)){t.result='WIN';t.r=2;t.status='closed';closed.push(t)}else if((t.dir==='BULLISH'&&state.displayedPrice>=t.tp1)||(t.dir==='BEARISH'&&state.displayedPrice<=t.tp1)){t.result='BE';t.r=0.5;t.status='closed';closed.push(t)}}if(!closed.length){renderOpen();return}state.openTrades=state.openTrades.filter(x=>x.status==='open');for(const t of closed){state.sessionTrades++;if(t.result==='WIN')state.wins++;else if(t.result==='LOSS'){state.losses++;state.dailyLoss+=state.paperBalance*0.01}else state.be++;state.totalR+=t.r;state.journalRows.unshift({...t})}state.journalRows=state.journalRows.slice(0,250);if(state.sessionTrades>=state.sessionCap){hist('SESSION CAP REACHED — auto reset armed');setTimeout(resetSession,3000)}renderPerf();renderOpen();renderJournal()}
-function draw(){const canvas=$('chart'),rect=canvas.getBoundingClientRect();canvas.width=rect.width*devicePixelRatio;canvas.height=rect.height*devicePixelRatio;const ctx=canvas.getContext('2d');ctx.scale(devicePixelRatio,devicePixelRatio);ctx.clearRect(0,0,rect.width,rect.height);const arr=state.candlesM1.slice(-70);if(arr.length<2){ctx.fillStyle='#9fb3d1';ctx.font='14px Segoe UI';ctx.fillText('Waiting for enough candles...',20,30);return}const highs=arr.map(x=>x.h),lows=arr.map(x=>x.l),closes=arr.map(x=>x.c),min=Math.min(...lows),max=Math.max(...highs),padX=14,padY=18,w=rect.width-padX*2,h=rect.height-padY*2;const X=i=>padX+(i/(arr.length-1))*w,Y=v=>padY+(1-(v-min)/(Math.max(0.00001,max-min)))*h;ctx.strokeStyle='rgba(255,255,255,.08)';for(let i=0;i<5;i++){const yy=padY+i*h/4;ctx.beginPath();ctx.moveTo(padX,yy);ctx.lineTo(padX+w,yy);ctx.stroke()}const e20=ema(closes,20),e50=ema(closes,50);ctx.lineWidth=2;ctx.strokeStyle='#48a8ff';ctx.beginPath();e20.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)));ctx.stroke();ctx.strokeStyle='#f0b44d';ctx.beginPath();e50.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)));ctx.stroke();if(state.chartMode==='line'){ctx.strokeStyle='#fff';ctx.beginPath();closes.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)));ctx.stroke()}else{const cw=Math.max(4,w/arr.length*0.55);arr.forEach((c,i)=>{const x=X(i),yo=Y(c.o),yc=Y(c.c),yh=Y(c.h),yl=Y(c.l),up=c.c>=c.o;ctx.strokeStyle=up?'#9ee7c0':'#ff8f8f';ctx.beginPath();ctx.moveTo(x,yh);ctx.lineTo(x,yl);ctx.stroke();ctx.fillStyle=up?'#9ee7c0':'#ff8f8f';const top=Math.min(yo,yc),body=Math.max(2,Math.abs(yc-yo));ctx.fillRect(x-cw/2,top,cw,body)})}}
-function resetSession(){state.wins=0;state.losses=0;state.be=0;state.sessionTrades=0;state.totalR=0;state.dailyLoss=0;state.blocked=0;state.openTrades=[];state.journalRows=[];state.lastTradeTs=0;renderPerf();renderOpen();renderJournal();hist('SESSION RESET')}
+
+function maybeTrade(sig){
+ if(!sig || sig.dir==='WAIT' || sig.exhausted) return;
+ if(!feedClear() || !warmReady() || state.sessionTrades>=state.sessionCap){ state.blocked++; renderPerf(); return; }
+ if(sig.finalScore < sig.adaptiveThreshold){ state.blocked++; renderPerf(); return; }
+ if(state.legLocked && state.lastLegDir===sig.dir){ state.blocked++; renderPerf(); return; }
+ if(Date.now()-state.lastTradeTs<state.cooldownMin*60000) return;
+ if(state.openTrades.length) return;
+ const tier = sig.finalScore>=85?'A+':sig.finalScore>=75?'A':'B';
+ for(let i=0;i<4;i++){ state.openTrades.push({time:nowTime(),dir:sig.dir,entry:sig.entry,sl:sig.sl,tp1:sig.tp1,tp2:sig.tp2,tp3:sig.tp3,tf:'M1',type:sig.setup,mode:state.mode,tier:tier,floatR:0,status:'open'})}
+ state.lastTradeTs=Date.now(); state.lastLegDir=sig.dir; state.legLocked=true; state.legAnchorPrice=sig.entry;
+ hist(`${sig.dir} ${state.symbolLabel} | ${sig.setup} | adaptive score ${Math.round(sig.finalScore)} | 4x burst | ${fmt(sig.entry)}`); renderOpen()
+}
+
+function updateOpenTrades(){
+ if(!state.openTrades.length || state.displayedPrice==null) return;
+ const closed=[];
+ for(const t of state.openTrades){
+   const m=t.dir==='BULLISH'?1:-1;
+   t.floatR=((state.displayedPrice-t.entry)*m)/Math.max(0.0001,Math.abs(t.entry-t.sl));
+   if((t.dir==='BULLISH'&&state.displayedPrice<=t.sl)||(t.dir==='BEARISH'&&state.displayedPrice>=t.sl)){ t.result='LOSS'; t.r=-1; t.status='closed'; closed.push(t); }
+   else if((t.dir==='BULLISH'&&state.displayedPrice>=t.tp2)||(t.dir==='BEARISH'&&state.displayedPrice<=t.tp2)){ t.result='WIN'; t.r=2; t.status='closed'; closed.push(t); }
+   else if((t.dir==='BULLISH'&&state.displayedPrice>=t.tp1)||(t.dir==='BEARISH'&&state.displayedPrice<=t.tp1)){ t.result='BE'; t.r=0.5; t.status='closed'; closed.push(t); }
+ }
+ if(!closed.length){ renderOpen(); return; }
+ state.openTrades=state.openTrades.filter(x=>x.status==='open');
+ let anyWin=false;
+ for(const t of closed){
+   state.sessionTrades++;
+   if(t.result==='WIN'){ state.wins++; state.consecutiveLosses=0; anyWin=true; }
+   else if(t.result==='LOSS'){ state.losses++; state.consecutiveLosses += 1; state.dailyLoss += state.paperBalance*0.01; }
+   else { state.be++; }
+   state.totalR+=t.r;
+   state.journalRows.unshift({...t});
+ }
+ state.journalRows=state.journalRows.slice(0,250);
+ if(anyWin && state.defensiveMode){ state.defensiveMode=false; hist('DEFENSIVE MODE CLEARED AFTER WIN'); }
+ if(state.consecutiveLosses>=2 && !state.defensiveMode){ state.defensiveMode=true; hist('DEFENSIVE MODE ACTIVATED — pullback-only, higher threshold'); }
+ if(state.consecutiveLosses>=3){ hist('SESSION KILL SWITCH — 3 consecutive losses'); state.sessionTrades=state.sessionCap; }
+ renderPerf(); renderOpen(); renderJournal();
+}
+
+function maybeUnlockLeg(){
+ if(!state.legLocked || state.displayedPrice==null || state.legAnchorPrice==null) return;
+ const distance=Math.abs(state.displayedPrice-state.legAnchorPrice);
+ const unlockThreshold=state.market==='Forex'?0.0016:4.8;
+ const oppositeMove=(state.lastLegDir==='BULLISH' && state.displayedPrice<state.legAnchorPrice-unlockThreshold) || (state.lastLegDir==='BEARISH' && state.displayedPrice>state.legAnchorPrice+unlockThreshold);
+ if(distance>unlockThreshold || oppositeMove){ hist('LEG LOCK CLEARED — fresh structure can be evaluated'); state.legLocked=false; state.lastLegDir=null; state.legAnchorPrice=null; }
+}
+
+function draw(){
+ const canvas=$('chart'),rect=canvas.getBoundingClientRect();
+ canvas.width=rect.width*devicePixelRatio; canvas.height=rect.height*devicePixelRatio;
+ const ctx=canvas.getContext('2d'); ctx.scale(devicePixelRatio,devicePixelRatio); ctx.clearRect(0,0,rect.width,rect.height);
+ const arr=state.candlesM1.slice(-70);
+ if(arr.length<2){ ctx.fillStyle='#9fb3d1'; ctx.font='14px Segoe UI'; ctx.fillText('Waiting for enough candles...',20,30); return; }
+ const highs=arr.map(x=>x.h), lows=arr.map(x=>x.l), closes=arr.map(x=>x.c), min=Math.min(...lows), max=Math.max(...highs), padX=14, padY=18, w=rect.width-padX*2, h=rect.height-padY*2;
+ const X=i=>padX+(i/(arr.length-1))*w, Y=v=>padY+(1-(v-min)/(Math.max(0.00001,max-min)))*h;
+ ctx.strokeStyle='rgba(255,255,255,.08)';
+ for(let i=0;i<5;i++){ const yy=padY+i*h/4; ctx.beginPath(); ctx.moveTo(padX,yy); ctx.lineTo(padX+w,yy); ctx.stroke(); }
+ const e20=ema(closes,20), e50=ema(closes,50);
+ ctx.lineWidth=2; ctx.strokeStyle='#48a8ff'; ctx.beginPath(); e20.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
+ ctx.strokeStyle='#f0b44d'; ctx.beginPath(); e50.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke();
+ if(state.chartMode==='line'){ ctx.strokeStyle='#fff'; ctx.beginPath(); closes.forEach((v,i)=>i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v))); ctx.stroke(); }
+ else {
+   const cw=Math.max(4,w/arr.length*0.55);
+   arr.forEach((c,i)=>{ const x=X(i), yo=Y(c.o), yc=Y(c.c), yh=Y(c.h), yl=Y(c.l), up=c.c>=c.o;
+     ctx.strokeStyle=up?'#9ee7c0':'#ff8f8f'; ctx.beginPath(); ctx.moveTo(x,yh); ctx.lineTo(x,yl); ctx.stroke();
+     ctx.fillStyle=up?'#9ee7c0':'#ff8f8f'; const top=Math.min(yo,yc), body=Math.max(2,Math.abs(yc-yo)); ctx.fillRect(x-cw/2,top,cw,body);
+   });
+ }
+}
+
+function resetSession(){state.wins=0;state.losses=0;state.be=0;state.sessionTrades=0;state.totalR=0;state.dailyLoss=0;state.blocked=0;state.lastTradeTs=0;state.consecutiveLosses=0;state.defensiveMode=false;state.legLocked=false;state.lastLegDir=null;state.legAnchorPrice=null;state.openTrades=[];state.journalRows=[];renderPerf();renderOpen();renderJournal();hist('SESSION RESET')}
 function hardReset(){disconnectSocket();state.feedState='fallback';state.source='Fallback';state.socketState='idle';state.returnedSymbol=null;state.symbolMismatch=false;state.livePrice=null;state.fallbackPrice=basePrice();bootstrapSeed(state.fallbackPrice);ui();evaluate();draw()}
 function setMarketButtons(){$('marketDeriv').className='btn'+(state.market==='Deriv'?' good':'');$('marketForex').className='btn'+(state.market==='Forex'?' good':'')}
 $('marketDeriv').onclick=()=>{state.market='Deriv';state.symbol='1HZ10V';state.symbolLabel='1HZ10V';$('symbolSelect').value='1HZ10V';setMarketButtons();hardReset();hist('MARKET SWITCHED TO DERIV')};
 $('marketForex').onclick=()=>{state.market='Forex';state.symbol='frxEURUSD';state.symbolLabel='EURUSD';$('symbolSelect').value='frxEURUSD';setMarketButtons();hardReset();hist('MARKET SWITCHED TO FOREX')};
 $('symbolSelect').onchange=e=>{state.symbol=e.target.value;state.symbolLabel=state.symbol.startsWith('frx')?state.symbol.replace('frx',''):state.symbol;hardReset();hist('SYMBOL SWITCHED TO '+state.symbolLabel)};
-$('modeSelect').onchange=e=>{state.mode=e.target.value};$('triggerSelect').onchange=e=>{state.trigger=e.target.value};$('balanceInput').onchange=e=>{state.paperBalance=Number(e.target.value)||35};$('chartMode').onchange=e=>{state.chartMode=e.target.value;ui();draw()};
-$('refreshBtn').onclick=()=>location.reload();$('resetBtn').onclick=()=>{resetSession();hardReset()};$('connectBtn').onclick=connectLive;$('disconnectBtn').onclick=()=>{disconnectSocket();state.feedState='fallback';state.source='Fallback';state.socketState='idle';state.returnedSymbol=null;state.symbolMismatch=false;setStrip('LIVE FEED DISCONNECTED — bootstrap/fallback retained.');ui()};
-state.fallbackPrice=basePrice();bootstrapSeed(state.fallbackPrice);setMarketButtons();ui();renderPerf();renderOpen();renderJournal();evaluate();draw();hist('V8.1 EXHAUSTION FILTER READY');setInterval(()=>fallbackTick(),1000);
+$('modeSelect').onchange=e=>{state.mode=e.target.value}; $('triggerSelect').onchange=e=>{state.trigger=e.target.value}; $('balanceInput').onchange=e=>{state.paperBalance=Number(e.target.value)||35}; $('chartMode').onchange=e=>{state.chartMode=e.target.value;ui();draw()};
+$('refreshBtn').onclick=()=>location.reload(); $('resetBtn').onclick=()=>{resetSession();hardReset()}; $('connectBtn').onclick=connectLive; $('disconnectBtn').onclick=()=>{disconnectSocket();state.feedState='fallback';state.source='Fallback';state.socketState='idle';state.returnedSymbol=null;state.symbolMismatch=false;setStrip('LIVE FEED DISCONNECTED — bootstrap/fallback retained.');ui()};
+
+state.fallbackPrice=basePrice(); bootstrapSeed(state.fallbackPrice); setMarketButtons(); ui(); renderPerf(); renderOpen(); renderJournal(); evaluate(); draw(); hist('V8.3 AI CONTEXT SCORING READY');
+setInterval(()=>{fallbackTick(); maybeUnlockLeg();},1000);
 })();
 </script>
 </body>
