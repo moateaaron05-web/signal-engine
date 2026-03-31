@@ -61,7 +61,7 @@ th{position:sticky;top:0;background:#132743}
     <div class="small" style="margin-top:8px">Strict top-down lock. You cannot move to H4 before D1, and cannot move to H1 before H4.</div>
   </div>
 
-  <div id="strip" class="strip">Upload D1 screenshot first. Then analyse and lock bias / POI before moving to H4.</div>
+  <div id="strip" class="strip">Upload D1 screenshot first. After selecting a file, the image preview should appear inside the D1 box. Then analyse and lock bias / POI before moving to H4.</div>
 
   <div class="grid three" style="margin-top:12px">
     <div id="d1Card" class="card">
@@ -289,7 +289,11 @@ function previewImage(fileInputId, previewId){
     if(!file) return;
     var reader = new FileReader();
     reader.onload = function(e){
-      $(previewId).innerHTML = '<img src="'+e.target.result+'" alt="chart preview">';
+      var fileName = file.name || 'uploaded image';
+      $(previewId).innerHTML = '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;">'
+        + '<img src="'+e.target.result+'" alt="chart preview" style="max-width:100%;max-height:220px;display:block;border-radius:10px;">'
+        + '<div style="font-size:12px;color:#9fb3d1;text-align:center;word-break:break-word;">Loaded: '+fileName+'</div>'
+        + '</div>';
       log(previewId.replace('preview','').toUpperCase() + ' SCREENSHOT LOADED');
     };
     reader.readAsDataURL(file);
@@ -538,7 +542,7 @@ function resetSession(){
   $('fileD1').value=''; $('fileH4').value=''; $('fileH1').value='';
   $('narrative').value=''; ['expectLbl','entryLbl','slLbl','tpLbl','qualityAdviceLbl','rrLbl'].forEach(function(id){ $(id).textContent='Locked'; });
   clearLogForm(); refreshSummary(); setStage(); state.feed='Fallback'; $('feedLbl').textContent='Fallback'; $('returnedLbl').textContent='--'; $('execState').textContent='Idle'; state.price=10000; seed();
-  setStrip('Upload D1 screenshot first. Then analyse and lock bias / POI before moving to H4.'); log('SESSION RESET');
+  setStrip('Upload D1 screenshot first. After selecting a file, the image preview should appear inside the D1 box. Then analyse and lock bias / POI before moving to H4.'); log('SESSION RESET');
 }
 
 previewImage('fileD1','previewD1'); previewImage('fileH4','previewH4'); previewImage('fileH1','previewH1');
