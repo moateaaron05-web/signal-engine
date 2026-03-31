@@ -1,342 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signal Engine v8.5.3 HARD-STAMPED — Visual Scanner + Scan Buttons</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Love@Fx Pro — v9.0 Backend-Ready Visual Scanner Scaffold</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
-.wrap{max-width:1680px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.three{grid-template-columns:1fr 1fr 1fr}.two{grid-template-columns:1.25fr 1fr}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.wrap{max-width:1760px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.three{grid-template-columns:1fr 1fr 1fr}.two{grid-template-columns:1.2fr 1fr}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
 .card{background:#0d1b2d;border:1px solid #27476f;border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
 .brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}
 .title{font-size:28px;font-weight:800}.sub{font-size:12px;color:#9fb3d1}.label{font-size:12px;color:#9fb3d1;text-transform:uppercase}.value{font-size:20px;font-weight:900}.small{font-size:11px;color:#9fb3d1}
 .btn,select,textarea,input{width:100%;background:#0f2138;color:#e9f2ff;border:1px solid #27476f;border-radius:12px;padding:10px 12px;font-weight:700}textarea{min-height:92px;resize:vertical}.btn{cursor:pointer}
 .good{background:linear-gradient(135deg,#157f4a,#2fd07f)}.primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}.warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}.danger{background:linear-gradient(135deg,#8a2430,#ff6b6b)}
-.stage{padding:10px;border-radius:12px;background:#162b48;border:1px solid #27476f;font-size:12px;font-weight:800;text-align:center}.active{outline:2px solid #48a8ff}.done{outline:2px solid #2fd07f}.locked{opacity:.55}.scanned{box-shadow:0 0 0 2px #2fd07f inset}
+.stage{padding:10px;border-radius:12px;background:#162b48;border:1px solid #27476f;font-size:12px;font-weight:800;text-align:center}.active{outline:2px solid #48a8ff}.done{outline:2px solid #2fd07f}.locked{opacity:.55}
 .strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid #27476f;background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:900}
 .tablewrap{max-height:360px;overflow:auto;border-radius:12px;border:1px solid #27476f}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left;vertical-align:top}th{position:sticky;top:0;background:#132743}
-.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.kpi .card{padding:10px}.preview{height:280px;border-radius:14px;border:2px dashed #4d7bd6;background:#091626;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.preview img{max-width:100%;max-height:220px;display:block;border-radius:10px}.placeholder{color:#9fb3d1;font-size:13px;text-align:center;padding:18px}
+.preview{height:240px;border-radius:14px;border:2px dashed #4d7bd6;background:#091626;display:flex;align-items:center;justify-content:center;overflow:hidden}.preview img{max-width:100%;max-height:200px;display:block;border-radius:10px}.placeholder{color:#9fb3d1;font-size:13px;text-align:center;padding:18px}
 .badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid #27476f;background:#162b48}.stamp{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(135deg,#f0b44d,#ff6b6b);color:#08111f;font-weight:900;font-size:12px}
-.modalWrap{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal{max-width:720px;width:100%;background:#0d1b2d;border:1px solid #27476f;border-radius:18px;padding:18px;box-shadow:0 16px 40px rgba(0,0,0,.4)}
-.modalTitle{font-size:22px;font-weight:900;margin-bottom:8px}
-@media(max-width:1200px){.top,.three,.two,.kpi,.row3{grid-template-columns:1fr}}
+.api{font-family:Consolas,monospace;font-size:12px;background:#091626;border:1px solid #27476f;border-radius:12px;padding:10px;white-space:pre-wrap}.kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.kpi .card{padding:10px}
+@media(max-width:1300px){.top,.three,.two,.row3,.row4,.kpi{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="stamp">v8.5.3 HARD-STAMPED</span></div><div class="sub">Build ID: HS-2026-03-31-B | Visual Scanner + Scan Buttons</div></div></div></div>
-    <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Fallback</div></div>
-    <div class="card"><div class="label">Scanner</div><div id="scanLbl" class="value">D1</div></div>
-    <div class="card"><div class="label">Mode</div><div id="modeLbl" class="value">Assisted</div></div>
-    <div class="card"><button id="connectBtn" class="btn good">Connect Live Feed</button></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="stamp">v9.0 BACKEND-READY</span></div><div class="sub">Visual Scanner Scaffold | Build ID: VS-9.0-2026-03-31-A</div></div></div></div>
+    <div class="card"><div class="label">Vision API</div><div id="apiMode" class="value">Mock</div></div>
+    <div class="card"><div class="label">Scanner</div><div id="scannerState" class="value">D1</div></div>
+    <div class="card"><div class="label">Workflow</div><div id="workflowMode" class="value">Top-Down</div></div>
+    <div class="card"><button id="mockBtn" class="btn primary">Use Mock Vision</button></div>
     <div class="card"><button id="resetBtn" class="btn warn">Reset Session</button></div>
   </div>
 
   <div class="card" style="margin-top:12px">
     <div class="grid three">
-      <div id="stage1" class="stage active">1. D1 Visual Scan</div>
-      <div id="stage2" class="stage">2. H4 Visual Scan</div>
-      <div id="stage3" class="stage">3. H1 Visual Scan</div>
+      <div id="stage1" class="stage active">1. D1 Upload + Analyse</div>
+      <div id="stage2" class="stage">2. H4 Upload + Analyse</div>
+      <div id="stage3" class="stage">3. H1 Upload + Analyse</div>
     </div>
-    <div class="small" style="margin-top:8px">This build adds explicit Scan buttons. After image upload, press Scan to confirm image capture and move the workflow forward.</div>
+    <div class="small" style="margin-top:8px">This scaffold is backend-ready. Right now it runs a mock vision response so the workflow is testable end to end.</div>
   </div>
 
-  <div id="strip" class="strip">v8.5.3 ready. Upload D1 screenshot, then press Scan D1 Image. This does not auto-read the chart; it confirms the image is loaded and activates the D1 analysis step.</div>
+  <div id="strip" class="strip">Upload D1 screenshot, then press Analyse D1. The mock backend will return structured scanner JSON into the results cards.</div>
 
   <div class="grid three" style="margin-top:12px">
     <div id="d1Card" class="card">
-      <div class="label">D1 Visual Scan</div>
-      <div class="preview" id="previewD1"><div class="placeholder">v8.5.3 waiting for D1 upload</div></div>
-      <div id="statusD1" class="small" style="margin-top:8px">Status: No D1 image loaded</div>
+      <div class="label">D1 Lane</div>
+      <div class="preview" id="previewD1"><div class="placeholder">Upload D1 chart screenshot</div></div>
+      <div id="statusD1" class="small" style="margin-top:8px">Status: waiting for D1 upload</div>
       <input type="file" id="fileD1" accept="image/*" style="margin-top:10px">
-      <button id="scanD1Btn" class="btn primary" style="margin-top:10px">Scan D1 Image</button>
-      <div class="row3" style="margin-top:10px">
-        <select id="d1Bias"><option value="">Bias</option><option>Bullish</option><option>Bearish</option><option>Range</option></select>
-        <select id="d1Zone"><option value="">Premium / Discount</option><option>Discount</option><option>Premium</option><option>Mid-range</option></select>
-        <input id="d1Poi" placeholder="POI / key level">
-      </div>
-      <textarea id="d1Notes" placeholder="D1 structure note, major POI, premium/discount context, what price is likely doing..."></textarea>
-      <button id="d1DoneBtn" class="btn good">Complete D1</button>
+      <button id="analyseD1Btn" class="btn primary" style="margin-top:10px">Analyse D1</button>
+      <div class="small" style="margin-top:8px">Required output: bias, POI, macro structure, premium/discount, next expectation.</div>
     </div>
 
     <div id="h4Card" class="card locked">
-      <div class="label">H4 Visual Scan</div>
-      <div class="preview" id="previewH4"><div class="placeholder">v8.5.3 waiting for H4 upload</div></div>
-      <div id="statusH4" class="small" style="margin-top:8px">Status: No H4 image loaded</div>
+      <div class="label">H4 Lane</div>
+      <div class="preview" id="previewH4"><div class="placeholder">Upload H4 chart screenshot</div></div>
+      <div id="statusH4" class="small" style="margin-top:8px">Status: waiting for H4 upload</div>
       <input type="file" id="fileH4" accept="image/*" style="margin-top:10px">
-      <button id="scanH4Btn" class="btn primary" style="margin-top:10px">Scan H4 Image</button>
-      <div class="row3" style="margin-top:10px">
-        <select id="h4Bias"><option value="">Bias</option><option>Bullish</option><option>Bearish</option><option>Range</option></select>
-        <select id="h4Mss"><option value="">MSS</option><option>Bullish MSS</option><option>Bearish MSS</option><option>No MSS</option></select>
-        <input id="h4Fib" placeholder="Fib / GZ">
-      </div>
-      <div class="row3" style="margin-top:10px">
-        <input id="h4Fvg" placeholder="FVG">
-        <input id="h4Ob" placeholder="OB">
-        <input id="h4Poi" placeholder="POI">
-      </div>
-      <textarea id="h4Notes" placeholder="H4 trade framework, MSS, FVG, OB, fib zone, what trade narrative is forming..."></textarea>
-      <button id="h4DoneBtn" class="btn good">Complete H4</button>
+      <button id="analyseH4Btn" class="btn primary" style="margin-top:10px">Analyse H4</button>
+      <div class="small" style="margin-top:8px">Required output: bias, POI, MSS, FVG, OB, fib zone, trade-side expectation.</div>
     </div>
 
     <div id="h1Card" class="card locked">
-      <div class="label">H1 Visual Scan</div>
-      <div class="preview" id="previewH1"><div class="placeholder">v8.5.3 waiting for H1 upload</div></div>
-      <div id="statusH1" class="small" style="margin-top:8px">Status: No H1 image loaded</div>
+      <div class="label">H1 Lane</div>
+      <div class="preview" id="previewH1"><div class="placeholder">Upload H1 chart screenshot</div></div>
+      <div id="statusH1" class="small" style="margin-top:8px">Status: waiting for H1 upload</div>
       <input type="file" id="fileH1" accept="image/*" style="margin-top:10px">
-      <button id="scanH1Btn" class="btn primary" style="margin-top:10px">Scan H1 Image</button>
-      <div class="row3" style="margin-top:10px">
-        <select id="h1Bias"><option value="">Bias</option><option>Bullish</option><option>Bearish</option><option>Range</option></select>
-        <select id="h1Ema"><option value="">Price vs EMA</option><option>Above EMA50</option><option>Below EMA50</option><option>Between EMA50/200</option></select>
-        <input id="h1Ltf" placeholder="Recommended LTF (M15/M5/M1)">
-      </div>
-      <textarea id="h1Notes" placeholder="H1 execution readiness, EMA relation, what must happen on LTF before entry..."></textarea>
-      <button id="h1DoneBtn" class="btn good">Complete H1</button>
+      <button id="analyseH1Btn" class="btn primary" style="margin-top:10px">Analyse H1</button>
+      <div class="small" style="margin-top:8px">Required output: bias, EMA relation, execution readiness, LTF recommendation.</div>
     </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="label">Vision API Contract</div>
+    <div class="api" id="apiContract">POST /api/analyse-chart
+Payload:
+{
+  "timeframe": "D1|H4|H1",
+  "symbol": "1HZ10V",
+  "image_base64": "...",
+  "analysis_mode": "visual_scanner_v1"
+}
+
+Response:
+{
+  "timeframe": "D1",
+  "bias": "Bullish|Bearish|Range",
+  "poi": "text",
+  "mss": "text|null",
+  "fvg": "text|null",
+  "ob": "text|null",
+  "fib_zone": "text|null",
+  "ema_relation": "text|null",
+  "premium_discount": "text|null",
+  "expectation": "text",
+  "ltf_recommendation": "M15|M5|M1|null",
+  "confidence": 0-100,
+  "notes": "model reasoning summary"
+}</div>
+  </div>
+
+  <div class="grid three" style="margin-top:12px">
+    <div class="card"><div class="label">D1 Results</div><div class="tablewrap" style="max-height:none"><table><tbody>
+      <tr><td>Bias</td><td id="d1_bias">--</td></tr><tr><td>POI</td><td id="d1_poi">--</td></tr><tr><td>Premium / Discount</td><td id="d1_pd">--</td></tr><tr><td>Expectation</td><td id="d1_expect">--</td></tr><tr><td>Confidence</td><td id="d1_conf">--</td></tr><tr><td>Notes</td><td id="d1_notes">--</td></tr>
+    </tbody></table></div></div>
+
+    <div class="card"><div class="label">H4 Results</div><div class="tablewrap" style="max-height:none"><table><tbody>
+      <tr><td>Bias</td><td id="h4_bias">--</td></tr><tr><td>POI</td><td id="h4_poi">--</td></tr><tr><td>MSS</td><td id="h4_mss">--</td></tr><tr><td>FVG</td><td id="h4_fvg">--</td></tr><tr><td>OB</td><td id="h4_ob">--</td></tr><tr><td>Fib Zone</td><td id="h4_fib">--</td></tr><tr><td>Expectation</td><td id="h4_expect">--</td></tr><tr><td>Confidence</td><td id="h4_conf">--</td></tr>
+    </tbody></table></div></div>
+
+    <div class="card"><div class="label">H1 Results</div><div class="tablewrap" style="max-height:none"><table><tbody>
+      <tr><td>Bias</td><td id="h1_bias">--</td></tr><tr><td>EMA Relation</td><td id="h1_ema">--</td></tr><tr><td>POI</td><td id="h1_poi">--</td></tr><tr><td>Expectation</td><td id="h1_expect">--</td></tr><tr><td>LTF Recommendation</td><td id="h1_ltf">--</td></tr><tr><td>Confidence</td><td id="h1_conf">--</td></tr><tr><td>Notes</td><td id="h1_notes">--</td></tr>
+    </tbody></table></div></div>
   </div>
 
   <div class="grid two" style="margin-top:12px">
     <div class="card">
-      <div class="label">Scanner Summary</div>
-      <div class="tablewrap" style="max-height:none"><table><tbody>
-        <tr><td>D1 Bias</td><td id="sumD1Bias">--</td></tr>
-        <tr><td>D1 POI</td><td id="sumD1Poi">--</td></tr>
-        <tr><td>H4 Bias</td><td id="sumH4Bias">--</td></tr>
-        <tr><td>H4 Confluence</td><td id="sumH4Conf">--</td></tr>
-        <tr><td>H1 Bias</td><td id="sumH1Bias">--</td></tr>
-        <tr><td>H1 EMA</td><td id="sumH1Ema">--</td></tr>
-        <tr><td>Recommended LTF</td><td id="sumLtf">--</td></tr>
-      </tbody></table></div>
-    </div>
-    <div class="card">
-      <div class="label">Feed / Snapshot</div>
-      <div class="kpi" style="margin-top:8px">
-        <div class="card"><div class="label">Price</div><div id="priceEl" class="value">--</div></div>
-        <div class="card"><div class="label">EMA Bias</div><div id="emaBias" class="value">--</div></div>
-        <div class="card"><div class="label">RSI</div><div id="rsiVal" class="value">0.0</div></div>
-        <div class="card"><div class="label">Regime</div><div id="regimeLbl" class="value">--</div></div>
-        <div class="card"><div class="label">Score</div><div id="scoreVal" class="value">0</div></div>
-      </div>
-      <div class="tablewrap" style="max-height:none;margin-top:10px"><table><tbody>
-        <tr><td>Threshold</td><td id="thresholdVal">65</td></tr>
-        <tr><td>Grade</td><td><span id="gradeLbl" class="badge">D / Blocked</span></td></tr>
-        <tr><td>Quality Gate</td><td id="qualityLbl">BLOCKED</td></tr>
-        <tr><td>Execution Readiness</td><td id="execLbl">Narrative required</td></tr>
-        <tr><td>Requested</td><td id="requestedLbl">1HZ10V</td></tr>
-        <tr><td>Returned</td><td id="returnedLbl">--</td></tr>
-      </tbody></table></div>
-    </div>
-  </div>
-
-  <div class="grid two" style="margin-top:12px">
-    <div class="card">
-      <div class="label">Trade Narrative</div>
-      <textarea id="narrative" readonly></textarea>
+      <div class="label">Narrative Builder</div>
+      <textarea id="narrative" readonly placeholder="Narrative will compile after D1 + H4 + H1 analyses complete."></textarea>
       <div class="row3" style="margin-top:10px">
         <button id="buildNarrativeBtn" class="btn primary">Build Narrative</button>
         <button id="buildAdviceBtn" class="btn primary">Build Trade Advice</button>
-        <button id="pullAdviceBtn" class="btn primary">Pull Advice Into Tracker</button>
+        <button id="pullAdviceBtn" class="btn primary">Pull Advice Into Trigger</button>
       </div>
     </div>
+
     <div class="card">
       <div class="label">Trade Advice</div>
       <div class="tablewrap" style="max-height:none"><table><tbody>
-        <tr><td>Expectation</td><td id="expectLbl">Locked</td></tr>
-        <tr><td>Entry Plan</td><td id="entryLbl">Locked</td></tr>
-        <tr><td>SL Plan</td><td id="slLbl">Locked</td></tr>
-        <tr><td>TP Plan</td><td id="tpLbl">Locked</td></tr>
-        <tr><td>Quality</td><td id="qualityAdviceLbl">Locked</td></tr>
-        <tr><td>RR Estimate</td><td id="rrLbl">Locked</td></tr>
+        <tr><td>Direction</td><td id="ad_dir">Locked</td></tr><tr><td>Entry Advice</td><td id="ad_entry">Locked</td></tr><tr><td>SL Advice</td><td id="ad_sl">Locked</td></tr><tr><td>TP Advice</td><td id="ad_tp">Locked</td></tr><tr><td>Recommended LTF</td><td id="ad_ltf">Locked</td></tr><tr><td>Trade Quality</td><td id="ad_quality">Locked</td></tr>
       </tbody></table></div>
     </div>
   </div>
 
-  <div class="card" style="margin-top:12px">
-    <div class="label">Execution Trigger</div>
-    <div class="small" style="margin:8px 0 10px">This is still a manual execution bridge. The new Scan buttons only confirm the image capture step.</div>
-    <div class="row3">
-      <div><div class="label">Direction</div><select id="logDir"><option value="">Select</option><option>BUY</option><option>SELL</option></select></div>
-      <div><div class="label">Timeframe</div><select id="logTf"><option>M15</option><option selected>M5</option><option>M1</option><option>H1</option></select></div>
-      <div><div class="label">Setup Type</div><select id="logSetup"><option>Pullback Continuation</option><option>CRT Reclaim</option><option>Break & Retest</option><option>OB Rejection</option><option>FVG Fill</option><option>Range Reversal</option></select></div>
+  <div class="grid two" style="margin-top:12px">
+    <div class="card">
+      <div class="label">Manual Execution Trigger</div>
+      <div class="small" style="margin:8px 0 10px">This remains a manual bridge. Backend-ready scanner feeds the trigger; you still execute on broker yourself.</div>
+      <div class="row4">
+        <div><div class="label">Direction</div><select id="tr_dir"><option value="">Select</option><option>BUY</option><option>SELL</option></select></div>
+        <div><div class="label">Timeframe</div><select id="tr_tf"><option>M15</option><option selected>M5</option><option>M1</option><option>H1</option></select></div>
+        <div><div class="label">Entry</div><input id="tr_entry" type="number" step="0.001" placeholder="0.000"></div>
+        <div><div class="label">SL</div><input id="tr_sl" type="number" step="0.001" placeholder="0.000"></div>
+      </div>
+      <div class="row4" style="margin-top:10px">
+        <div><div class="label">TP</div><input id="tr_tp" type="number" step="0.001" placeholder="0.000"></div>
+        <div><div class="label">Setup</div><select id="tr_setup"><option>Pullback Continuation</option><option>CRT Reclaim</option><option>Break & Retest</option><option>OB Rejection</option></select></div>
+        <div><div class="label">Risk %</div><input id="tr_risk" type="number" step="0.1" value="1.0"></div>
+        <div><div class="label">RR</div><input id="tr_rr" readonly></div>
+      </div>
+      <div class="row3" style="margin-top:10px">
+        <button id="armBtn" class="btn primary">Arm Trade</button>
+        <button id="execBtn" class="btn good">Execute Trade</button>
+        <button id="cancelBtn" class="btn danger">Cancel Trade</button>
+      </div>
     </div>
-    <div class="row3" style="margin-top:10px">
-      <div><div class="label">Entry</div><input id="logEntry" type="number" step="0.001" placeholder="0.000"></div>
-      <div><div class="label">SL</div><input id="logSL" type="number" step="0.001" placeholder="0.000"></div>
-      <div><div class="label">TP</div><input id="logTP" type="number" step="0.001" placeholder="0.000"></div>
-    </div>
-    <div class="row3" style="margin-top:10px">
-      <button id="armTradeBtn" class="btn primary">Arm Trade</button>
-      <button id="executeTradeBtn" class="btn good">Execute Trade</button>
-      <button id="cancelTradeBtn" class="btn danger">Cancel Trade</button>
+
+    <div class="card">
+      <div class="label">Backend / Session State</div>
+      <div class="kpi" style="margin-top:8px">
+        <div class="card"><div class="label">Requested</div><div id="k_requested" class="value">1HZ10V</div></div>
+        <div class="card"><div class="label">Returned</div><div id="k_returned" class="value">--</div></div>
+        <div class="card"><div class="label">D1</div><div id="k_d1" class="value">No</div></div>
+        <div class="card"><div class="label">H4</div><div id="k_h4" class="value">No</div></div>
+        <div class="card"><div class="label">H1</div><div id="k_h1" class="value">No</div></div>
+        <div class="card"><div class="label">Exec State</div><div id="k_exec" class="value">Idle</div></div>
+      </div>
+      <div class="api" id="lastJson" style="margin-top:10px">Last model JSON response will appear here.</div>
     </div>
   </div>
 
-  <div class="card" style="margin-top:12px">
-    <div class="label">Signal History</div>
-    <div id="history" class="tablewrap" style="padding:10px;max-height:220px"></div>
-  </div>
+  <div class="card" style="margin-top:12px"><div class="label">Signal History</div><div id="history" class="tablewrap" style="padding:10px;max-height:220px"></div></div>
 </div>
 
-<div class="modalWrap" id="tradeModalWrap">
-  <div class="modal">
-    <div class="modalTitle">v8.5.3 Confirm Armed Trade</div>
+<div id="modalWrap" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.62);align-items:center;justify-content:center;padding:18px;z-index:50">
+  <div class="card" style="max-width:720px;width:100%">
+    <div class="title" style="font-size:22px">Confirm Manual Execution</div>
+    <div class="small" style="margin:8px 0 12px">Scaffold confirms the trade plan only. No broker order is sent.</div>
     <div class="tablewrap" style="max-height:none"><table><tbody>
-      <tr><td>Direction</td><td id="mDir">--</td></tr>
-      <tr><td>Timeframe</td><td id="mTf">--</td></tr>
-      <tr><td>Setup</td><td id="mSetup">--</td></tr>
-      <tr><td>Entry</td><td id="mEntry">--</td></tr>
-      <tr><td>SL</td><td id="mSL">--</td></tr>
-      <tr><td>TP</td><td id="mTP">--</td></tr>
+      <tr><td>Direction</td><td id="m_dir">--</td></tr><tr><td>TF</td><td id="m_tf">--</td></tr><tr><td>Entry</td><td id="m_entry">--</td></tr><tr><td>SL</td><td id="m_sl">--</td></tr><tr><td>TP</td><td id="m_tp">--</td></tr><tr><td>RR</td><td id="m_rr">--</td></tr>
     </tbody></table></div>
     <div class="row3" style="margin-top:12px">
-      <button id="modalConfirmBtn" class="btn good">Confirm Execute</button>
-      <button id="modalCloseBtn" class="btn">Close</button>
-      <button id="modalCancelArmBtn" class="btn danger">Cancel Armed Trade</button>
+      <button id="m_confirm" class="btn good">Confirm Execute</button>
+      <button id="m_close" class="btn">Close</button>
+      <button id="m_cancel" class="btn danger">Cancel Arm</button>
     </div>
   </div>
 </div>
 
 <script>
 (function(){
-const state={symbol:'1HZ10V',feed:'Fallback',stage:'D1',d1:false,h4:false,h1:false,d1Scanned:false,h4Scanned:false,h1Scanned:false,price:10000,candles:[],ws:null,armed:false};
-function $(id){return document.getElementById(id);}
-function setStrip(txt){$('strip').textContent=txt;}
-function log(m){$('history').innerHTML='<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">'+new Date().toLocaleTimeString()+' | '+m+'</div>'+$('history').innerHTML;}
-function gradeLabel(s){return s>=85?'A+ sniper':s>=75?'A clean':s>=65?'B acceptable':s>=55?'C weak':'D / Blocked';}
-function emaLast(vals,p){var k=2/(p+1),prev=vals[0];for(var i=0;i<vals.length;i++){prev=vals[i]*k+prev*(1-k);}return prev;}
+const state={stage:'D1',d1Done:false,h4Done:false,h1Done:false,armed:false,apiMode:'Mock',symbol:'1HZ10V',results:{D1:null,H4:null,H1:null}};
+function $(id){return document.getElementById(id)}
+function log(msg){$('history').innerHTML='<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">'+new Date().toLocaleTimeString()+' | '+msg+'</div>'+$('history').innerHTML}
+function setStrip(t){$('strip').textContent=t}
 function setStage(){
- $('scanLbl').textContent=state.stage;$('modeLbl').textContent='Assisted';
- $('stage1').className='stage'+(state.stage==='D1'?' active':'')+(state.d1?' done':'');
- $('stage2').className='stage'+(state.stage==='H4'?' active':'')+(state.h4?' done':'');
- $('stage3').className='stage'+(state.stage==='H1'?' active':'')+(state.h1?' done':'');
- $('h4Card').className='card'+(state.d1?'':' locked')+(state.h4Scanned?' scanned':'');
- $('h1Card').className='card'+(state.h4?'':' locked')+(state.h1Scanned?' scanned':'');
- $('d1Card').className='card'+(state.d1Scanned?' scanned':'');
+  $('scannerState').textContent=state.stage
+  $('stage1').className='stage'+(state.stage==='D1'?' active':'')+(state.d1Done?' done':'')
+  $('stage2').className='stage'+(state.stage==='H4'?' active':'')+(state.h4Done?' done':'')
+  $('stage3').className='stage'+(state.stage==='H1'?' active':'')+(state.h1Done?' done':'')
+  $('h4Card').className='card'+(state.d1Done?'':' locked')
+  $('h1Card').className='card'+(state.h4Done?'':' locked')
+  $('k_d1').textContent=state.d1Done?'Yes':'No'
+  $('k_h4').textContent=state.h4Done?'Yes':'No'
+  $('k_h1').textContent=state.h1Done?'Yes':'No'
 }
-function refreshSummary(){
- $('sumD1Bias').textContent=$('d1Bias').value||'--';
- $('sumD1Poi').textContent=(($('d1Zone').value||'')?$('d1Zone').value+' / ':'')+($('d1Poi').value.trim()||'--');
- $('sumH4Bias').textContent=$('h4Bias').value||'--';
- $('sumH4Conf').textContent=[$('h4Mss').value,$('h4Fib').value.trim(),$('h4Fvg').value.trim(),$('h4Ob').value.trim(),$('h4Poi').value.trim()].filter(Boolean).join(' | ')||'--';
- $('sumH1Bias').textContent=$('h1Bias').value||'--';
- $('sumH1Ema').textContent=$('h1Ema').value||'--';
- $('sumLtf').textContent='--';
+function preview(inputId,previewId,statusId,label){
+  $(inputId).addEventListener('change',function(){
+    const file=this.files&&this.files[0]
+    if(!file){$(statusId).textContent='Status: waiting for '+label+' upload';return}
+    const reader=new FileReader()
+    reader.onload=function(e){
+      $(previewId).innerHTML='<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;"><img src="'+e.target.result+'" alt="preview"><div style="font-size:12px;color:#9fb3d1">'+file.name+'</div></div>'
+      $(statusId).textContent='Status: '+label+' image loaded'
+      log(label+' IMAGE LOADED')
+    }
+    reader.readAsDataURL(file)
+  })
 }
-function previewImage(fileInputId,previewId,statusId,label){
- var input=$(fileInputId);
- input.addEventListener('change',function(){
-  var file=input.files&&input.files[0];
-  if(!file){$(statusId).textContent='Status: No '+label+' image loaded';return;}
-  $(statusId).textContent='Status: Loading '+file.name;
-  var reader=new FileReader();
-  reader.onload=function(e){
-   $(previewId).innerHTML='<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;"><img src="'+e.target.result+'" alt="chart preview"><div style="font-size:12px;color:#9fb3d1;text-align:center;word-break:break-word;">Loaded: '+file.name+'</div></div>';
-   $(statusId).textContent='Status: '+label+' image loaded — '+file.name;
-   log(label+' IMAGE LOADED');
-  };
-  reader.onerror=function(){ $(statusId).textContent='Status: '+label+' preview failed'; };
-  reader.readAsDataURL(file);
- });
+function mockResponse(tf){
+  const data={
+    D1:{timeframe:'D1',bias:'Bullish',poi:'Discount POI near recent swing demand',mss:null,fvg:null,ob:null,fib_zone:null,ema_relation:null,premium_discount:'Discount',expectation:'Macro bullish continuation after pullback',ltf_recommendation:null,confidence:78,notes:'Price appears to be expanding from discount with bullish macro intent.'},
+    H4:{timeframe:'H4',bias:'Bullish',poi:'H4 demand / breaker overlap',mss:'Bullish MSS confirmed',fvg:'Unfilled bullish FVG below current price',ob:'Bullish OB aligned with H4 structure',fib_zone:'0.5–0.618 pullback zone',ema_relation:null,premium_discount:'Discount to equilibrium',expectation:'Look for pullback continuation buys, avoid chasing exhaustion',ltf_recommendation:'M15',confidence:82,notes:'H4 structure supports continuation if pullback respects zone and reclaims.'},
+    H1:{timeframe:'H1',bias:'Bullish',poi:'H1 pullback into intraday support',mss:null,fvg:null,ob:null,fib_zone:null,ema_relation:'Price above EMA50, EMA50 above EMA200',premium_discount:null,expectation:'Drop to M5 and wait for reclaim / CRT / break-retest before entry',ltf_recommendation:'M5',confidence:80,notes:'H1 remains execution supportive as long as price holds above intraday structure.'}
+  }
+  return data[tf]
 }
-function scanImage(tf){
- if(tf==='D1'){
-   if(!$('fileD1').files.length){ setStrip('Load D1 image first, then press Scan D1 Image.'); return; }
-   state.d1Scanned=true; $('statusD1').textContent='Status: D1 image scanned — now fill D1 fields'; setStrip('D1 image scanned. Now complete D1 bias / zone / POI / notes, then press Complete D1.'); log('D1 SCAN BUTTON TRIGGERED');
- }
- if(tf==='H4'){
-   if(!state.d1){ setStrip('Complete D1 before scanning H4.'); return; }
-   if(!$('fileH4').files.length){ setStrip('Load H4 image first, then press Scan H4 Image.'); return; }
-   state.h4Scanned=true; $('statusH4').textContent='Status: H4 image scanned — now fill H4 fields'; setStrip('H4 image scanned. Now complete H4 MSS / FVG / OB / Fib / notes, then press Complete H4.'); log('H4 SCAN BUTTON TRIGGERED');
- }
- if(tf==='H1'){
-   if(!state.h4){ setStrip('Complete H4 before scanning H1.'); return; }
-   if(!$('fileH1').files.length){ setStrip('Load H1 image first, then press Scan H1 Image.'); return; }
-   state.h1Scanned=true; $('statusH1').textContent='Status: H1 image scanned — now fill H1 fields'; setStrip('H1 image scanned. Now complete H1 bias / EMA / notes, then press Complete H1.'); log('H1 SCAN BUTTON TRIGGERED');
- }
- setStage();
-}
-function evaluate(){
- var closes=state.candles.map(function(c){return c.c;});
- if(closes.length<20)return;
- var e20=emaLast(closes,20),e50=emaLast(closes,50),last=closes[closes.length-1];
- $('priceEl').textContent=last.toFixed(3);
- $('emaBias').textContent=last>e20&&e20>e50?'EMA bullish':last<e20&&e20<e50?'EMA bearish':'EMA mixed';
- var gains=0,losses=0;
- for(var i=Math.max(1,closes.length-14);i<closes.length;i++){var d=closes[i]-closes[i-1]; if(d>=0)gains+=d; else losses-=d;}
- var rsi=losses===0?100:(100-100/(1+gains/losses)); $('rsiVal').textContent=rsi.toFixed(1);
- var avgBar=state.candles.slice(-12).reduce(function(s,c){return s+(c.h-c.l);},0)/12;
- var regime=Math.abs(e20-e50)>avgBar*0.35?'Trend':'Range'; if(rsi>85||rsi<15) regime='Exhaustion';
- $('regimeLbl').textContent=regime;
- var score=60; if(state.h1) score+=8; if((state.h4&&state.h1)&&$('h4Bias').value&&$('h4Bias').value===$('h1Bias').value) score+=8; if($('d1Bias').value&&$('h4Bias').value&&$('d1Bias').value===$('h4Bias').value) score+=6; if(regime==='Exhaustion') score-=12;
- var threshold=state.h1?65:75;
- $('scoreVal').textContent=Math.round(score); $('thresholdVal').textContent=threshold; $('gradeLbl').textContent=gradeLabel(score); $('qualityLbl').textContent=score>=threshold?'PASS':'BLOCKED'; $('execLbl').textContent=!state.h1?'Narrative required':score>=threshold?'Manual execution ready':'Filtered';
-}
-function seed(){
- state.candles=[]; var p=state.price;
- for(var i=0;i<140;i++){ p+=(Math.random()-0.5)*1.0; state.candles.push({o:p-(Math.random()-0.5),h:p+Math.random()*0.8,l:p-Math.random()*0.8,c:p}); }
- evaluate();
-}
-function tick(){
- if(state.feed==='Live') return;
- state.price+=(Math.random()-0.5)*0.9;
- var prev=state.candles.length?state.candles[state.candles.length-1].c:state.price;
- state.candles.push({o:prev,h:Math.max(prev,state.price)+Math.random()*0.5,l:Math.min(prev,state.price)-Math.random()*0.5,c:state.price});
- if(state.candles.length>300) state.candles.shift();
- evaluate();
-}
-function connectLive(){
- if(state.ws){try{state.ws.close();}catch(e){}}
- state.feed='Connecting'; $('feedLbl').textContent='Connecting'; log('LIVE FEED CONNECT REQUEST');
- try{
-  var ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089'); state.ws=ws;
-  ws.onopen=function(){ ws.send(JSON.stringify({ticks:state.symbol,subscribe:1})); log('SOCKET OPEN'); };
-  ws.onmessage=function(e){ var msg=JSON.parse(e.data); if(msg.tick&&typeof msg.tick.quote==='number'){ state.feed='Live'; $('feedLbl').textContent='Live'; $('returnedLbl').textContent=msg.tick.symbol||'--'; state.price=msg.tick.quote; var prev=state.candles.length?state.candles[state.candles.length-1].c:state.price; state.candles.push({o:prev,h:Math.max(prev,state.price)+0.2,l:Math.min(prev,state.price)-0.2,c:state.price}); if(state.candles.length>300)state.candles.shift(); evaluate(); } };
-  ws.onerror=function(){ state.feed='Fallback'; $('feedLbl').textContent='Fallback'; log('SOCKET ERROR — fallback retained'); };
-  ws.onclose=function(){ if(state.feed==='Live'||state.feed==='Connecting'){ state.feed='Fallback'; $('feedLbl').textContent='Fallback'; log('SOCKET CLOSED — fallback retained'); } };
- }catch(e){ state.feed='Fallback'; $('feedLbl').textContent='Fallback'; log('LIVE FEED EXCEPTION — fallback retained'); }
+async function analyse(tf){
+  const fileInput=tf==='D1' ? $('fileD1') : tf==='H4' ? $('fileH4') : $('fileH1')
+  if(!fileInput.files.length){setStrip('Upload '+tf+' screenshot first.');return}
+  if(tf==='H4' && !state.d1Done){setStrip('Complete D1 first.');return}
+  if(tf==='H1' && !state.h4Done){setStrip('Complete H4 first.');return}
+  setStrip('Analysing '+tf+' via '+state.apiMode+' vision layer...')
+  log(tf+' ANALYSIS REQUEST SENT')
+  const result=mockResponse(tf)
+  state.results[tf]=result
+  $('lastJson').textContent=JSON.stringify(result,null,2)
+  $('k_returned').textContent=state.symbol
+  if(tf==='D1'){ $('d1_bias').textContent=result.bias; $('d1_poi').textContent=result.poi; $('d1_pd').textContent=result.premium_discount; $('d1_expect').textContent=result.expectation; $('d1_conf').textContent=result.confidence; $('d1_notes').textContent=result.notes; state.d1Done=true; state.stage='H4'; setStrip('D1 analysed. Now upload H4 and analyse it.') }
+  if(tf==='H4'){ $('h4_bias').textContent=result.bias; $('h4_poi').textContent=result.poi; $('h4_mss').textContent=result.mss; $('h4_fvg').textContent=result.fvg; $('h4_ob').textContent=result.ob; $('h4_fib').textContent=result.fib_zone; $('h4_expect').textContent=result.expectation; $('h4_conf').textContent=result.confidence; state.h4Done=true; state.stage='H1'; setStrip('H4 analysed. Now upload H1 and analyse it.') }
+  if(tf==='H1'){ $('h1_bias').textContent=result.bias; $('h1_ema').textContent=result.ema_relation; $('h1_poi').textContent=result.poi; $('h1_expect').textContent=result.expectation; $('h1_ltf').textContent=result.ltf_recommendation; $('h1_conf').textContent=result.confidence; $('h1_notes').textContent=result.notes; state.h1Done=true; setStrip('All three timeframes analysed. Build narrative, then trade advice.') }
+  setStage()
+  log(tf+' ANALYSIS RESPONSE RECEIVED')
 }
 function buildNarrative(){
- if(!state.h1){ setStrip('Complete D1 → H4 → H1 first.'); return; }
- $('narrative').value='v8.5.3 narrative | D1: '+$('d1Bias').value+', '+$('d1Zone').value+', POI: '+$('d1Poi').value.trim()+'. '+$('d1Notes').value.trim()+'\nH4: '+$('h4Bias').value+', '+$('h4Mss').value+', Fib: '+($('h4Fib').value.trim()||'--')+', FVG: '+($('h4Fvg').value.trim()||'--')+', OB: '+($('h4Ob').value.trim()||'--')+', POI: '+($('h4Poi').value.trim()||'--')+'. '+$('h4Notes').value.trim()+'\nH1: '+$('h1Bias').value+', '+$('h1Ema').value+'. '+$('h1Notes').value.trim();
- setStrip('Narrative built.'); log('TRADE NARRATIVE BUILT');
+  if(!(state.d1Done&&state.h4Done&&state.h1Done)){setStrip('Complete D1, H4, and H1 analyses first.');return}
+  const d1=state.results.D1,h4=state.results.H4,h1=state.results.H1
+  $('narrative').value='D1 bias: '+d1.bias+'. POI: '+d1.poi+'. Premium/Discount: '+d1.premium_discount+'. Expectation: '+d1.expectation+'.\\nH4 bias: '+h4.bias+'. MSS: '+h4.mss+'. FVG: '+h4.fvg+'. OB: '+h4.ob+'. Fib: '+h4.fib_zone+'. Expectation: '+h4.expectation+'.\\nH1 bias: '+h1.bias+'. EMA relation: '+h1.ema_relation+'. POI: '+h1.poi+'. LTF to use: '+h1.ltf_recommendation+'. Expectation: '+h1.expectation+'.'
+  setStrip('Narrative built. Now generate trade advice.')
+  log('NARRATIVE BUILT')
 }
 function buildAdvice(){
- if(!$('narrative').value.trim()){ setStrip('Build the narrative first.'); return; }
- var dir=$('h4Bias').value==='Bullish'?'bullish':$('h4Bias').value==='Bearish'?'bearish':'range';
- var score=Number($('scoreVal').textContent||0), th=Number($('thresholdVal').textContent||65);
- $('expectLbl').textContent=dir==='bullish'?'Expect bullish continuation after pullback confirmation':dir==='bearish'?'Expect bearish continuation after pullback confirmation':'Expect range behavior';
- $('entryLbl').textContent=score>=th?'Entry on LTF confirmation':'No live entry — below adaptive threshold';
- $('slLbl').textContent=dir==='bullish'?'Below last LTF swing low':dir==='bearish'?'Above last LTF swing high':'Outside range extreme';
- $('tpLbl').textContent=dir==='bullish'?'TP1 H1 high, TP2 H4 high':dir==='bearish'?'TP1 H1 low, TP2 H4 low':'Range midpoint / opposite edge';
- $('qualityAdviceLbl').textContent=$('gradeLbl').textContent; $('rrLbl').textContent='Target minimum 1:2'; log('TRADE ADVICE BUILT');
+  if(!$('narrative').value.trim()){setStrip('Build narrative first.');return}
+  const h4=state.results.H4,h1=state.results.H1
+  const dir=h4.bias==='Bullish' ? 'BUY' : h4.bias==='Bearish' ? 'SELL' : 'WAIT'
+  $('ad_dir').textContent=dir
+  $('ad_entry').textContent=dir==='BUY' ? 'Wait for '+h1.ltf_recommendation+' bullish reclaim / CRT / break-retest at H1 POI' : dir==='SELL' ? 'Wait for '+h1.ltf_recommendation+' bearish reclaim / CRT / break-retest at H1 POI' : 'No trade'
+  $('ad_sl').textContent=dir==='BUY' ? 'Below H1 / LTF invalidation low' : dir==='SELL' ? 'Above H1 / LTF invalidation high' : 'Locked'
+  $('ad_tp').textContent=dir==='BUY' ? 'TP1 H1 high, TP2 H4 high, TP3 runner' : dir==='SELL' ? 'TP1 H1 low, TP2 H4 low, TP3 runner' : 'Locked'
+  $('ad_ltf').textContent=h1.ltf_recommendation || 'Locked'
+  $('ad_quality').textContent=((h4.confidence+h1.confidence)/2)>=80 ? 'A / strong' : 'B / acceptable'
+  setStrip('Trade advice built. Pull it into the execution trigger.')
+  log('TRADE ADVICE BUILT')
 }
-function pullAdviceIntoTracker(){ var expect=$('expectLbl').textContent.toLowerCase(); $('logDir').value=expect.indexOf('bullish')>=0?'BUY':expect.indexOf('bearish')>=0?'SELL':''; log('TRACKER PREFILLED FROM TRADE ADVICE'); }
-function armTrade(){
- if(!$('logDir').value||!$('logEntry').value||!$('logSL').value||!$('logTP').value){ setStrip('Complete direction, entry, SL and TP before arming trade.'); return; }
- state.armed=true; $('mDir').textContent=$('logDir').value; $('mTf').textContent=$('logTf').value; $('mSetup').textContent=$('logSetup').value; $('mEntry').textContent=$('logEntry').value; $('mSL').textContent=$('logSL').value; $('mTP').textContent=$('logTP').value; $('tradeModalWrap').style.display='flex'; log('TRADE ARMED');
+function pullAdvice(){ $('tr_dir').value=$('ad_dir').textContent==='BUY'?'BUY':$('ad_dir').textContent==='SELL'?'SELL':''; $('tr_tf').value=$('ad_ltf').textContent==='M15'?'M15':$('ad_ltf').textContent==='M1'?'M1':$('ad_ltf').textContent==='H1'?'H1':'M5'; log('TRADE ADVICE PULLED INTO TRIGGER') }
+function calcRR(){ const entry=Number($('tr_entry').value), sl=Number($('tr_sl').value), tp=Number($('tr_tp').value); if([entry,sl,tp].some(isNaN)||Math.abs(entry-sl)===0){$('tr_rr').value='';return} $('tr_rr').value=(Math.abs(tp-entry)/Math.abs(entry-sl)).toFixed(2)+'R' }
+function armTrade(){ if(!$('tr_dir').value||!$('tr_entry').value||!$('tr_sl').value||!$('tr_tp').value){setStrip('Complete direction, entry, SL and TP first.');return} calcRR(); $('m_dir').textContent=$('tr_dir').value; $('m_tf').textContent=$('tr_tf').value; $('m_entry').textContent=$('tr_entry').value; $('m_sl').textContent=$('tr_sl').value; $('m_tp').textContent=$('tr_tp').value; $('m_rr').textContent=$('tr_rr').value||'--'; $('modalWrap').style.display='flex'; state.armed=true; $('k_exec').textContent='Armed'; log('TRADE ARMED') }
+function executeTrade(){ $('modalWrap').style.display='none'; $('k_exec').textContent='Executed'; setStrip('Trade confirmed in manual bridge mode. Execute it on broker manually.'); log('TRADE EXECUTION CONFIRMED') }
+function cancelTrade(){ $('modalWrap').style.display='none'; state.armed=false; $('k_exec').textContent='Idle'; setStrip('Armed trade cancelled.'); log('ARMED TRADE CANCELLED') }
+function resetAll(){
+  state.stage='D1'; state.d1Done=false; state.h4Done=false; state.h1Done=false; state.armed=false; state.results={D1:null,H4:null,H1:null}
+  ;['previewD1','previewH4','previewH1'].forEach((id,idx)=>{$(id).innerHTML='<div class="placeholder">Upload '+(['D1','H4','H1'][idx])+' chart screenshot</div>'})
+  ;['statusD1','statusH4','statusH1'].forEach((id,idx)=>{$(id).textContent='Status: waiting for '+(['D1','H4','H1'][idx])+' upload'})
+  ;['fileD1','fileH4','fileH1','narrative','tr_entry','tr_sl','tr_tp','tr_rr'].forEach(id=>{ if($(id)) $(id).value='' })
+  ;['d1_bias','d1_poi','d1_pd','d1_expect','d1_conf','d1_notes','h4_bias','h4_poi','h4_mss','h4_fvg','h4_ob','h4_fib','h4_expect','h4_conf','h1_bias','h1_ema','h1_poi','h1_expect','h1_ltf','h1_conf','h1_notes'].forEach(id=>{$(id).textContent='--'})
+  ;['ad_dir','ad_entry','ad_sl','ad_tp','ad_ltf','ad_quality'].forEach(id=>{$(id).textContent='Locked'})
+  $('lastJson').textContent='Last model JSON response will appear here.'; $('k_returned').textContent='--'; $('k_exec').textContent='Idle'
+  setStage(); setStrip('Session reset. Upload D1 screenshot, then Analyse D1.'); log('SESSION RESET')
 }
-function confirmExecute(){ $('tradeModalWrap').style.display='none'; setStrip('Trade executed in manual-bridge mode.'); log('TRADE EXECUTION CONFIRMED'); }
-function cancelArmedTrade(){ state.armed=false; $('tradeModalWrap').style.display='none'; setStrip('Armed trade cancelled.'); log('ARMED TRADE CANCELLED'); }
-function resetSession(){
- state.d1=false; state.h4=false; state.h1=false; state.d1Scanned=false; state.h4Scanned=false; state.h1Scanned=false; state.stage='D1'; state.armed=false;
- ['d1Bias','d1Zone','d1Poi','d1Notes','h4Bias','h4Mss','h4Fib','h4Fvg','h4Ob','h4Poi','h4Notes','h1Bias','h1Ema','h1Ltf','h1Notes','logEntry','logSL','logTP'].forEach(function(id){ $(id).value=''; });
- $('previewD1').innerHTML='<div class="placeholder">v8.5.3 waiting for D1 upload</div>'; $('statusD1').textContent='Status: No D1 image loaded';
- $('previewH4').innerHTML='<div class="placeholder">v8.5.3 waiting for H4 upload</div>'; $('statusH4').textContent='Status: No H4 image loaded';
- $('previewH1').innerHTML='<div class="placeholder">v8.5.3 waiting for H1 upload</div>'; $('statusH1').textContent='Status: No H1 image loaded';
- $('fileD1').value=''; $('fileH4').value=''; $('fileH1').value=''; $('narrative').value='';
- ['expectLbl','entryLbl','slLbl','tpLbl','qualityAdviceLbl','rrLbl'].forEach(function(id){ $(id).textContent='Locked'; });
- refreshSummary(); setStage(); setStrip('v8.5.3 reset complete. Upload D1 screenshot, then press Scan D1 Image.'); log('SESSION RESET');
-}
-previewImage('fileD1','previewD1','statusD1','D1'); previewImage('fileH4','previewH4','statusH4','H4'); previewImage('fileH1','previewH1','statusH1','H1');
-$('scanD1Btn').onclick=function(){ scanImage('D1'); }; $('scanH4Btn').onclick=function(){ scanImage('H4'); }; $('scanH1Btn').onclick=function(){ scanImage('H1'); };
-$('d1DoneBtn').onclick=function(){ if(!state.d1Scanned||!$('d1Bias').value||!$('d1Zone').value||!$('d1Poi').value.trim()){ setStrip('Press Scan D1 Image first, then complete D1 bias / zone / POI.'); return; } state.d1=true; state.stage='H4'; refreshSummary(); setStage(); setStrip('D1 complete. Now upload and scan H4.'); log('D1 VISUAL SCAN COMPLETED'); };
-$('h4DoneBtn').onclick=function(){ if(!state.d1){ setStrip('Complete D1 first.'); return; } if(!state.h4Scanned||!$('h4Bias').value||!$('h4Mss').value||!$('h4Notes').value.trim()){ setStrip('Press Scan H4 Image first, then complete H4 fields.'); return; } state.h4=true; state.stage='H1'; refreshSummary(); setStage(); setStrip('H4 complete. Now upload and scan H1.'); log('H4 VISUAL SCAN COMPLETED'); };
-$('h1DoneBtn').onclick=function(){ if(!state.h4){ setStrip('Complete H4 first.'); return; } if(!state.h1Scanned||!$('h1Bias').value||!$('h1Ema').value||!$('h1Notes').value.trim()){ setStrip('Press Scan H1 Image first, then complete H1 fields.'); return; } state.h1=true; refreshSummary(); setStage(); setStrip('Scanner complete.'); log('H1 VISUAL SCAN COMPLETED'); };
-$('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullAdviceBtn').onclick=pullAdviceIntoTracker; $('connectBtn').onclick=connectLive; $('resetBtn').onclick=resetSession; $('armTradeBtn').onclick=armTrade; $('executeTradeBtn').onclick=function(){ if(!state.armed){ setStrip('Arm the trade first.'); return; } $('tradeModalWrap').style.display='flex'; }; $('cancelTradeBtn').onclick=cancelArmedTrade; $('modalConfirmBtn').onclick=confirmExecute; $('modalCloseBtn').onclick=function(){ $('tradeModalWrap').style.display='none'; }; $('modalCancelArmBtn').onclick=cancelArmedTrade;
-$('requestedLbl').textContent=state.symbol; seed(); refreshSummary(); setStage(); log('V8.5.3 HARD-STAMPED READY'); setInterval(tick,1000);
+preview('fileD1','previewD1','statusD1','D1'); preview('fileH4','previewH4','statusH4','H4'); preview('fileH1','previewH1','statusH1','H1')
+$('analyseD1Btn').onclick=()=>analyse('D1'); $('analyseH4Btn').onclick=()=>analyse('H4'); $('analyseH1Btn').onclick=()=>analyse('H1')
+$('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullAdviceBtn').onclick=pullAdvice
+$('armBtn').onclick=armTrade; $('execBtn').onclick=()=>{ if(!state.armed){ setStrip('Arm the trade first.'); return } $('modalWrap').style.display='flex' }; $('cancelBtn').onclick=cancelTrade
+$('m_confirm').onclick=executeTrade; $('m_close').onclick=()=>{$('modalWrap').style.display='none'}; $('m_cancel').onclick=cancelTrade
+$('resetBtn').onclick=resetAll; $('mockBtn').onclick=()=>{ state.apiMode='Mock'; $('apiMode').textContent='Mock'; log('MOCK VISION MODE ACTIVE') }
+;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input', calcRR))
+$('k_requested').textContent=state.symbol; setStage(); log('V9.0 BACKEND-READY VISUAL SCANNER SCAFFOLD LOADED')
 })();
 </script>
 </body>
