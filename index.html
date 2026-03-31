@@ -3,12 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signal Engine v8.5 — Visual Scanner + Execution Trigger</title>
+<title>Signal Engine v8.5.2 HARD-STAMPED — Visual Scanner + Execution Trigger</title>
 <style>
-:root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--chip:#162b48}
+:root{
+  --bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;
+  --green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;
+}
 *{box-sizing:border-box}
 body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
-.wrap{max-width:1680px;margin:0 auto;padding:14px}
+.wrap{max-width:1700px;margin:0 auto;padding:14px}
 .grid{display:grid;gap:12px}
 .top{grid-template-columns:2fr repeat(5,1fr)}
 .three{grid-template-columns:1fr 1fr 1fr}
@@ -17,34 +20,55 @@ body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(1
 .card{background:#0d1b2d;border:1px solid #27476f;border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
 .brand{display:flex;gap:12px;align-items:center}
 .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}
-.title{font-size:28px;font-weight:800}.sub{font-size:12px;color:#9fb3d1}
-.label{font-size:12px;color:#9fb3d1;text-transform:uppercase}.value{font-size:20px;font-weight:900}.small{font-size:11px;color:#9fb3d1}
+.title{font-size:28px;font-weight:800}
+.sub{font-size:12px;color:#9fb3d1}
+.hardstamp{display:inline-block;margin-top:6px;padding:6px 10px;border-radius:999px;background:#1a3557;border:1px solid #4f7db2;color:#ffffff;font-size:12px;font-weight:900}
+.label{font-size:12px;color:#9fb3d1;text-transform:uppercase}
+.value{font-size:20px;font-weight:900}
+.small{font-size:11px;color:#9fb3d1}
 .btn,select,textarea,input{width:100%;background:#0f2138;color:#e9f2ff;border:1px solid #27476f;border-radius:12px;padding:10px 12px;font-weight:700}
-textarea{min-height:92px;resize:vertical}.btn{cursor:pointer}
-.good{background:linear-gradient(135deg,#157f4a,#2fd07f)}.primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}.warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}.danger{background:linear-gradient(135deg,#8a2430,#ff6b6b)}
+textarea{min-height:92px;resize:vertical}
+.btn{cursor:pointer}
+.good{background:linear-gradient(135deg,#157f4a,#2fd07f)}
+.primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}
+.warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}
+.danger{background:linear-gradient(135deg,#8a2430,#ff6b6b)}
 .stage{padding:10px;border-radius:12px;background:#162b48;border:1px solid #27476f;font-size:12px;font-weight:800;text-align:center}
-.active{outline:2px solid #48a8ff}.done{outline:2px solid #2fd07f}.locked{opacity:.55}
+.active{outline:2px solid #48a8ff}
+.done{outline:2px solid #2fd07f}
+.locked{opacity:.55}
 .strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid #27476f;background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:900}
 .tablewrap{max-height:360px;overflow:auto;border-radius:12px;border:1px solid #27476f}
 table{width:100%;border-collapse:collapse}
 th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left;vertical-align:top}
 th{position:sticky;top:0;background:#132743}
-.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.kpi .card{padding:10px}
-.preview{height:280px;border-radius:14px;border:1px dashed #355985;background:#091626;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.preview img{max-width:100%;max-height:100%;display:block}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.kpi .card{padding:10px}
+.preview{height:280px;border-radius:14px;border:2px dashed #4f7db2;background:#091626;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.preview img{max-width:100%;max-height:210px;display:block;border-radius:10px}
 .placeholder{color:#9fb3d1;font-size:13px;text-align:center;padding:18px}
+.uploadStatus{margin-top:8px;padding:8px 10px;border-radius:10px;background:#162b48;border:1px solid #27476f;font-size:12px;font-weight:800;color:#c7d8f3}
 .badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid #27476f;background:#162b48}
-.win{color:var(--green);font-weight:900}.loss{color:var(--red);font-weight:900}.be{color:var(--amber);font-weight:900}
 .modalWrap{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
 .modal{max-width:720px;width:100%;background:#0d1b2d;border:1px solid #27476f;border-radius:18px;padding:18px;box-shadow:0 16px 40px rgba(0,0,0,.4)}
 .modalTitle{font-size:22px;font-weight:900;margin-bottom:8px}
+.win{color:var(--green);font-weight:900}.loss{color:var(--red);font-weight:900}.be{color:var(--amber);font-weight:900}
 @media(max-width:1200px){.top,.three,.two,.kpi,.row3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro</div><div class="sub">Signal Engine v8.5 — Visual Scanner + Execution Trigger</div></div></div></div>
+    <div class="card">
+      <div class="brand">
+        <div class="logo">◆</div>
+        <div>
+          <div class="title">AI Love@Fx Pro</div>
+          <div class="sub">Signal Engine v8.5.2 HARD-STAMPED — Visual Scanner + Execution Trigger</div>
+          <div class="hardstamp">BUILD ID: V852-HS-20260331-A</div>
+        </div>
+      </div>
+    </div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Fallback</div></div>
     <div class="card"><div class="label">Scanner</div><div id="scanLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Mode</div><div id="modeLbl" class="value">Assisted</div></div>
@@ -58,15 +82,16 @@ th{position:sticky;top:0;background:#132743}
       <div id="stage2" class="stage">2. H4 Visual Scan</div>
       <div id="stage3" class="stage">3. H1 Visual Scan</div>
     </div>
-    <div class="small" style="margin-top:8px">Strict top-down lock. You cannot move to H4 before D1, and cannot move to H1 before H4.</div>
+    <div class="small" style="margin-top:8px">Hard-stamped build. If you do not see BUILD ID: V852-HS-20260331-A, you are not running the correct file.</div>
   </div>
 
-  <div id="strip" class="strip">Upload D1 screenshot first. After selecting a file, the image preview should appear inside the D1 box. Then analyse and lock bias / POI before moving to H4.</div>
+  <div id="strip" class="strip">Upload D1 screenshot first. After selecting a file, the preview must change and the upload status must show the filename.</div>
 
   <div class="grid three" style="margin-top:12px">
     <div id="d1Card" class="card">
       <div class="label">D1 Visual Scan</div>
-      <div class="preview" id="previewD1"><div class="placeholder">Upload D1 chart screenshot</div></div>
+      <div class="preview" id="previewD1"><div class="placeholder">HARD-STAMP D1 BOX<br>Upload D1 chart screenshot</div></div>
+      <div id="statusD1" class="uploadStatus">D1 upload status: waiting for file</div>
       <input type="file" id="fileD1" accept="image/*" style="margin-top:10px">
       <div class="row3" style="margin-top:10px">
         <select id="d1Bias"><option value="">Bias</option><option>Bullish</option><option>Bearish</option><option>Range</option></select>
@@ -79,7 +104,8 @@ th{position:sticky;top:0;background:#132743}
 
     <div id="h4Card" class="card locked">
       <div class="label">H4 Visual Scan</div>
-      <div class="preview" id="previewH4"><div class="placeholder">Upload H4 chart screenshot</div></div>
+      <div class="preview" id="previewH4"><div class="placeholder">HARD-STAMP H4 BOX<br>Upload H4 chart screenshot</div></div>
+      <div id="statusH4" class="uploadStatus">H4 upload status: waiting for file</div>
       <input type="file" id="fileH4" accept="image/*" style="margin-top:10px">
       <div class="row3" style="margin-top:10px">
         <select id="h4Bias"><option value="">Bias</option><option>Bullish</option><option>Bearish</option><option>Range</option></select>
@@ -97,7 +123,8 @@ th{position:sticky;top:0;background:#132743}
 
     <div id="h1Card" class="card locked">
       <div class="label">H1 Visual Scan</div>
-      <div class="preview" id="previewH1"><div class="placeholder">Upload H1 chart screenshot</div></div>
+      <div class="preview" id="previewH1"><div class="placeholder">HARD-STAMP H1 BOX<br>Upload H1 chart screenshot</div></div>
+      <div id="statusH1" class="uploadStatus">H1 upload status: waiting for file</div>
       <input type="file" id="fileH1" accept="image/*" style="margin-top:10px">
       <div class="row3" style="margin-top:10px">
         <select id="h1Bias"><option value="">Bias</option><option>Bullish</option><option>Bearish</option><option>Range</option></select>
@@ -170,7 +197,7 @@ th{position:sticky;top:0;background:#132743}
   <div class="grid two" style="margin-top:12px">
     <div class="card">
       <div class="label">Execution Trigger</div>
-      <div class="small" style="margin:8px 0 10px">Use this block to arm a manual trade, confirm parameters, and execute with discipline.</div>
+      <div class="small" style="margin:8px 0 10px">Manual execution bridge. Arm the trade, confirm the plan, then execute with discipline.</div>
       <div class="row3">
         <div><div class="label">Direction</div><select id="logDir"><option value="">Select</option><option>BUY</option><option>SELL</option></select></div>
         <div><div class="label">Timeframe</div><select id="logTf"><option>M15</option><option selected>M5</option><option>M1</option><option>H1</option></select></div>
@@ -247,7 +274,7 @@ th{position:sticky;top:0;background:#132743}
 <div class="modalWrap" id="tradeModalWrap">
   <div class="modal">
     <div class="modalTitle">Confirm Armed Trade</div>
-    <div class="small" style="margin-bottom:10px">This is a manual execution bridge. It does not send a broker order directly. It locks your trade plan and confirms your action.</div>
+    <div class="small" style="margin-bottom:10px">Manual execution bridge only. This confirms and locks your trade plan before you place it on broker.</div>
     <div class="tablewrap" style="max-height:none"><table><tbody>
       <tr><td>Direction</td><td id="mDir">--</td></tr>
       <tr><td>Timeframe</td><td id="mTf">--</td></tr>
@@ -268,33 +295,36 @@ th{position:sticky;top:0;background:#132743}
 
 <script>
 (function(){
-const state = {market:'Deriv', symbol:'1HZ10V', feed:'Fallback', stage:'D1', d1:false, h4:false, h1:false, price:10000, candles:[], ws:null, journal:[], armed:false, executed:false, currentTrade:null};
+var BUILD_ID = 'V852-HS-20260331-A';
+var state = {market:'Deriv', symbol:'1HZ10V', feed:'Fallback', stage:'D1', d1:false, h4:false, h1:false, price:10000, candles:[], ws:null, journal:[], armed:false, executed:false, currentTrade:null};
 function $(id){ return document.getElementById(id); }
 function setStrip(txt){ $('strip').textContent = txt; }
 function log(m){ $('history').innerHTML = '<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">' + new Date().toLocaleTimeString() + ' | ' + m + '</div>' + $('history').innerHTML; }
 function gradeLabel(s){ return s>=85?'A+ sniper':s>=75?'A clean':s>=65?'B acceptable':s>=55?'C weak':'D / Blocked'; }
 function emaLast(vals,p){ var k=2/(p+1), prev=vals[0]; for(var i=0;i<vals.length;i++){ prev=vals[i]*k+prev*(1-k); } return prev; }
 function setStage(){
-  $('scanLbl').textContent = state.stage; $('modeLbl').textContent = 'Assisted';
+  $('scanLbl').textContent = state.stage;
+  $('modeLbl').textContent = 'Assisted';
   $('stage1').className = 'stage' + (state.stage==='D1'?' active':'') + (state.d1?' done':'');
   $('stage2').className = 'stage' + (state.stage==='H4'?' active':'') + (state.h4?' done':'');
   $('stage3').className = 'stage' + (state.stage==='H1'?' active':'') + (state.h1?' done':'');
   $('h4Card').className = 'card' + (state.d1 ? '' : ' locked');
   $('h1Card').className = 'card' + (state.h4 ? '' : ' locked');
 }
-function previewImage(fileInputId, previewId){
+function previewImage(fileInputId, previewId, statusId){
   var input = $(fileInputId);
   input.addEventListener('change', function(){
     var file = input.files && input.files[0];
-    if(!file) return;
+    if(!file){ $(statusId).textContent = statusId.replace('status','') + ' upload status: no file selected'; return; }
     var reader = new FileReader();
     reader.onload = function(e){
-      var fileName = file.name || 'uploaded image';
       $(previewId).innerHTML = '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;">'
-        + '<img src="'+e.target.result+'" alt="chart preview" style="max-width:100%;max-height:220px;display:block;border-radius:10px;">'
-        + '<div style="font-size:12px;color:#9fb3d1;text-align:center;word-break:break-word;">Loaded: '+fileName+'</div>'
+        + '<img src="' + e.target.result + '" alt="chart preview">'
+        + '<div style="font-size:12px;color:#9fb3d1;text-align:center;word-break:break-word;">LOADED FILE: ' + file.name + '</div>'
+        + '<div style="font-size:11px;color:#6fd2ff;font-weight:900;">HARD STAMP ACTIVE: ' + BUILD_ID + '</div>'
         + '</div>';
-      log(previewId.replace('preview','').toUpperCase() + ' SCREENSHOT LOADED');
+      $(statusId).textContent = statusId.replace('status','') + ' upload status: loaded ' + file.name;
+      log(previewId.replace('preview','').toUpperCase() + ' SCREENSHOT LOADED — ' + file.name);
     };
     reader.readAsDataURL(file);
   });
@@ -378,10 +408,9 @@ function connectLive(){
 function buildNarrative(){
   if(!state.h1){ setStrip('Complete D1 → H4 → H1 first.'); return; }
   $('narrative').value =
-    'D1: ' + $('d1Bias').value + ', ' + $('d1Zone').value + ', POI: ' + $('d1Poi').value.trim() + '. ' + $('d1Notes').value.trim() + '
-' +
-    'H4: ' + $('h4Bias').value + ', ' + $('h4Mss').value + ', Fib: ' + ($('h4Fib').value.trim()||'--') + ', FVG: ' + ($('h4Fvg').value.trim()||'--') + ', OB: ' + ($('h4Ob').value.trim()||'--') + ', POI: ' + ($('h4Poi').value.trim()||'--') + '. ' + $('h4Notes').value.trim() + '
-' +
+    'BUILD ID: ' + BUILD_ID + '\n' +
+    'D1: ' + $('d1Bias').value + ', ' + $('d1Zone').value + ', POI: ' + $('d1Poi').value.trim() + '. ' + $('d1Notes').value.trim() + '\n' +
+    'H4: ' + $('h4Bias').value + ', ' + $('h4Mss').value + ', Fib: ' + ($('h4Fib').value.trim()||'--') + ', FVG: ' + ($('h4Fvg').value.trim()||'--') + ', OB: ' + ($('h4Ob').value.trim()||'--') + ', POI: ' + ($('h4Poi').value.trim()||'--') + '. ' + $('h4Notes').value.trim() + '\n' +
     'H1: ' + $('h1Bias').value + ', ' + $('h1Ema').value + ', LTF: ' + ($('h1Ltf').value.trim()||'--') + '. ' + $('h1Notes').value.trim();
   setStrip('Narrative built. Now generate trade advice and arm the trade.');
   log('TRADE NARRATIVE BUILT');
@@ -425,8 +454,7 @@ function recalcRisk(){
   if([entry,sl,tp,balance,riskPct].some(function(v){ return isNaN(v); })){ $('sizeHint').value=''; return; }
   var riskAmt = balance * (riskPct/100), stopDist = Math.abs(entry-sl);
   if(stopDist===0){ $('sizeHint').value=''; return; }
-  var unit = riskAmt / stopDist;
-  $('sizeHint').value = unit.toFixed(3);
+  $('sizeHint').value = (riskAmt / stopDist).toFixed(3);
   $('rrLbl').textContent = calcRR(entry,sl,tp).toFixed(2) + 'R';
 }
 function armTrade(){
@@ -492,19 +520,11 @@ function updateStats(){
   var avgR = total ? totalR/total : 0;
   var winRate = (wins+losses+be) ? (wins/(wins+losses+be))*100 : 0;
   var bySetup={}, byTF={};
-  rows.forEach(function(r){
-    if(!bySetup[r.setup]) bySetup[r.setup] = {count:0,totalR:0};
-    bySetup[r.setup].count += 1; bySetup[r.setup].totalR += r.r;
-    byTF[r.tf] = (byTF[r.tf]||0)+1;
-  });
+  rows.forEach(function(r){ if(!bySetup[r.setup]) bySetup[r.setup]={count:0,totalR:0}; bySetup[r.setup].count+=1; bySetup[r.setup].totalR+=r.r; byTF[r.tf]=(byTF[r.tf]||0)+1; });
   var bestSetup='--', worstSetup='--', bestVal=-Infinity, worstVal=Infinity;
-  Object.keys(bySetup).forEach(function(k){
-    var avg = bySetup[k].totalR / bySetup[k].count;
-    if(avg > bestVal){ bestVal = avg; bestSetup = k; }
-    if(avg < worstVal){ worstVal = avg; worstSetup = k; }
-  });
+  Object.keys(bySetup).forEach(function(k){ var avg = bySetup[k].totalR / bySetup[k].count; if(avg>bestVal){bestVal=avg;bestSetup=k;} if(avg<worstVal){worstVal=avg;worstSetup=k;} });
   var mostTF='--', maxTF=0;
-  Object.keys(byTF).forEach(function(k){ if(byTF[k] > maxTF){ maxTF = byTF[k]; mostTF = k; } });
+  Object.keys(byTF).forEach(function(k){ if(byTF[k]>maxTF){maxTF=byTF[k];mostTF=k;} });
   $('statTotal').textContent = total;
   $('statWLB').textContent = wins + ' / ' + losses + ' / ' + be + ' / ' + open;
   $('statWinRate').textContent = winRate.toFixed(1) + '%';
@@ -522,30 +542,27 @@ function saveTrade(){
   state.journal.unshift(row);
   renderJournal(); updateStats(); setStrip('Trade saved to journal.'); log('TRADE JOURNAL ENTRY SAVED (' + row.outcome + ', ' + row.setup + ')');
 }
-function exportJson(){
-  var blob = new Blob([JSON.stringify(state.journal,null,2)], {type:'application/json'});
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'v8_5_trade_journal.json'; a.click();
-}
-function exportCsv(){
-  var headers = ['time','dir','tf','setup','entry','sl','tp','outcome','r','grade','session','notes'], lines=[headers.join(',')];
-  state.journal.forEach(function(r){ lines.push(headers.map(function(h){ return '"' + String(r[h]).replace(/"/g,'""') + '"'; }).join(',')); });
-  var blob = new Blob([lines.join('\n')], {type:'text/csv'});
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'v8_5_trade_journal.csv'; a.click();
-}
+function exportJson(){ var blob=new Blob([JSON.stringify(state.journal,null,2)],{type:'application/json'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='v8_5_2_trade_journal.json'; a.click(); }
+function exportCsv(){ var headers=['time','dir','tf','setup','entry','sl','tp','outcome','r','grade','session','notes'], lines=[headers.join(',')]; state.journal.forEach(function(r){ lines.push(headers.map(function(h){ return '"' + String(r[h]).replace(/"/g,'""') + '"'; }).join(',')); }); var blob=new Blob([lines.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='v8_5_2_trade_journal.csv'; a.click(); }
 function clearJournal(){ state.journal=[]; renderJournal(); updateStats(); log('TRADE JOURNAL CLEARED'); }
 function resetSession(){
   state.d1=false; state.h4=false; state.h1=false; state.stage='D1'; state.armed=false; state.executed=false; state.currentTrade=null;
   ['d1Bias','d1Zone','d1Poi','d1Notes','h4Bias','h4Mss','h4Fib','h4Fvg','h4Ob','h4Poi','h4Notes','h1Bias','h1Ema','h1Ltf','h1Notes'].forEach(function(id){ $(id).value=''; });
-  $('previewD1').innerHTML='<div class="placeholder">Upload D1 chart screenshot</div>';
-  $('previewH4').innerHTML='<div class="placeholder">Upload H4 chart screenshot</div>';
-  $('previewH1').innerHTML='<div class="placeholder">Upload H1 chart screenshot</div>';
+  $('previewD1').innerHTML='<div class="placeholder">HARD-STAMP D1 BOX<br>Upload D1 chart screenshot</div>';
+  $('previewH4').innerHTML='<div class="placeholder">HARD-STAMP H4 BOX<br>Upload H4 chart screenshot</div>';
+  $('previewH1').innerHTML='<div class="placeholder">HARD-STAMP H1 BOX<br>Upload H1 chart screenshot</div>';
+  $('statusD1').textContent='D1 upload status: waiting for file';
+  $('statusH4').textContent='H4 upload status: waiting for file';
+  $('statusH1').textContent='H1 upload status: waiting for file';
   $('fileD1').value=''; $('fileH4').value=''; $('fileH1').value='';
   $('narrative').value=''; ['expectLbl','entryLbl','slLbl','tpLbl','qualityAdviceLbl','rrLbl'].forEach(function(id){ $(id).textContent='Locked'; });
   clearLogForm(); refreshSummary(); setStage(); state.feed='Fallback'; $('feedLbl').textContent='Fallback'; $('returnedLbl').textContent='--'; $('execState').textContent='Idle'; state.price=10000; seed();
-  setStrip('Upload D1 screenshot first. After selecting a file, the image preview should appear inside the D1 box. Then analyse and lock bias / POI before moving to H4.'); log('SESSION RESET');
+  setStrip('Upload D1 screenshot first. After selecting a file, the preview must change and the upload status must show the filename.'); log('SESSION RESET');
 }
 
-previewImage('fileD1','previewD1'); previewImage('fileH4','previewH4'); previewImage('fileH1','previewH1');
+previewImage('fileD1','previewD1','statusD1');
+previewImage('fileH4','previewH4','statusH4');
+previewImage('fileH1','previewH1','statusH1');
 
 $('d1DoneBtn').onclick = function(){
   if(!$('fileD1').files.length || !$('d1Bias').value || !$('d1Zone').value || !$('d1Poi').value.trim()){ setStrip('Upload D1 image and complete D1 bias / zone / POI first.'); return; }
@@ -579,7 +596,7 @@ $('clearJournalBtn').onclick = clearJournal;
 $('connectBtn').onclick = connectLive;
 $('resetBtn').onclick = resetSession;
 
-seed(); refreshSummary(); setStage(); $('requestedLbl').textContent = state.symbol; renderJournal(); updateStats(); log('V8.5 VISUAL SCANNER + EXECUTION TRIGGER READY'); setInterval(tick,1000);
+seed(); refreshSummary(); setStage(); $('requestedLbl').textContent = state.symbol; renderJournal(); updateStats(); log('V8.5.2 HARD-STAMPED READY — ' + BUILD_ID); setInterval(tick,1000);
 })();
 </script>
 </body>
