@@ -3,151 +3,191 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI Love@Fx Pro — v9.0 Backend-Ready Visual Scanner Scaffold</title>
+<title>AI Love@Fx Pro — v9.2 Live Chart Window + Top-Down Scanner Shell</title>
 <style>
-:root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff}
-*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
-.wrap{max-width:1760px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.three{grid-template-columns:1fr 1fr 1fr}.two{grid-template-columns:1.2fr 1fr}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+:root{
+  --bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;
+  --green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--chip:#162b48;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
+.wrap{max-width:1820px;margin:0 auto;padding:14px}
+.grid{display:grid;gap:12px}
+.top{grid-template-columns:2fr repeat(5,1fr)}
+.main{display:grid;grid-template-columns:1.55fr .95fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.row6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
 .card{background:#0d1b2d;border:1px solid #27476f;border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
-.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}
-.title{font-size:28px;font-weight:800}.sub{font-size:12px;color:#9fb3d1}.label{font-size:12px;color:#9fb3d1;text-transform:uppercase}.value{font-size:20px;font-weight:900}.small{font-size:11px;color:#9fb3d1}
-.btn,select,textarea,input{width:100%;background:#0f2138;color:#e9f2ff;border:1px solid #27476f;border-radius:12px;padding:10px 12px;font-weight:700}textarea{min-height:92px;resize:vertical}.btn{cursor:pointer}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}
+.title{font-size:28px;font-weight:800}.sub{font-size:12px;color:#9fb3d1}
+.label{font-size:12px;color:#9fb3d1;text-transform:uppercase}.value{font-size:20px;font-weight:900}.small{font-size:11px;color:#9fb3d1}
+.btn,select,textarea,input{width:100%;background:#0f2138;color:#e9f2ff;border:1px solid #27476f;border-radius:12px;padding:10px 12px;font-weight:700}
+textarea{min-height:96px;resize:vertical}.btn{cursor:pointer}
 .good{background:linear-gradient(135deg,#157f4a,#2fd07f)}.primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}.warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}.danger{background:linear-gradient(135deg,#8a2430,#ff6b6b)}
-.stage{padding:10px;border-radius:12px;background:#162b48;border:1px solid #27476f;font-size:12px;font-weight:800;text-align:center}.active{outline:2px solid #48a8ff}.done{outline:2px solid #2fd07f}.locked{opacity:.55}
+.stage{padding:10px;border-radius:12px;background:#162b48;border:1px solid #27476f;font-size:12px;font-weight:800;text-align:center}
+.active{outline:2px solid #48a8ff}.done{outline:2px solid #2fd07f}.locked{opacity:.55}
 .strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid #27476f;background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:900}
-.tablewrap{max-height:360px;overflow:auto;border-radius:12px;border:1px solid #27476f}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left;vertical-align:top}th{position:sticky;top:0;background:#132743}
-.preview{height:240px;border-radius:14px;border:2px dashed #4d7bd6;background:#091626;display:flex;align-items:center;justify-content:center;overflow:hidden}.preview img{max-width:100%;max-height:200px;display:block;border-radius:10px}.placeholder{color:#9fb3d1;font-size:13px;text-align:center;padding:18px}
-.badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid #27476f;background:#162b48}.stamp{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(135deg,#f0b44d,#ff6b6b);color:#08111f;font-weight:900;font-size:12px}
-.api{font-family:Consolas,monospace;font-size:12px;background:#091626;border:1px solid #27476f;border-radius:12px;padding:10px;white-space:pre-wrap}.kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.kpi .card{padding:10px}
-@media(max-width:1300px){.top,.three,.two,.row3,.row4,.kpi{grid-template-columns:1fr}}
+.tablewrap{max-height:360px;overflow:auto;border-radius:12px;border:1px solid #27476f}
+table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left;vertical-align:top}
+th{position:sticky;top:0;background:#132743}
+.kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.kpi .card{padding:10px}
+.chartShell{height:520px;border-radius:16px;border:1px solid #27476f;background:linear-gradient(180deg,#0a1628,#0b1a30);padding:12px;display:flex;flex-direction:column;gap:10px}
+.chartTop{display:grid;grid-template-columns:1fr 320px;gap:12px}
+.plotWrap{position:relative;height:390px;border-radius:14px;background:#091626;border:1px solid #27476f;overflow:hidden}
+.canvas{width:100%;height:100%}
+.sideRail{display:grid;gap:10px}
+.badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid #27476f;background:#162b48}
+.api{font-family:Consolas,monospace;font-size:12px;background:#091626;border:1px solid #27476f;border-radius:12px;padding:10px;white-space:pre-wrap}
+.pillRow{display:flex;gap:8px;flex-wrap:wrap}
+.pill{padding:8px 10px;border:1px solid #27476f;background:#162b48;border-radius:999px;font-size:12px;font-weight:800}
+.muted{color:#9fb3d1}
+.green{color:#2fd07f}.amber{color:#f0b44d}.red{color:#ff6b6b}
+@media(max-width:1380px){.top,.main,.row3,.row4,.row6,.kpi,.chartTop{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="stamp">v9.0 BACKEND-READY</span></div><div class="sub">Visual Scanner Scaffold | Build ID: VS-9.0-2026-03-31-A</div></div></div></div>
-    <div class="card"><div class="label">Vision API</div><div id="apiMode" class="value">Mock</div></div>
-    <div class="card"><div class="label">Scanner</div><div id="scannerState" class="value">D1</div></div>
-    <div class="card"><div class="label">Workflow</div><div id="workflowMode" class="value">Top-Down</div></div>
-    <div class="card"><button id="mockBtn" class="btn primary">Use Mock Vision</button></div>
+    <div class="card">
+      <div class="brand">
+        <div class="logo">◆</div>
+        <div>
+          <div class="title">AI Love@Fx Pro <span class="badge">v9.2 LIVE CHART SHELL</span></div>
+          <div class="sub">Top-Down Scanner Shell | Build ID: VS-9.2-2026-03-31-A</div>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Mock Live</div></div>
+    <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
+    <div class="card"><div class="label">Workflow</div><div class="value">Top-Down</div></div>
+    <div class="card"><button id="connectBtn" class="btn good">Start Live Window</button></div>
     <div class="card"><button id="resetBtn" class="btn warn">Reset Session</button></div>
   </div>
 
   <div class="card" style="margin-top:12px">
-    <div class="grid three">
-      <div id="stage1" class="stage active">1. D1 Upload + Analyse</div>
-      <div id="stage2" class="stage">2. H4 Upload + Analyse</div>
-      <div id="stage3" class="stage">3. H1 Upload + Analyse</div>
+    <div class="row3">
+      <div id="stage1" class="stage active">1. D1 Scan First</div>
+      <div id="stage2" class="stage">2. H4 Scan Second</div>
+      <div id="stage3" class="stage">3. H1 Scan Third</div>
     </div>
-    <div class="small" style="margin-top:8px">This scaffold is backend-ready. Right now it runs a mock vision response so the workflow is testable end to end.</div>
+    <div class="small" style="margin-top:8px">This build uses one controlled chart window. Timeframe buttons are sequence-locked, so you cannot properly scan lower timeframe before the higher timeframe step is completed.</div>
   </div>
 
-  <div id="strip" class="strip">Upload D1 screenshot, then press Analyse D1. The mock backend will return structured scanner JSON into the results cards.</div>
+  <div id="strip" class="strip">Start the live window. The shell will simulate a controlled chart source, then guide you D1 → H4 → H1. This is the right architecture direction versus repeated screenshot uploads.</div>
 
-  <div class="grid three" style="margin-top:12px">
-    <div id="d1Card" class="card">
-      <div class="label">D1 Lane</div>
-      <div class="preview" id="previewD1"><div class="placeholder">Upload D1 chart screenshot</div></div>
-      <div id="statusD1" class="small" style="margin-top:8px">Status: waiting for D1 upload</div>
-      <input type="file" id="fileD1" accept="image/*" style="margin-top:10px">
-      <button id="analyseD1Btn" class="btn primary" style="margin-top:10px">Analyse D1</button>
-      <div class="small" style="margin-top:8px">Required output: bias, POI, macro structure, premium/discount, next expectation.</div>
-    </div>
+  <div class="main" style="margin-top:12px">
+    <div class="chartShell">
+      <div class="chartTop">
+        <div class="row4">
+          <div>
+            <div class="label">Market</div>
+            <select id="symbolSel">
+              <option selected>V10 (1s) / 1HZ10V</option>
+              <option>V25 (1s) / 1HZ25V</option>
+              <option>V75 (1s) / 1HZ75V</option>
+            </select>
+          </div>
+          <div>
+            <div class="label">Mode</div>
+            <select id="modeSel">
+              <option selected>Scanner</option>
+              <option>Assisted</option>
+            </select>
+          </div>
+          <div>
+            <div class="label">D1</div>
+            <button id="btnD1" class="btn primary">Load D1</button>
+          </div>
+          <div>
+            <div class="label">H4</div>
+            <button id="btnH4" class="btn primary">Load H4</button>
+          </div>
+        </div>
+        <div class="row3">
+          <div>
+            <div class="label">H1</div>
+            <button id="btnH1" class="btn primary">Load H1</button>
+          </div>
+          <div>
+            <div class="label">M5</div>
+            <button id="btnM5" class="btn primary">Load M5</button>
+          </div>
+          <div>
+            <div class="label">Action</div>
+            <button id="scanCurrentBtn" class="btn good">Scan Current TF</button>
+          </div>
+        </div>
+      </div>
 
-    <div id="h4Card" class="card locked">
-      <div class="label">H4 Lane</div>
-      <div class="preview" id="previewH4"><div class="placeholder">Upload H4 chart screenshot</div></div>
-      <div id="statusH4" class="small" style="margin-top:8px">Status: waiting for H4 upload</div>
-      <input type="file" id="fileH4" accept="image/*" style="margin-top:10px">
-      <button id="analyseH4Btn" class="btn primary" style="margin-top:10px">Analyse H4</button>
-      <div class="small" style="margin-top:8px">Required output: bias, POI, MSS, FVG, OB, fib zone, trade-side expectation.</div>
-    </div>
+      <div class="plotWrap">
+        <canvas id="chartCanvas" class="canvas" width="1200" height="720"></canvas>
+      </div>
 
-    <div id="h1Card" class="card locked">
-      <div class="label">H1 Lane</div>
-      <div class="preview" id="previewH1"><div class="placeholder">Upload H1 chart screenshot</div></div>
-      <div id="statusH1" class="small" style="margin-top:8px">Status: waiting for H1 upload</div>
-      <input type="file" id="fileH1" accept="image/*" style="margin-top:10px">
-      <button id="analyseH1Btn" class="btn primary" style="margin-top:10px">Analyse H1</button>
-      <div class="small" style="margin-top:8px">Required output: bias, EMA relation, execution readiness, LTF recommendation.</div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:12px">
-    <div class="label">Vision API Contract</div>
-    <div class="api" id="apiContract">POST /api/analyse-chart
-Payload:
-{
-  "timeframe": "D1|H4|H1",
-  "symbol": "1HZ10V",
-  "image_base64": "...",
-  "analysis_mode": "visual_scanner_v1"
-}
-
-Response:
-{
-  "timeframe": "D1",
-  "bias": "Bullish|Bearish|Range",
-  "poi": "text",
-  "mss": "text|null",
-  "fvg": "text|null",
-  "ob": "text|null",
-  "fib_zone": "text|null",
-  "ema_relation": "text|null",
-  "premium_discount": "text|null",
-  "expectation": "text",
-  "ltf_recommendation": "M15|M5|M1|null",
-  "confidence": 0-100,
-  "notes": "model reasoning summary"
-}</div>
-  </div>
-
-  <div class="grid three" style="margin-top:12px">
-    <div class="card"><div class="label">D1 Results</div><div class="tablewrap" style="max-height:none"><table><tbody>
-      <tr><td>Bias</td><td id="d1_bias">--</td></tr><tr><td>POI</td><td id="d1_poi">--</td></tr><tr><td>Premium / Discount</td><td id="d1_pd">--</td></tr><tr><td>Expectation</td><td id="d1_expect">--</td></tr><tr><td>Confidence</td><td id="d1_conf">--</td></tr><tr><td>Notes</td><td id="d1_notes">--</td></tr>
-    </tbody></table></div></div>
-
-    <div class="card"><div class="label">H4 Results</div><div class="tablewrap" style="max-height:none"><table><tbody>
-      <tr><td>Bias</td><td id="h4_bias">--</td></tr><tr><td>POI</td><td id="h4_poi">--</td></tr><tr><td>MSS</td><td id="h4_mss">--</td></tr><tr><td>FVG</td><td id="h4_fvg">--</td></tr><tr><td>OB</td><td id="h4_ob">--</td></tr><tr><td>Fib Zone</td><td id="h4_fib">--</td></tr><tr><td>Expectation</td><td id="h4_expect">--</td></tr><tr><td>Confidence</td><td id="h4_conf">--</td></tr>
-    </tbody></table></div></div>
-
-    <div class="card"><div class="label">H1 Results</div><div class="tablewrap" style="max-height:none"><table><tbody>
-      <tr><td>Bias</td><td id="h1_bias">--</td></tr><tr><td>EMA Relation</td><td id="h1_ema">--</td></tr><tr><td>POI</td><td id="h1_poi">--</td></tr><tr><td>Expectation</td><td id="h1_expect">--</td></tr><tr><td>LTF Recommendation</td><td id="h1_ltf">--</td></tr><tr><td>Confidence</td><td id="h1_conf">--</td></tr><tr><td>Notes</td><td id="h1_notes">--</td></tr>
-    </tbody></table></div></div>
-  </div>
-
-  <div class="grid two" style="margin-top:12px">
-    <div class="card">
-      <div class="label">Narrative Builder</div>
-      <textarea id="narrative" readonly placeholder="Narrative will compile after D1 + H4 + H1 analyses complete."></textarea>
-      <div class="row3" style="margin-top:10px">
-        <button id="buildNarrativeBtn" class="btn primary">Build Narrative</button>
-        <button id="buildAdviceBtn" class="btn primary">Build Trade Advice</button>
-        <button id="pullAdviceBtn" class="btn primary">Pull Advice Into Trigger</button>
+      <div class="row6">
+        <div class="card"><div class="label">Visible TF</div><div id="visibleTf" class="value">D1</div></div>
+        <div class="card"><div class="label">Live Price</div><div id="livePrice" class="value">--</div></div>
+        <div class="card"><div class="label">EMA Bias</div><div id="emaBias" class="value">--</div></div>
+        <div class="card"><div class="label">RSI</div><div id="rsiVal" class="value">--</div></div>
+        <div class="card"><div class="label">Regime</div><div id="regimeVal" class="value">--</div></div>
+        <div class="card"><div class="label">Sequence</div><div id="seqVal" class="value">Locked</div></div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="label">Trade Advice</div>
-      <div class="tablewrap" style="max-height:none"><table><tbody>
-        <tr><td>Direction</td><td id="ad_dir">Locked</td></tr><tr><td>Entry Advice</td><td id="ad_entry">Locked</td></tr><tr><td>SL Advice</td><td id="ad_sl">Locked</td></tr><tr><td>TP Advice</td><td id="ad_tp">Locked</td></tr><tr><td>Recommended LTF</td><td id="ad_ltf">Locked</td></tr><tr><td>Trade Quality</td><td id="ad_quality">Locked</td></tr>
-      </tbody></table></div>
+    <div class="sideRail">
+      <div class="card">
+        <div class="label">Scanner Results</div>
+        <div class="tablewrap" style="max-height:none"><table><tbody>
+          <tr><td>D1 Bias</td><td id="d1_bias">--</td></tr>
+          <tr><td>D1 POI</td><td id="d1_poi">--</td></tr>
+          <tr><td>H4 Bias</td><td id="h4_bias">--</td></tr>
+          <tr><td>H4 MSS</td><td id="h4_mss">--</td></tr>
+          <tr><td>H4 FVG</td><td id="h4_fvg">--</td></tr>
+          <tr><td>H4 OB</td><td id="h4_ob">--</td></tr>
+          <tr><td>H4 Fib</td><td id="h4_fib">--</td></tr>
+          <tr><td>H1 Bias</td><td id="h1_bias">--</td></tr>
+          <tr><td>H1 EMA</td><td id="h1_ema">--</td></tr>
+          <tr><td>Drop To</td><td id="drop_to">--</td></tr>
+        </tbody></table></div>
+      </div>
+
+      <div class="card">
+        <div class="label">Price Map</div>
+        <div class="tablewrap" style="max-height:none"><table><thead><tr><th>Level</th><th>Value</th></tr></thead><tbody id="priceMapBody"></tbody></table></div>
+      </div>
+
+      <div class="card">
+        <div class="label">Narrative + Advice</div>
+        <textarea id="narrative" readonly placeholder="Builds after D1 + H4 + H1 scans complete."></textarea>
+        <div class="row3" style="margin-top:10px">
+          <button id="buildNarrativeBtn" class="btn primary">Build Narrative</button>
+          <button id="buildAdviceBtn" class="btn primary">Build Advice</button>
+          <button id="pullTriggerBtn" class="btn primary">Pull To Trigger</button>
+        </div>
+        <div class="tablewrap" style="max-height:none;margin-top:10px"><table><tbody>
+          <tr><td>Direction</td><td id="ad_dir">Locked</td></tr>
+          <tr><td>Entry</td><td id="ad_entry">Locked</td></tr>
+          <tr><td>SL</td><td id="ad_sl">Locked</td></tr>
+          <tr><td>TP</td><td id="ad_tp">Locked</td></tr>
+          <tr><td>Execution Note</td><td id="ad_note">Locked</td></tr>
+        </tbody></table></div>
+      </div>
     </div>
   </div>
 
   <div class="grid two" style="margin-top:12px">
     <div class="card">
       <div class="label">Manual Execution Trigger</div>
-      <div class="small" style="margin:8px 0 10px">This remains a manual bridge. Backend-ready scanner feeds the trigger; you still execute on broker yourself.</div>
       <div class="row4">
         <div><div class="label">Direction</div><select id="tr_dir"><option value="">Select</option><option>BUY</option><option>SELL</option></select></div>
-        <div><div class="label">Timeframe</div><select id="tr_tf"><option>M15</option><option selected>M5</option><option>M1</option><option>H1</option></select></div>
+        <div><div class="label">TF</div><select id="tr_tf"><option>M15</option><option selected>M5</option><option>M1</option><option>H1</option></select></div>
         <div><div class="label">Entry</div><input id="tr_entry" type="number" step="0.001" placeholder="0.000"></div>
         <div><div class="label">SL</div><input id="tr_sl" type="number" step="0.001" placeholder="0.000"></div>
       </div>
       <div class="row4" style="margin-top:10px">
         <div><div class="label">TP</div><input id="tr_tp" type="number" step="0.001" placeholder="0.000"></div>
-        <div><div class="label">Setup</div><select id="tr_setup"><option>Pullback Continuation</option><option>CRT Reclaim</option><option>Break & Retest</option><option>OB Rejection</option></select></div>
+        <div><div class="label">Setup</div><select id="tr_setup"><option>Pullback Continuation</option><option>CRT Reclaim</option><option>Break & Retest</option></select></div>
         <div><div class="label">Risk %</div><input id="tr_risk" type="number" step="0.1" value="1.0"></div>
         <div><div class="label">RR</div><input id="tr_rr" readonly></div>
       </div>
@@ -159,135 +199,341 @@ Response:
     </div>
 
     <div class="card">
-      <div class="label">Backend / Session State</div>
-      <div class="kpi" style="margin-top:8px">
-        <div class="card"><div class="label">Requested</div><div id="k_requested" class="value">1HZ10V</div></div>
-        <div class="card"><div class="label">Returned</div><div id="k_returned" class="value">--</div></div>
-        <div class="card"><div class="label">D1</div><div id="k_d1" class="value">No</div></div>
-        <div class="card"><div class="label">H4</div><div id="k_h4" class="value">No</div></div>
-        <div class="card"><div class="label">H1</div><div id="k_h1" class="value">No</div></div>
-        <div class="card"><div class="label">Exec State</div><div id="k_exec" class="value">Idle</div></div>
-      </div>
-      <div class="api" id="lastJson" style="margin-top:10px">Last model JSON response will appear here.</div>
+      <div class="label">Architecture Note</div>
+      <div class="api">v9.2 shell direction:
+1. One controlled live chart window
+2. Sequence lock D1 → H4 → H1
+3. Scanner reads chart state from controlled source
+4. Later add real data feed + backend analysis
+5. Optional vision layer can inspect rendered chart if needed
+
+This is better than repeated screenshot uploads because:
+- lower friction
+- consistent symbol
+- same visible chart source
+- no stale image mismatch
+- easier live market comparison</div>
     </div>
   </div>
 
-  <div class="card" style="margin-top:12px"><div class="label">Signal History</div><div id="history" class="tablewrap" style="padding:10px;max-height:220px"></div></div>
-</div>
-
-<div id="modalWrap" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.62);align-items:center;justify-content:center;padding:18px;z-index:50">
-  <div class="card" style="max-width:720px;width:100%">
-    <div class="title" style="font-size:22px">Confirm Manual Execution</div>
-    <div class="small" style="margin:8px 0 12px">Scaffold confirms the trade plan only. No broker order is sent.</div>
-    <div class="tablewrap" style="max-height:none"><table><tbody>
-      <tr><td>Direction</td><td id="m_dir">--</td></tr><tr><td>TF</td><td id="m_tf">--</td></tr><tr><td>Entry</td><td id="m_entry">--</td></tr><tr><td>SL</td><td id="m_sl">--</td></tr><tr><td>TP</td><td id="m_tp">--</td></tr><tr><td>RR</td><td id="m_rr">--</td></tr>
-    </tbody></table></div>
-    <div class="row3" style="margin-top:12px">
-      <button id="m_confirm" class="btn good">Confirm Execute</button>
-      <button id="m_close" class="btn">Close</button>
-      <button id="m_cancel" class="btn danger">Cancel Arm</button>
-    </div>
+  <div class="card" style="margin-top:12px">
+    <div class="label">Signal History</div>
+    <div id="history" class="tablewrap" style="padding:10px;max-height:220px"></div>
   </div>
 </div>
 
 <script>
 (function(){
-const state={stage:'D1',d1Done:false,h4Done:false,h1Done:false,armed:false,apiMode:'Mock',symbol:'1HZ10V',results:{D1:null,H4:null,H1:null}};
+const state = {
+  feed:false,
+  armed:false,
+  symbol:'1HZ10V',
+  currentTf:'D1',
+  requiredTf:'D1',
+  completed:{D1:false,H4:false,H1:false},
+  datasets:{},
+  results:{D1:null,H4:null,H1:null}
+}
+const tfOrder=['D1','H4','H1']
+const tfMeta={D1:{bars:80, drift:1.8}, H4:{bars:120, drift:1.0}, H1:{bars:150, drift:.55}, M5:{bars:160, drift:.22}}
 function $(id){return document.getElementById(id)}
 function log(msg){$('history').innerHTML='<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">'+new Date().toLocaleTimeString()+' | '+msg+'</div>'+$('history').innerHTML}
 function setStrip(t){$('strip').textContent=t}
-function setStage(){
-  $('scannerState').textContent=state.stage
-  $('stage1').className='stage'+(state.stage==='D1'?' active':'')+(state.d1Done?' done':'')
-  $('stage2').className='stage'+(state.stage==='H4'?' active':'')+(state.h4Done?' done':'')
-  $('stage3').className='stage'+(state.stage==='H1'?' active':'')+(state.h1Done?' done':'')
-  $('h4Card').className='card'+(state.d1Done?'':' locked')
-  $('h1Card').className='card'+(state.h4Done?'':' locked')
-  $('k_d1').textContent=state.d1Done?'Yes':'No'
-  $('k_h4').textContent=state.h4Done?'Yes':'No'
-  $('k_h1').textContent=state.h1Done?'Yes':'No'
+function nextRequired(){
+  if(!state.completed.D1) return 'D1'
+  if(!state.completed.H4) return 'H4'
+  if(!state.completed.H1) return 'H1'
+  return 'DONE'
 }
-function preview(inputId,previewId,statusId,label){
-  $(inputId).addEventListener('change',function(){
-    const file=this.files&&this.files[0]
-    if(!file){$(statusId).textContent='Status: waiting for '+label+' upload';return}
-    const reader=new FileReader()
-    reader.onload=function(e){
-      $(previewId).innerHTML='<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;"><img src="'+e.target.result+'" alt="preview"><div style="font-size:12px;color:#9fb3d1">'+file.name+'</div></div>'
-      $(statusId).textContent='Status: '+label+' image loaded'
-      log(label+' IMAGE LOADED')
+function setStages(){
+  const req=nextRequired()
+  state.requiredTf=req
+  $('stepLbl').textContent = req==='DONE' ? 'Ready' : req
+  $('stage1').className='stage'+(req==='D1'?' active':'')+(state.completed.D1?' done':'')
+  $('stage2').className='stage'+(req==='H4'?' active':'')+(state.completed.H4?' done':'')
+  $('stage3').className='stage'+(req==='H1'?' active':'')+(state.completed.H1?' done':'')
+  $('seqVal').textContent = req==='DONE' ? 'Unlocked' : 'Locked to '+req
+}
+function allowedTf(tf){
+  const req=nextRequired()
+  if(req==='DONE') return true
+  if(tf===req) return true
+  if(tf==='M5') return state.completed.H1
+  return false
+}
+function setTf(tf){
+  if(!allowedTf(tf)){ setStrip('Top-down lock active. Complete '+nextRequired()+' first.'); log('TF SWITCH BLOCKED: '+tf); return; }
+  state.currentTf=tf
+  $('visibleTf').textContent=tf
+  setStrip(tf+' window loaded. Press Scan Current TF when ready.')
+  log('TF WINDOW LOADED: '+tf)
+  ensureDataset(tf)
+  renderChart()
+}
+function ensureDataset(tf){
+  if(state.datasets[tf]) return
+  const cfg=tfMeta[tf]||tfMeta.H1
+  let p = 9970 + Math.random()*15
+  const arr=[]
+  for(let i=0;i<cfg.bars;i++){
+    const drift=(Math.random()-0.48)*cfg.drift
+    const o=p
+    p += drift
+    const c=p
+    const h=Math.max(o,c)+Math.random()*cfg.drift*1.1
+    const l=Math.min(o,c)-Math.random()*cfg.drift*1.1
+    arr.push({o,h,l,c})
+  }
+  state.datasets[tf]=arr
+}
+function calcEMA(values, p){
+  const k=2/(p+1); let prev=values[0]
+  for(let i=1;i<values.length;i++) prev=values[i]*k+prev*(1-k)
+  return prev
+}
+function calcRSI(values, p=14){
+  let gains=0, losses=0
+  for(let i=Math.max(1,values.length-p); i<values.length; i++){
+    const d=values[i]-values[i-1]
+    if(d>=0) gains+=d; else losses-=d
+  }
+  if(losses===0) return 100
+  return 100 - 100/(1 + gains/losses)
+}
+function getStateStats(tf){
+  const arr=state.datasets[tf]; const closes=arr.map(x=>x.c)
+  const ema20=calcEMA(closes,20), ema50=calcEMA(closes,50), last=closes[closes.length-1]
+  const rsi=calcRSI(closes,14)
+  const regime=Math.abs(ema20-ema50) > ((Math.max(...closes)-Math.min(...closes))/closes.length)*3 ? 'Trend' : 'Range'
+  return {last, ema20, ema50, rsi, regime}
+}
+function renderChart(){
+  const canvas=$('chartCanvas'), ctx=canvas.getContext('2d')
+  const W=canvas.width, H=canvas.height
+  ctx.clearRect(0,0,W,H)
+  ctx.fillStyle='#091626'; ctx.fillRect(0,0,W,H)
+  const arr=state.datasets[state.currentTf] || []
+  if(!arr.length) return
+  const highs=arr.map(x=>x.h), lows=arr.map(x=>x.l)
+  const max=Math.max(...highs), min=Math.min(...lows), pad=(max-min)*0.08 || 1
+  const hi=max+pad, lo=min-pad
+  const plotX=50, plotY=20, plotW=W-90, plotH=H-60
+  ctx.strokeStyle='rgba(255,255,255,.08)'
+  for(let i=0;i<6;i++){
+    const y=plotY + (plotH/5)*i
+    ctx.beginPath(); ctx.moveTo(plotX,y); ctx.lineTo(plotX+plotW,y); ctx.stroke()
+  }
+  const closes=arr.map(x=>x.c)
+  const ema20Series=[], ema50Series=[]
+  let prev20=closes[0], prev50=closes[0]
+  const k20=2/21, k50=2/51
+  for(let i=0;i<closes.length;i++){
+    prev20=closes[i]*k20 + prev20*(1-k20)
+    prev50=closes[i]*k50 + prev50*(1-k50)
+    ema20Series.push(prev20); ema50Series.push(prev50)
+  }
+  const xStep=plotW/arr.length
+  function yOf(v){ return plotY + (hi-v)/(hi-lo)*plotH }
+  // candlesticks
+  arr.forEach((b,i)=>{
+    const x=plotX + i*xStep + xStep*0.5
+    ctx.strokeStyle='#cfd9ea'
+    ctx.beginPath(); ctx.moveTo(x,yOf(b.h)); ctx.lineTo(x,yOf(b.l)); ctx.stroke()
+    const green=b.c>=b.o
+    ctx.fillStyle=green?'#91f2be':'#ff9aa3'
+    const bodyTop=yOf(Math.max(b.o,b.c)), bodyBot=yOf(Math.min(b.o,b.c))
+    const bodyH=Math.max(2, bodyBot-bodyTop)
+    ctx.fillRect(x-xStep*0.28, bodyTop, xStep*0.56, bodyH)
+  })
+  // ema20
+  ctx.strokeStyle='#4db1ff'; ctx.lineWidth=2
+  ctx.beginPath()
+  ema20Series.forEach((v,i)=>{ const x=plotX+i*xStep+xStep*.5, y=yOf(v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y) })
+  ctx.stroke()
+  // ema50
+  ctx.strokeStyle='#f0b44d'; ctx.lineWidth=2
+  ctx.beginPath()
+  ema50Series.forEach((v,i)=>{ const x=plotX+i*xStep+xStep*.5, y=yOf(v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y) })
+  ctx.stroke()
+  // right labels
+  ctx.fillStyle='#9fb3d1'; ctx.font='16px Segoe UI'
+  ctx.fillText(state.currentTf+' | '+state.symbol, plotX, 18)
+  ctx.fillText('Live window shell', plotX+180, 18)
+  const stats=getStateStats(state.currentTf)
+  $('livePrice').textContent=stats.last.toFixed(3)
+  $('emaBias').textContent=stats.last>stats.ema20 && stats.ema20>stats.ema50 ? 'Bullish' : stats.last<stats.ema20 && stats.ema20<stats.ema50 ? 'Bearish' : 'Mixed'
+  $('rsiVal').textContent=stats.rsi.toFixed(1)
+  $('regimeVal').textContent=(stats.rsi>75||stats.rsi<25)?'Exhaustion':stats.regime
+}
+function scanTf(tf){
+  if(tf!==state.currentTf){ setStrip('Load '+tf+' first.'); return }
+  const req=nextRequired()
+  if(req==='DONE'){ setStrip('Scanner already completed.'); return }
+  if(tf!==req){ setStrip('Sequence lock active. Scan '+req+' first.'); log('SCAN BLOCKED: '+tf); return }
+  const stats=getStateStats(tf)
+  let result={}
+  if(tf==='D1'){
+    result={
+      bias: stats.last>stats.ema20 ? 'Bullish':'Bearish',
+      poi: (stats.last - 6.4).toFixed(3)+' demand / discount zone',
+      priceMap: {
+        current_visible_price: stats.last.toFixed(3),
+        poi_price: (stats.last-6.4).toFixed(3),
+        swing_high: (stats.last+8.2).toFixed(3),
+        swing_low: (stats.last-10.5).toFixed(3)
+      }
     }
-    reader.readAsDataURL(file)
+    $('d1_bias').textContent=result.bias
+    $('d1_poi').textContent=result.poi
+    state.completed.D1=true
+    state.stage='H4'
+    setStrip('D1 scan complete. Load H4 next.')
+  }
+  if(tf==='H4'){
+    result={
+      bias: stats.last>stats.ema20 ? 'Bullish':'Bearish',
+      mss: stats.last>stats.ema20 ? 'Bullish MSS candidate':'Bearish MSS candidate',
+      fvg: ((stats.last+1.8).toFixed(3))+' to '+((stats.last+4.2).toFixed(3)),
+      ob: ((stats.last-3.7).toFixed(3))+' to '+((stats.last-1.9).toFixed(3)),
+      fib: ((stats.last-2.8).toFixed(3))+' / '+((stats.last-4.4).toFixed(3)),
+      priceMap: {
+        poi_price:(stats.last-2.9).toFixed(3),
+        fib_50:(stats.last-2.8).toFixed(3),
+        fib_618:(stats.last-4.4).toFixed(3),
+        ob_high:(stats.last-1.9).toFixed(3),
+        ob_low:(stats.last-3.7).toFixed(3),
+        fvg_high:(stats.last+4.2).toFixed(3),
+        fvg_low:(stats.last+1.8).toFixed(3)
+      }
+    }
+    $('h4_bias').textContent=result.bias
+    $('h4_mss').textContent=result.mss
+    $('h4_fvg').textContent=result.fvg
+    $('h4_ob').textContent=result.ob
+    $('h4_fib').textContent=result.fib
+    state.completed.H4=true
+    state.stage='H1'
+    setStrip('H4 scan complete. Load H1 next.')
+  }
+  if(tf==='H1'){
+    const emaRel=stats.last>stats.ema20 && stats.ema20>stats.ema50 ? 'Price above EMA20 & EMA50' : stats.last<stats.ema20 && stats.ema20<stats.ema50 ? 'Price below EMA20 & EMA50' : 'Price around EMA cluster'
+    result={
+      bias: stats.last>stats.ema20 ? 'Bullish':'Bearish',
+      ema: emaRel,
+      dropTo: 'M5',
+      priceMap: {
+        entry:(stats.last+0.6).toFixed(3),
+        sl:(stats.last-2.2).toFixed(3),
+        tp1:(stats.last+4.8).toFixed(3),
+        tp2:(stats.last+8.4).toFixed(3)
+      }
+    }
+    $('h1_bias').textContent=result.bias
+    $('h1_ema').textContent=result.ema
+    $('drop_to').textContent=result.dropTo
+    state.completed.H1=true
+    state.stage='DONE'
+    setStrip('H1 scan complete. Build narrative and trade advice. M5 window is now unlocked for execution monitoring.')
+  }
+  state.results[tf]=result
+  renderPriceMap()
+  setStages()
+  log(tf+' SCAN COMPLETE')
+}
+function renderPriceMap(){
+  const body=$('priceMapBody'); body.innerHTML=''
+  const parts=['D1','H4','H1'].filter(tf=>state.results[tf]).map(tf=>state.results[tf].priceMap||{})
+  const merged=Object.assign({}, ...parts)
+  Object.entries(merged).forEach(([k,v])=>{
+    const tr=document.createElement('tr')
+    tr.innerHTML='<td>'+k+'</td><td>'+v+'</td>'
+    body.appendChild(tr)
   })
 }
-function mockResponse(tf){
-  const data={
-    D1:{timeframe:'D1',bias:'Bullish',poi:'Discount POI near recent swing demand',mss:null,fvg:null,ob:null,fib_zone:null,ema_relation:null,premium_discount:'Discount',expectation:'Macro bullish continuation after pullback',ltf_recommendation:null,confidence:78,notes:'Price appears to be expanding from discount with bullish macro intent.'},
-    H4:{timeframe:'H4',bias:'Bullish',poi:'H4 demand / breaker overlap',mss:'Bullish MSS confirmed',fvg:'Unfilled bullish FVG below current price',ob:'Bullish OB aligned with H4 structure',fib_zone:'0.5–0.618 pullback zone',ema_relation:null,premium_discount:'Discount to equilibrium',expectation:'Look for pullback continuation buys, avoid chasing exhaustion',ltf_recommendation:'M15',confidence:82,notes:'H4 structure supports continuation if pullback respects zone and reclaims.'},
-    H1:{timeframe:'H1',bias:'Bullish',poi:'H1 pullback into intraday support',mss:null,fvg:null,ob:null,fib_zone:null,ema_relation:'Price above EMA50, EMA50 above EMA200',premium_discount:null,expectation:'Drop to M5 and wait for reclaim / CRT / break-retest before entry',ltf_recommendation:'M5',confidence:80,notes:'H1 remains execution supportive as long as price holds above intraday structure.'}
-  }
-  return data[tf]
-}
-async function analyse(tf){
-  const fileInput=tf==='D1' ? $('fileD1') : tf==='H4' ? $('fileH4') : $('fileH1')
-  if(!fileInput.files.length){setStrip('Upload '+tf+' screenshot first.');return}
-  if(tf==='H4' && !state.d1Done){setStrip('Complete D1 first.');return}
-  if(tf==='H1' && !state.h4Done){setStrip('Complete H4 first.');return}
-  setStrip('Analysing '+tf+' via '+state.apiMode+' vision layer...')
-  log(tf+' ANALYSIS REQUEST SENT')
-  const result=mockResponse(tf)
-  state.results[tf]=result
-  $('lastJson').textContent=JSON.stringify(result,null,2)
-  $('k_returned').textContent=state.symbol
-  if(tf==='D1'){ $('d1_bias').textContent=result.bias; $('d1_poi').textContent=result.poi; $('d1_pd').textContent=result.premium_discount; $('d1_expect').textContent=result.expectation; $('d1_conf').textContent=result.confidence; $('d1_notes').textContent=result.notes; state.d1Done=true; state.stage='H4'; setStrip('D1 analysed. Now upload H4 and analyse it.') }
-  if(tf==='H4'){ $('h4_bias').textContent=result.bias; $('h4_poi').textContent=result.poi; $('h4_mss').textContent=result.mss; $('h4_fvg').textContent=result.fvg; $('h4_ob').textContent=result.ob; $('h4_fib').textContent=result.fib_zone; $('h4_expect').textContent=result.expectation; $('h4_conf').textContent=result.confidence; state.h4Done=true; state.stage='H1'; setStrip('H4 analysed. Now upload H1 and analyse it.') }
-  if(tf==='H1'){ $('h1_bias').textContent=result.bias; $('h1_ema').textContent=result.ema_relation; $('h1_poi').textContent=result.poi; $('h1_expect').textContent=result.expectation; $('h1_ltf').textContent=result.ltf_recommendation; $('h1_conf').textContent=result.confidence; $('h1_notes').textContent=result.notes; state.h1Done=true; setStrip('All three timeframes analysed. Build narrative, then trade advice.') }
-  setStage()
-  log(tf+' ANALYSIS RESPONSE RECEIVED')
-}
 function buildNarrative(){
-  if(!(state.d1Done&&state.h4Done&&state.h1Done)){setStrip('Complete D1, H4, and H1 analyses first.');return}
-  const d1=state.results.D1,h4=state.results.H4,h1=state.results.H1
-  $('narrative').value='D1 bias: '+d1.bias+'. POI: '+d1.poi+'. Premium/Discount: '+d1.premium_discount+'. Expectation: '+d1.expectation+'.\\nH4 bias: '+h4.bias+'. MSS: '+h4.mss+'. FVG: '+h4.fvg+'. OB: '+h4.ob+'. Fib: '+h4.fib_zone+'. Expectation: '+h4.expectation+'.\\nH1 bias: '+h1.bias+'. EMA relation: '+h1.ema_relation+'. POI: '+h1.poi+'. LTF to use: '+h1.ltf_recommendation+'. Expectation: '+h1.expectation+'.'
-  setStrip('Narrative built. Now generate trade advice.')
+  if(!(state.completed.D1 && state.completed.H4 && state.completed.H1)){ setStrip('Complete D1, H4 and H1 scans first.'); return }
+  const d1=state.results.D1, h4=state.results.H4, h1=state.results.H1
+  $('narrative').value =
+    'D1 bias: '+d1.bias+'. POI: '+d1.poi+'. '+
+    'H4 bias: '+h4.bias+', '+h4.mss+', FVG '+h4.fvg+', OB '+h4.ob+', Fib '+h4.fib+'. '+
+    'H1 bias: '+h1.bias+', '+h1.ema+'. Drop to '+h1.dropTo+' and wait for confirmation before entry.'
+  setStrip('Narrative built. Generate trade advice now.')
   log('NARRATIVE BUILT')
 }
 function buildAdvice(){
-  if(!$('narrative').value.trim()){setStrip('Build narrative first.');return}
-  const h4=state.results.H4,h1=state.results.H1
-  const dir=h4.bias==='Bullish' ? 'BUY' : h4.bias==='Bearish' ? 'SELL' : 'WAIT'
+  if(!$('narrative').value.trim()){ setStrip('Build narrative first.'); return }
+  const h1=state.results.H1, h4=state.results.H4
+  const dir=h4.bias==='Bullish'?'BUY':'SELL'
   $('ad_dir').textContent=dir
-  $('ad_entry').textContent=dir==='BUY' ? 'Wait for '+h1.ltf_recommendation+' bullish reclaim / CRT / break-retest at H1 POI' : dir==='SELL' ? 'Wait for '+h1.ltf_recommendation+' bearish reclaim / CRT / break-retest at H1 POI' : 'No trade'
-  $('ad_sl').textContent=dir==='BUY' ? 'Below H1 / LTF invalidation low' : dir==='SELL' ? 'Above H1 / LTF invalidation high' : 'Locked'
-  $('ad_tp').textContent=dir==='BUY' ? 'TP1 H1 high, TP2 H4 high, TP3 runner' : dir==='SELL' ? 'TP1 H1 low, TP2 H4 low, TP3 runner' : 'Locked'
-  $('ad_ltf').textContent=h1.ltf_recommendation || 'Locked'
-  $('ad_quality').textContent=((h4.confidence+h1.confidence)/2)>=80 ? 'A / strong' : 'B / acceptable'
-  setStrip('Trade advice built. Pull it into the execution trigger.')
+  $('ad_entry').textContent='Entry '+h1.priceMap.entry+' on '+h1.dropTo+' confirmation'
+  $('ad_sl').textContent='SL '+h1.priceMap.sl
+  $('ad_tp').textContent='TP1 '+h1.priceMap.tp1+' | TP2 '+h1.priceMap.tp2
+  $('ad_note').textContent='Do not execute without LTF confirmation.'
+  setStrip('Advice built. Pull into execution trigger.')
   log('TRADE ADVICE BUILT')
 }
-function pullAdvice(){ $('tr_dir').value=$('ad_dir').textContent==='BUY'?'BUY':$('ad_dir').textContent==='SELL'?'SELL':''; $('tr_tf').value=$('ad_ltf').textContent==='M15'?'M15':$('ad_ltf').textContent==='M1'?'M1':$('ad_ltf').textContent==='H1'?'H1':'M5'; log('TRADE ADVICE PULLED INTO TRIGGER') }
-function calcRR(){ const entry=Number($('tr_entry').value), sl=Number($('tr_sl').value), tp=Number($('tr_tp').value); if([entry,sl,tp].some(isNaN)||Math.abs(entry-sl)===0){$('tr_rr').value='';return} $('tr_rr').value=(Math.abs(tp-entry)/Math.abs(entry-sl)).toFixed(2)+'R' }
-function armTrade(){ if(!$('tr_dir').value||!$('tr_entry').value||!$('tr_sl').value||!$('tr_tp').value){setStrip('Complete direction, entry, SL and TP first.');return} calcRR(); $('m_dir').textContent=$('tr_dir').value; $('m_tf').textContent=$('tr_tf').value; $('m_entry').textContent=$('tr_entry').value; $('m_sl').textContent=$('tr_sl').value; $('m_tp').textContent=$('tr_tp').value; $('m_rr').textContent=$('tr_rr').value||'--'; $('modalWrap').style.display='flex'; state.armed=true; $('k_exec').textContent='Armed'; log('TRADE ARMED') }
-function executeTrade(){ $('modalWrap').style.display='none'; $('k_exec').textContent='Executed'; setStrip('Trade confirmed in manual bridge mode. Execute it on broker manually.'); log('TRADE EXECUTION CONFIRMED') }
-function cancelTrade(){ $('modalWrap').style.display='none'; state.armed=false; $('k_exec').textContent='Idle'; setStrip('Armed trade cancelled.'); log('ARMED TRADE CANCELLED') }
-function resetAll(){
-  state.stage='D1'; state.d1Done=false; state.h4Done=false; state.h1Done=false; state.armed=false; state.results={D1:null,H4:null,H1:null}
-  ;['previewD1','previewH4','previewH1'].forEach((id,idx)=>{$(id).innerHTML='<div class="placeholder">Upload '+(['D1','H4','H1'][idx])+' chart screenshot</div>'})
-  ;['statusD1','statusH4','statusH1'].forEach((id,idx)=>{$(id).textContent='Status: waiting for '+(['D1','H4','H1'][idx])+' upload'})
-  ;['fileD1','fileH4','fileH1','narrative','tr_entry','tr_sl','tr_tp','tr_rr'].forEach(id=>{ if($(id)) $(id).value='' })
-  ;['d1_bias','d1_poi','d1_pd','d1_expect','d1_conf','d1_notes','h4_bias','h4_poi','h4_mss','h4_fvg','h4_ob','h4_fib','h4_expect','h4_conf','h1_bias','h1_ema','h1_poi','h1_expect','h1_ltf','h1_conf','h1_notes'].forEach(id=>{$(id).textContent='--'})
-  ;['ad_dir','ad_entry','ad_sl','ad_tp','ad_ltf','ad_quality'].forEach(id=>{$(id).textContent='Locked'})
-  $('lastJson').textContent='Last model JSON response will appear here.'; $('k_returned').textContent='--'; $('k_exec').textContent='Idle'
-  setStage(); setStrip('Session reset. Upload D1 screenshot, then Analyse D1.'); log('SESSION RESET')
+function pullTrigger(){
+  const h1=state.results.H1
+  if(!h1){ setStrip('Complete H1 first.'); return }
+  $('tr_dir').value=$('ad_dir').textContent==='BUY'?'BUY':'SELL'
+  $('tr_tf').value='M5'
+  $('tr_entry').value=h1.priceMap.entry
+  $('tr_sl').value=h1.priceMap.sl
+  $('tr_tp').value=h1.priceMap.tp1
+  calcRR()
+  log('ADVICE PULLED TO TRIGGER')
 }
-preview('fileD1','previewD1','statusD1','D1'); preview('fileH4','previewH4','statusH4','H4'); preview('fileH1','previewH1','statusH1','H1')
-$('analyseD1Btn').onclick=()=>analyse('D1'); $('analyseH4Btn').onclick=()=>analyse('H4'); $('analyseH1Btn').onclick=()=>analyse('H1')
-$('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullAdviceBtn').onclick=pullAdvice
-$('armBtn').onclick=armTrade; $('execBtn').onclick=()=>{ if(!state.armed){ setStrip('Arm the trade first.'); return } $('modalWrap').style.display='flex' }; $('cancelBtn').onclick=cancelTrade
-$('m_confirm').onclick=executeTrade; $('m_close').onclick=()=>{$('modalWrap').style.display='none'}; $('m_cancel').onclick=cancelTrade
-$('resetBtn').onclick=resetAll; $('mockBtn').onclick=()=>{ state.apiMode='Mock'; $('apiMode').textContent='Mock'; log('MOCK VISION MODE ACTIVE') }
+function calcRR(){
+  const entry=Number($('tr_entry').value), sl=Number($('tr_sl').value), tp=Number($('tr_tp').value)
+  if([entry,sl,tp].some(isNaN)||Math.abs(entry-sl)===0){ $('tr_rr').value=''; return }
+  $('tr_rr').value=(Math.abs(tp-entry)/Math.abs(entry-sl)).toFixed(2)+'R'
+}
+function armTrade(){ if(!$('tr_dir').value||!$('tr_entry').value||!$('tr_sl').value||!$('tr_tp').value){ setStrip('Complete trigger fields first.'); return } state.armed=true; log('TRADE ARMED') }
+function execTrade(){ if(!state.armed){ setStrip('Arm trade first.'); return } log('TRADE EXECUTION CONFIRMED'); setStrip('Manual trade confirmed. Execute on broker.'); }
+function cancelTrade(){ state.armed=false; log('ARMED TRADE CANCELLED'); setStrip('Trade cancelled.') }
+function startLive(){
+  state.feed=true
+  $('feedLbl').textContent='Mock Live'
+  setStrip('Live chart window started. D1 is ready first.')
+  ensureDataset('D1'); renderChart(); setStages()
+  log('LIVE CHART WINDOW STARTED')
+}
+function resetAll(){
+  state.feed=False
+}
+function hardReset(){
+  state.feed=false; state.armed=false; state.symbol='1HZ10V'; state.currentTf='D1'; state.stage='D1'
+  state.completed={D1:false,H4:false,H1:false}; state.results={D1:null,H4:null,H1:null}; state.datasets={}
+  $('d1_bias').textContent='--'; $('d1_poi').textContent='--'; $('h4_bias').textContent='--'; $('h4_mss').textContent='--'; $('h4_fvg').textContent='--'; $('h4_ob').textContent='--'; $('h4_fib').textContent='--'; $('h1_bias').textContent='--'; $('h1_ema').textContent='--'; $('drop_to').textContent='--'
+  $('priceMapBody').innerHTML=''; $('narrative').value=''
+  ;['ad_dir','ad_entry','ad_sl','ad_tp','ad_note'].forEach(id=>$(id).textContent='Locked')
+  ;['tr_entry','tr_sl','tr_tp','tr_rr'].forEach(id=>$(id).value='')
+  $('visibleTf').textContent='D1'; $('livePrice').textContent='--'; $('emaBias').textContent='--'; $('rsiVal').textContent='--'; $('regimeVal').textContent='--'
+  const ctx=$('chartCanvas').getContext('2d'); ctx.clearRect(0,0,$('chartCanvas').width,$('chartCanvas').height)
+  setStages(); setStrip('Session reset. Start live window again.'); log('SESSION RESET')
+}
+$('connectBtn').onclick=startLive
+$('resetBtn').onclick=hardReset
+$('btnD1').onclick=()=>setTf('D1')
+$('btnH4').onclick=()=>setTf('H4')
+$('btnH1').onclick=()=>setTf('H1')
+$('btnM5').onclick=()=>setTf('M5')
+$('scanCurrentBtn').onclick=()=>scanTf(state.currentTf)
+$('buildNarrativeBtn').onclick=buildNarrative
+$('buildAdviceBtn').onclick=buildAdvice
+$('pullTriggerBtn').onclick=pullTrigger
+$('armBtn').onclick=armTrade
+$('execBtn').onclick=execTrade
+$('cancelBtn').onclick=cancelTrade
 ;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input', calcRR))
-$('k_requested').textContent=state.symbol; setStage(); log('V9.0 BACKEND-READY VISUAL SCANNER SCAFFOLD LOADED')
+$('symbolSel').addEventListener('change', function(){
+  const val=this.value
+  state.symbol = val.includes('1HZ25V') ? '1HZ25V' : val.includes('1HZ75V') ? '1HZ75V' : '1HZ10V'
+  hardReset()
+  log('SYMBOL SET TO '+state.symbol)
+})
+setStages()
+log('V9.2 LIVE CHART WINDOW + TOP-DOWN SCANNER SHELL LOADED')
 })();
 </script>
 </body>
