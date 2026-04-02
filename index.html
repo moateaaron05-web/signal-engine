@@ -1,34 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI Love@Fx Pro — v9.3.3 Manual Drawing Tools</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Love@Fx Pro — v9.3.4 Chart Fidelity Fix</title>
 <style>
-:root{
-  --bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;
-  --green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;
-  --bull:#00bfff; /* deep sky blue */
-  --bear:#2e8b57; /* sea green */
-  --ema1:#5aaef7; --ema2:#d6a14c;
-}
+:root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--bull:#00bfff;--bear:#2e8b57;--ema1:#5aaef7;--ema2:#d6a14c}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
-.wrap{max-width:1880px;margin:0 auto;padding:14px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.main{display:grid;grid-template-columns:1.78fr .82fr;gap:12px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}.row5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.row6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.card{background:#0d1b2d;border:1px solid #27476f;border-radius:16px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.22)}.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}.title{font-size:28px;font-weight:800}.sub{font-size:12px;color:#9fb3d1}.label{font-size:12px;color:#9fb3d1;text-transform:uppercase}.value{font-size:20px;font-weight:900}.small{font-size:11px;color:#9fb3d1}
-.btn,select,textarea,input{width:100%;background:#0f2138;color:#e9f2ff;border:1px solid #27476f;border-radius:12px;padding:10px 12px;font-weight:700}textarea{min-height:96px;resize:vertical}.btn{cursor:pointer}.good{background:linear-gradient(135deg,#157f4a,#2fd07f)}.primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}.warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}.danger{background:linear-gradient(135deg,#8a2430,#ff6b6b)}
+.wrap{max-width:1880px;margin:0 auto;padding:12px}.grid{display:grid;gap:12px}.top{grid-template-columns:2fr repeat(5,1fr)}.main{display:grid;grid-template-columns:1.75fr .85fr;gap:12px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}.row5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.row6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.card{background:#0d1b2d;border:1px solid #27476f;border-radius:16px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.22)}.brand{display:flex;gap:12px;align-items:center}.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#58c2ff,#6c67ff);display:flex;align-items:center;justify-content:center;font-weight:800}.title{font-size:26px;font-weight:800}.sub{font-size:12px;color:#9fb3d1}.label{font-size:12px;color:#9fb3d1;text-transform:uppercase}.value{font-size:19px;font-weight:900}.small{font-size:11px;color:#9fb3d1}
+.btn,select,textarea,input{width:100%;background:#0f2138;color:#e9f2ff;border:1px solid #27476f;border-radius:12px;padding:10px 12px;font-weight:700}textarea{min-height:88px;resize:vertical}.btn{cursor:pointer}.good{background:linear-gradient(135deg,#157f4a,#2fd07f)}.primary{background:linear-gradient(135deg,#1b74ff,#2cb9ff)}.warn{background:linear-gradient(135deg,#98651f,#f0b44d);color:#07111f}.danger{background:linear-gradient(135deg,#8a2430,#ff6b6b)}
 .stage{padding:10px;border-radius:12px;background:#162b48;border:1px solid #27476f;font-size:12px;font-weight:800;text-align:center}.active{outline:2px solid #48a8ff}.done{outline:2px solid #2fd07f}.strip{margin:12px 0;padding:12px 14px;border-radius:14px;border:1px solid #27476f;background:linear-gradient(90deg,rgba(240,180,77,.14),rgba(72,168,255,.08));font-weight:900}
-.tablewrap{max-height:360px;overflow:auto;border-radius:12px;border:1px solid #27476f}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left;vertical-align:top}th{position:sticky;top:0;background:#132743}
-.chartShell{min-height:1080px;border-radius:16px;border:1px solid #27476f;background:linear-gradient(180deg,#0a1628,#0b1a30);padding:12px;display:flex;flex-direction:column;gap:10px}.plotWrap{position:relative;height:620px;border-radius:14px;background:#091626;border:1px solid #27476f;overflow:hidden}
-.canvas{position:absolute;left:0;top:0;width:100%;height:100%}
-.kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.kpi .card{padding:10px}.badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid #27476f;background:#162b48}.api{font-family:Consolas,monospace;font-size:12px;background:#091626;border:1px solid #27476f;border-radius:12px;padding:10px;white-space:pre-wrap}.mt5note{font-size:11px;color:#9fb3d1;padding:8px 10px;border:1px dashed #27476f;border-radius:12px;background:#0a1728}
-.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#162b48;border:1px solid #27476f;font-size:11px;font-weight:800}.toolOn{outline:2px solid #2fd07f}
-@media(max-width:1440px){.top,.main,.row2,.row3,.row4,.row5,.row6,.kpi{grid-template-columns:1fr}}
+.tablewrap{max-height:320px;overflow:auto;border-radius:12px;border:1px solid #27476f}table{width:100%;border-collapse:collapse}th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;text-align:left;vertical-align:top}th{position:sticky;top:0;background:#132743}
+.chartShell{min-height:1040px;border-radius:16px;border:1px solid #27476f;background:linear-gradient(180deg,#0a1628,#0b1a30);padding:12px;display:flex;flex-direction:column;gap:10px}.plotWrap{position:relative;height:620px;border-radius:14px;background:#091626;border:1px solid #27476f;overflow:hidden}.canvas{position:absolute;left:0;top:0;width:100%;height:100%}
+.kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.kpi .card{padding:10px}.badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;border:1px solid #27476f;background:#162b48}.api{font-family:Consolas,monospace;font-size:12px;background:#091626;border:1px solid #27476f;border-radius:12px;padding:10px;white-space:pre-wrap}.toolOn{outline:2px solid #2fd07f}.mobileSticky{display:none}
+@media (max-width:980px){.wrap{padding:8px}.top,.main,.row2,.row3,.row4,.row5,.row6,.kpi{grid-template-columns:1fr}.title{font-size:20px}.value{font-size:18px}.plotWrap{height:360px}.chartShell{min-height:auto}.mobileSticky{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;bottom:0;z-index:20;padding:8px;background:rgba(8,17,31,.95);backdrop-filter:blur(6px);border-top:1px solid #27476f;margin-top:12px}.mobileSticky .btn{padding:12px 10px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.3.3 MANUAL DRAW TOOLS</span></div><div class="sub">Manual chart drawings before scan | Descriptive price map | Updated candle colours</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.3.4 FIDELITY FIX</span></div><div class="sub">MT5-style structure rendering | candle sanity guard | smartphone-ready layout</div></div></div></div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Offline</div></div>
     <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Current TF</div><div id="currTfLbl" class="value">D1</div></div>
@@ -38,10 +30,10 @@
 
   <div class="card" style="margin-top:12px">
     <div class="row3"><div id="stage1" class="stage active">1. D1 Scan First</div><div id="stage2" class="stage">2. H4 Scan Second</div><div id="stage3" class="stage">3. H1 Scan Third</div></div>
-    <div class="small" style="margin-top:8px">Fib is no longer permanently drawn on H4. You can draw it manually before scanning. Same for lines and zones.</div>
+    <div class="small" style="margin-top:8px">This build blocks irrational tick-to-bar redraws. If structure desync is detected, the chart freezes instead of printing nonsense.</div>
   </div>
 
-  <div id="strip" class="strip">Connect live first. Draw your manual tools if needed. Then scan in sequence D1 → H4 → H1.</div>
+  <div id="strip" class="strip">Connect live first. Fidelity guard is active. If incoming tick is too far from the active bar structure, redraw is blocked and the chart is frozen until you refresh TF data.</div>
 
   <div class="main" style="margin-top:12px">
     <div class="chartShell">
@@ -73,7 +65,7 @@
         <div><div class="label">Fib Reference Selector</div><select id="fibSelector"><option value="auto" selected>Auto from scan</option><option value="23.6">Fib 23.6</option><option value="38.2">Fib 38.2</option><option value="50.0">Fib 50.0</option><option value="61.8">Fib 61.8</option><option value="78.6">Fib 78.6</option></select></div>
         <div><div class="label">HTF Zone Overlay</div><select id="overlaySelector"><option value="both" selected>D1 + H4 zones</option><option value="d1">D1 only</option><option value="h4">H4 only</option><option value="off">Overlay off</option></select></div>
         <div><div class="label">Active Tool</div><input id="activeToolLbl" readonly value="None"></div>
-        <div class="mt5note">Candle colours updated: up = deep sky blue, down = sea green</div>
+        <div><div class="label">Chart State</div><input id="chartState" readonly value="Stable"></div>
       </div>
 
       <div class="plotWrap">
@@ -138,11 +130,18 @@
   </div>
 
   <div class="card" style="margin-top:12px"><div class="label">Signal History</div><div id="history" class="tablewrap" style="padding:10px;max-height:220px"></div></div>
+
+  <div class="mobileSticky">
+    <button id="mobileConnect" class="btn good">Connect</button>
+    <button id="mobileScan" class="btn primary">Scan</button>
+    <button id="mobileNarr" class="btn primary">Narrative</button>
+    <button id="mobileAdvice" class="btn primary">Advice</button>
+  </div>
 </div>
 
 <script>
 (function(){
-const state={socket:null,connected:false,symbol:'1HZ10V',currentTf:'D1',feedLive:false,armed:false,completed:{D1:false,H4:false,H1:false},results:{D1:null,H4:null,H1:null},candles:{},reqId:1000,pending:new Map(),latestTick:null,tradeLog:[],activeTool:null,drawings:{D1:[],H4:[],H1:[],M5:[]},draft:null}
+const state={socket:null,connected:false,feedLive:false,symbol:'1HZ10V',currentTf:'D1',armed:false,completed:{D1:false,H4:false,H1:false},results:{D1:null,H4:null,H1:null},candles:{},reqId:1000,pending:new Map(),latestTick:null,tradeLog:[],activeTool:null,drawings:{D1:[],H4:[],H1:[],M5:[]},draft:null,plot:null,guardBlocked:false,lastAcceptedTick:null}
 const TF={D1:{granularity:86400,count:120},H4:{granularity:14400,count:160},H1:{granularity:3600,count:180},M5:{granularity:300,count:220},M1:{granularity:60,count:260}}
 function $(id){return document.getElementById(id)}
 function log(msg){$('history').innerHTML='<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">'+new Date().toLocaleTimeString()+' | '+msg+'</div>'+$('history').innerHTML}
@@ -156,29 +155,54 @@ currentTf: ${state.currentTf}
 nextRequired: ${req}
 loaded TFs: ${Object.keys(state.candles).filter(k=>state.candles[k]?.length).join(', ') || 'none'}
 latestTick: ${state.latestTick ?? '--'}
+lastAcceptedTick: ${state.lastAcceptedTick ?? '--'}
+guardBlocked: ${state.guardBlocked}
 overlay: ${$('overlaySelector').value}
 fibSelector: ${$('fibSelector').value}
 activeTool: ${state.activeTool || 'none'}
-drawings on TF: ${(state.drawings[state.currentTf]||[]).length}
 ${extra}`.trim()}
 function send(msg){if(!state.socket||state.socket.readyState!==1) throw new Error('Socket not open'); state.socket.send(JSON.stringify(msg))}
 function sendReq(msg){return new Promise((resolve,reject)=>{const req_id=++state.reqId; msg.req_id=req_id; state.pending.set(req_id,{resolve,reject}); try{send(msg)}catch(e){state.pending.delete(req_id); reject(e)}; setTimeout(()=>{if(state.pending.has(req_id)){state.pending.delete(req_id); reject(new Error('Timed out'))}},10000)})}
-function connectLive(){const endpoint=$('endpoint').value.trim()||'wss://ws.derivws.com/websockets/v3'; const appId=$('appId').value.trim()||'1089'; try{if(state.socket) state.socket.close()}catch(e){} state.connected=false; state.feedLive=false; $('feedLbl').textContent='Connecting'; updateAdapterState('connecting...'); setStrip('Connecting live websocket...'); const url=endpoint+(endpoint.includes('?')?'&':'?')+'app_id='+encodeURIComponent(appId); const ws=new WebSocket(url); state.socket=ws;
-ws.onopen=async()=>{state.connected=true; $('feedLbl').textContent='Connected'; log('LIVE SOCKET OPEN'); updateAdapterState('socket open'); setStrip('Live connected. Loading D1 data first...'); try{await subscribeTicks(); await loadTf('D1',true); state.currentTf='D1'; renderChart(); setStages(); setStrip('D1 loaded from live adapter. Scan D1 first.')}catch(err){log('LIVE INIT ERROR: '+err.message); setStrip('Live socket opened but candle history failed. Falling back to generated bars.'); seedSynthetic('D1'); renderChart(); updateAdapterState('history failed, using synthetic fallback')}}
-ws.onmessage=(ev)=>{let msg; try{msg=JSON.parse(ev.data)}catch(e){return}
-if(typeof msg.req_id!=='undefined' && state.pending.has(msg.req_id)){const p=state.pending.get(msg.req_id); state.pending.delete(msg.req_id); p.resolve(msg)}
-if(msg.error){log('API ERROR: '+msg.error.message); updateAdapterState('api error: '+msg.error.message); return}
-if(msg.tick && typeof msg.tick.quote==='number'){state.feedLive=true; $('feedLbl').textContent='Live'; state.latestTick=msg.tick.quote; $('livePrice').textContent=msg.tick.quote.toFixed(3); updateLiveBar(msg.tick.quote); renderStats(); renderChart()}}
-ws.onerror=()=>{$('feedLbl').textContent='Error'; updateAdapterState('socket error'); log('SOCKET ERROR')}
-ws.onclose=()=>{state.connected=false; state.feedLive=false; $('feedLbl').textContent='Offline'; updateAdapterState('socket closed'); log('SOCKET CLOSED')}
+function connectLive(){
+  const endpoint=$('endpoint').value.trim()||'wss://ws.derivws.com/websockets/v3'
+  const appId=$('appId').value.trim()||'1089'
+  try{if(state.socket) state.socket.close()}catch(e){}
+  state.connected=false; state.feedLive=false; $('feedLbl').textContent='Connecting'; updateAdapterState('connecting...'); setStrip('Connecting live websocket...')
+  const url=endpoint+(endpoint.includes('?')?'&':'?')+'app_id='+encodeURIComponent(appId)
+  const ws=new WebSocket(url); state.socket=ws
+  ws.onopen=async()=>{state.connected=true; $('feedLbl').textContent='Connected'; log('LIVE SOCKET OPEN'); updateAdapterState('socket open'); setStrip('Live connected. Loading D1 data first...'); try{await subscribeTicks(); await loadTf('D1',true); state.currentTf='D1'; renderChart(); setStages(); setStrip('D1 loaded from live adapter. Scan D1 first.')}catch(err){log('LIVE INIT ERROR: '+err.message); setStrip('Live socket opened but candle history failed. Using fallback bars.'); seedSynthetic('D1'); renderChart(); updateAdapterState('history failed, using synthetic fallback')}}
+  ws.onmessage=(ev)=>{let msg; try{msg=JSON.parse(ev.data)}catch(e){return}
+    if(typeof msg.req_id!=='undefined' && state.pending.has(msg.req_id)){const p=state.pending.get(msg.req_id); state.pending.delete(msg.req_id); p.resolve(msg)}
+    if(msg.error){log('API ERROR: '+msg.error.message); updateAdapterState('api error: '+msg.error.message); return}
+    if(msg.tick && typeof msg.tick.quote==='number'){state.feedLive=true; $('feedLbl').textContent='Live'; state.latestTick=msg.tick.quote; $('livePrice').textContent=msg.tick.quote.toFixed(3); updateLiveBarWithGuard(msg.tick.quote); renderStats(); renderChart()}
+  }
+  ws.onerror=()=>{$('feedLbl').textContent='Error'; updateAdapterState('socket error'); log('SOCKET ERROR')}
+  ws.onclose=()=>{state.connected=false; state.feedLive=false; $('feedLbl').textContent='Offline'; updateAdapterState('socket closed'); log('SOCKET CLOSED')}
 }
 async function subscribeTicks(){const res=await sendReq({ticks:state.symbol,subscribe:1}); if(res.error) throw new Error(res.error.message); log('TICK SUBSCRIBED: '+state.symbol); updateAdapterState('tick stream active')}
-async function loadTf(tf,force=false){if(state.candles[tf]?.length && !force){state.currentTf=tf; $('visibleTf').textContent=tf; renderStats(); renderChart(); setStages(); log('TF WINDOW LOADED: '+tf); return}
-if(!state.connected){seedSynthetic(tf); state.currentTf=tf; $('visibleTf').textContent=tf; renderStats(); renderChart(); setStages(); log('TF WINDOW LOADED ON SYNTHETIC FALLBACK: '+tf); return}
-const cfg=TF[tf]; const req={ticks_history:state.symbol,adjust_start_time:1,count:cfg.count,end:'latest',style:'candles',granularity:cfg.granularity}; const res=await sendReq(req); if(res.error) throw new Error(res.error.message)
-let candles=[]; if(Array.isArray(res.candles)){candles=res.candles.map(c=>({epoch:c.epoch,o:Number(c.open),h:Number(c.high),l:Number(c.low),c:Number(c.close)}))}
-if(!candles.length){seedSynthetic(tf)} else {state.candles[tf]=candles; updateAdapterState('loaded '+tf+' from API')}
-state.currentTf=tf; $('visibleTf').textContent=tf; renderStats(); renderChart(); setStages(); log('TF WINDOW LOADED: '+tf)}
+async function loadTf(tf,force=false){
+  if(state.candles[tf]?.length && !force){state.currentTf=tf; $('visibleTf').textContent=tf; renderStats(); renderChart(); setStages(); log('TF WINDOW LOADED: '+tf); return}
+  if(!state.connected){seedSynthetic(tf); state.currentTf=tf; $('visibleTf').textContent=tf; renderStats(); renderChart(); setStages(); log('TF WINDOW LOADED ON SYNTHETIC FALLBACK: '+tf); return}
+  const cfg=TF[tf]
+  const res=await sendReq({ticks_history:state.symbol,adjust_start_time:1,count:cfg.count,end:'latest',style:'candles',granularity:cfg.granularity})
+  if(res.error) throw new Error(res.error.message)
+  let candles=[]
+  if(Array.isArray(res.candles)){candles=res.candles.map(c=>({epoch:Number(c.epoch),o:Number(c.open),h:Number(c.high),l:Number(c.low),c:Number(c.close)}))}
+  candles = normalizeCandles(candles)
+  if(!candles.length) seedSynthetic(tf); else state.candles[tf]=candles
+  state.currentTf=tf; $('visibleTf').textContent=tf; state.guardBlocked=false; $('chartState').value='Stable'; updateAdapterState('loaded '+tf+' from API'); renderStats(); renderChart(); setStages(); log('TF WINDOW LOADED: '+tf)
+}
+function normalizeCandles(candles){
+  if(!candles || !candles.length) return []
+  candles.sort((a,b)=>a.epoch-b.epoch)
+  const out=[]
+  for(const c of candles){
+    if([c.o,c.h,c.l,c.c].some(v=>!Number.isFinite(v))) continue
+    const high=Math.max(c.o,c.h,c.l,c.c), low=Math.min(c.o,c.h,c.l,c.c)
+    out.push({epoch:c.epoch,o:c.o,h:high,l:low,c:c.c})
+  }
+  return out
+}
 function seedSynthetic(tf){const cfg=TF[tf]||TF.H1; let p=9980+Math.random()*15; const arr=[]; for(let i=0;i<cfg.count;i++){const drift=(Math.random()-0.49)*Math.max(0.15,cfg.granularity/86400*4); const o=p; p+=drift; const c=p; const h=Math.max(o,c)+Math.random()*1.2; const l=Math.min(o,c)-Math.random()*1.2; arr.push({epoch:Date.now()/1000-(cfg.count-i)*cfg.granularity,o,h,l,c})} state.candles[tf]=arr}
 function allowedTf(tf){const req=nextRequired(); if(req==='DONE') return true; if(tf===req) return true; if(tf==='M5') return state.completed.H1; return false}
 function setTf(tf){if(!allowedTf(tf)){setStrip('Top-down lock active. Complete '+nextRequired()+' first.'); log('TF SWITCH BLOCKED: '+tf); return} loadTf(tf).catch(err=>{log('LOAD TF ERROR: '+err.message); setStrip('Could not load '+tf+' from API. Using fallback.'); seedSynthetic(tf); state.currentTf=tf; $('visibleTf').textContent=tf; renderStats(); renderChart()})}
@@ -192,68 +216,122 @@ function detectFVG(arr){if(arr.length<3) return null; for(let i=arr.length-1;i>=
 function detectOrderBlock(arr,bias){if(arr.length<8) return null; const recent=arr.slice(-8); if(bias==='Bullish'){for(let i=recent.length-2;i>=0;i--){const b=recent[i]; if(b.c<b.o) return {low:b.l,high:b.o,type:'buy opportunity'}}} else {for(let i=recent.length-2;i>=0;i--){const b=recent[i]; if(b.c>b.o) return {low:b.o,high:b.h,type:'sell opportunity'}}} return null}
 function detectMSS(arr){if(arr.length<12) return 'No clear MSS'; const prevHigh=Math.max(...arr.slice(-10,-5).map(x=>x.h)); const prevLow=Math.min(...arr.slice(-10,-5).map(x=>x.l)); const nowHigh=Math.max(...arr.slice(-5).map(x=>x.h)); const nowLow=Math.min(...arr.slice(-5).map(x=>x.l)); if(nowHigh>prevHigh) return 'Bullish MSS candidate'; if(nowLow<prevLow) return 'Bearish MSS candidate'; return 'No clear MSS'}
 function getStats(tf){const arr=state.candles[tf]||[]; const cls=closes(tf); const last=cls.at(-1); const ema20=calcEMA(cls,20); const ema50=calcEMA(cls,50); const rsi=calcRSI(cls,14); let bias='Mixed'; if(last>ema20 && ema20>ema50) bias='Bullish'; else if(last<ema20 && ema20<ema50) bias='Bearish'; const regime=Math.abs((ema20||0)-(ema50||0)) > ((recentSwingHigh(arr,20)-recentSwingLow(arr,20))/10) ? 'Trend':'Range'; return {arr,last,ema20,ema50,rsi,bias,regime}}
-function renderStats(){const s=getStats(state.currentTf); if(!s.arr.length) return; $('livePrice').textContent=(state.latestTick ?? s.last).toFixed(3); $('emaBias').textContent=s.bias; $('rsiVal').textContent=s.rsi?s.rsi.toFixed(1):'--'; $('regimeVal').textContent=((s.rsi||50)>75||(s.rsi||50)<25)?'Exhaustion':s.regime; $('dataState').textContent=state.feedLive?'API':'Fallback'}
 function selectedFibLabel(){return $('fibSelector').value}
 function selectedFibValue(fib){const sel=selectedFibLabel(); if(sel==='23.6') return fib.f236; if(sel==='38.2') return fib.f382; if(sel==='50.0') return fib.f50; if(sel==='61.8') return fib.f618; if(sel==='78.6') return fib.f786; return fib.f618}
 function selectedFibText(fib){const sel=selectedFibLabel(); if(sel==='auto') return 'H4 Fib 61.8 = '+fib.f618.toFixed(3); return 'H4 Fib '+sel+' = '+selectedFibValue(fib).toFixed(3)}
+function renderStats(){const s=getStats(state.currentTf); if(!s.arr.length) return; $('livePrice').textContent=(state.latestTick ?? s.last).toFixed(3); $('emaBias').textContent=s.bias; $('rsiVal').textContent=s.rsi?s.rsi.toFixed(1):'--'; $('regimeVal').textContent=((s.rsi||50)>75||(s.rsi||50)<25)?'Exhaustion':s.regime; $('dataState').textContent=state.feedLive?'API':'Fallback'}
 function drawZone(ctx,x1,x2,yTop,yBot,fill,label){ctx.fillStyle=fill; ctx.fillRect(x1,yTop,x2-x1,yBot-yTop); ctx.strokeStyle='rgba(255,255,255,.18)'; ctx.strokeRect(x1,yTop,x2-x1,yBot-yTop); ctx.fillStyle='#e9f2ff'; ctx.font='12px Segoe UI'; ctx.fillText(label,x1+8,yTop+16)}
 function renderChart(){
-const canvas=$('chartCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height; ctx.clearRect(0,0,W,H); ctx.fillStyle='#091626'; ctx.fillRect(0,0,W,H)
-const arr=state.candles[state.currentTf]||[]; if(!arr.length){renderDrawings(); return}
-const highs=arr.map(x=>x.h), lows=arr.map(x=>x.l), max=Math.max(...highs), min=Math.min(...lows), pad=(max-min)*0.08||1, hi=max+pad, lo=min-pad
-const plotX=70, plotY=28, plotW=W-130, plotH=H-100; state.plot={plotX,plotY,plotW,plotH,hi,lo}
-ctx.strokeStyle='rgba(255,255,255,.08)'
-for(let i=0;i<6;i++){const y=plotY+i*(plotH/5); ctx.beginPath(); ctx.moveTo(plotX,y); ctx.lineTo(plotX+plotW,y); ctx.stroke()}
-const cls=arr.map(x=>x.c), ema20Series=[], ema50Series=[]; let p20=cls[0], p50=cls[0], k20=2/21, k50=2/51
-for(let i=0;i<cls.length;i++){p20=cls[i]*k20+p20*(1-k20); p50=cls[i]*k50+p50*(1-k50); ema20Series.push(p20); ema50Series.push(p50)}
-const step=plotW/arr.length; function yOf(v){return plotY+(hi-v)/(hi-lo)*plotH}
-const overlay=$('overlaySelector').value
-if(overlay!=='off'){
- if((overlay==='both'||overlay==='d1') && state.results.D1?.priceMap){const top=Number(state.results.D1.priceMap.fib_50||state.results.D1.priceMap.swing_high), bot=Number(state.results.D1.priceMap.fib_618||state.results.D1.priceMap.poi_price); if(!Number.isNaN(top)&&!Number.isNaN(bot)) drawZone(ctx,plotX,plotX+plotW,yOf(top),yOf(bot),'rgba(72,168,255,.10)','D1 discount / POI')}
- if((overlay==='both'||overlay==='h4') && state.results.H4?.priceMap){const top=Number(state.results.H4.priceMap.ob_high||state.results.H4.priceMap.fib_50), bot=Number(state.results.H4.priceMap.ob_low||state.results.H4.priceMap.fib_618); if(!Number.isNaN(top)&&!Number.isNaN(bot)) drawZone(ctx,plotX+plotW*0.45,plotX+plotW,yOf(top),yOf(bot),'rgba(240,180,77,.10)','H4 reaction zone')}
-}
-arr.forEach((b,i)=>{const x=plotX+i*step+step*0.5; ctx.strokeStyle=b.c>=b.o?'#00bfff':'#2e8b57'; ctx.beginPath(); ctx.moveTo(x,yOf(b.h)); ctx.lineTo(x,yOf(b.l)); ctx.stroke(); ctx.fillStyle=b.c>=b.o?'#00bfff':'#2e8b57'; const top=yOf(Math.max(b.o,b.c)), bot=yOf(Math.min(b.o,b.c)), h=Math.max(2,bot-top); ctx.fillRect(x-step*0.28, top, step*0.56, h)})
-ctx.strokeStyle='#5aaef7'; ctx.lineWidth=2; ctx.beginPath(); ema20Series.forEach((v,i)=>{const x=plotX+i*step+step*0.5,y=yOf(v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y)}); ctx.stroke()
-ctx.strokeStyle='#d6a14c'; ctx.lineWidth=2; ctx.beginPath(); ema50Series.forEach((v,i)=>{const x=plotX+i*step+step*0.5,y=yOf(v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y)}); ctx.stroke()
-const stats=getStats(state.currentTf); ctx.fillStyle='#9fb3d1'; ctx.font='16px Segoe UI'; ctx.fillText(state.symbol+' | '+state.currentTf+' | manual drawing shell',74,18); if(stats.last) ctx.fillText('Last '+stats.last.toFixed(3),W-220,18)
-renderDrawings()
-renderStats()
+  const canvas=$('chartCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#091626'; ctx.fillRect(0,0,W,H)
+  const arr=state.candles[state.currentTf]||[]; if(!arr.length){renderDrawings(); return}
+  const highs=arr.map(x=>x.h), lows=arr.map(x=>x.l), max=Math.max(...highs), min=Math.min(...lows)
+  const pad=(max-min)*0.08||1, hi=max+pad, lo=min-pad
+  const plotX=70, plotY=28, plotW=W-130, plotH=H-100; state.plot={plotX,plotY,plotW,plotH,hi,lo}
+  ctx.strokeStyle='rgba(255,255,255,.08)'
+  for(let i=0;i<6;i++){const y=plotY+i*(plotH/5); ctx.beginPath(); ctx.moveTo(plotX,y); ctx.lineTo(plotX+plotW,y); ctx.stroke()}
+  const cls=arr.map(x=>x.c); const ema20Series=[], ema50Series=[]; let p20=cls[0], p50=cls[0], k20=2/21, k50=2/51
+  for(let i=0;i<cls.length;i++){p20=cls[i]*k20+p20*(1-k20); p50=cls[i]*k50+p50*(1-k50); ema20Series.push(p20); ema50Series.push(p50)}
+  const step=plotW/arr.length; const bodyW=Math.max(2, step*0.58)
+  function yOf(v){return plotY+(hi-v)/(hi-lo)*plotH}
+
+  const overlay=$('overlaySelector').value
+  if(overlay!=='off'){
+    if((overlay==='both'||overlay==='d1') && state.results.D1?.priceMap){
+      const rows=Object.fromEntries(state.results.D1.priceMap)
+      const top=Number(rows['D1 Fib 50.0']||rows['D1 swing high'])
+      const bot=Number(rows['D1 Fib 61.8']||rows['D1 POI price (buy opportunity)'])
+      if(!Number.isNaN(top)&&!Number.isNaN(bot)) drawZone(ctx,plotX,plotX+plotW,yOf(top),yOf(bot),'rgba(72,168,255,.10)','D1 discount / POI')
+    }
+    if((overlay==='both'||overlay==='h4') && state.results.H4?.priceMap){
+      const rows=Object.fromEntries(state.results.H4.priceMap)
+      const top=Number(rows['OB high (sell opportunity)']||rows['OB high (buy opportunity)']||rows['H4 Fib 50.0'])
+      const bot=Number(rows['OB low (sell opportunity)']||rows['OB low (buy opportunity)']||rows['H4 Fib 61.8'])
+      if(!Number.isNaN(top)&&!Number.isNaN(bot)) drawZone(ctx,plotX+plotW*0.45,plotX+plotW,yOf(top),yOf(bot),'rgba(240,180,77,.10)','H4 reaction zone')
+    }
+  }
+
+  arr.forEach((b,i)=>{
+    const x=plotX+i*step+step*0.5
+    ctx.strokeStyle=b.c>=b.o?'#00bfff':'#2e8b57'
+    ctx.beginPath(); ctx.moveTo(x,yOf(b.h)); ctx.lineTo(x,yOf(b.l)); ctx.stroke()
+    ctx.fillStyle=b.c>=b.o?'#00bfff':'#2e8b57'
+    const top=yOf(Math.max(b.o,b.c)), bot=yOf(Math.min(b.o,b.c)), h=Math.max(2,bot-top)
+    ctx.fillRect(x-bodyW/2, top, bodyW, h)
+  })
+
+  ctx.strokeStyle='#5aaef7'; ctx.lineWidth=2
+  ctx.beginPath(); ema20Series.forEach((v,i)=>{const x=plotX+i*step+step*0.5,y=yOf(v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y)}); ctx.stroke()
+  ctx.strokeStyle='#d6a14c'; ctx.lineWidth=2
+  ctx.beginPath(); ema50Series.forEach((v,i)=>{const x=plotX+i*step+step*0.5,y=yOf(v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y)}); ctx.stroke()
+
+  const stats=getStats(state.currentTf)
+  ctx.fillStyle='#9fb3d1'; ctx.font='16px Segoe UI'
+  ctx.fillText(state.symbol+' | '+state.currentTf+' | MT5-style structure shell',74,18)
+  if(stats.last) ctx.fillText('Last '+stats.last.toFixed(3),W-220,18)
+
+  renderDrawings()
+  renderStats()
 }
 function renderDrawings(){
-const canvas=$('drawCanvas'),ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height)
-if(!state.plot) return
-const {plotX,plotY,plotW,plotH,hi,lo}=state.plot
-function yOf(v){return plotY+(hi-v)/(hi-lo)*plotH}
-const drawings=state.drawings[state.currentTf]||[]
-drawings.forEach(d=>{
-  if(d.type==='line'){ctx.strokeStyle='#f0b44d'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(d.x1,d.y1); ctx.lineTo(d.x2,d.y2); ctx.stroke()}
-  if(d.type==='zone'){const x=Math.min(d.x1,d.x2), w=Math.abs(d.x2-d.x1), y=Math.min(d.y1,d.y2), h=Math.abs(d.y2-d.y1); ctx.fillStyle='rgba(72,168,255,.14)'; ctx.fillRect(x,y,w,h); ctx.strokeStyle='rgba(72,168,255,.9)'; ctx.strokeRect(x,y,w,h)}
-  if(d.type==='fib'){const topY=Math.min(d.y1,d.y2), botY=Math.max(d.y1,d.y2), left=Math.min(d.x1,d.x2), right=Math.max(d.x1,d.x2); const h=botY-topY; const levels=[['0.0',0],['23.6',.236],['38.2',.382],['50.0',.5],['61.8',.618],['78.6',.786],['100.0',1]]; ctx.strokeStyle='#e4ca48'; ctx.fillStyle='#e4ca48'; ctx.lineWidth=1.5; ctx.font='13px Segoe UI'; levels.forEach(([lbl,p])=>{const y=topY+h*p; ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(right,y); ctx.stroke(); ctx.fillText(lbl,right+6,y+4)})}
-})
-if(state.draft){
- const d=state.draft
- if(d.type==='line'){ctx.strokeStyle='rgba(240,180,77,.8)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(d.x1,d.y1); ctx.lineTo(d.x2,d.y2); ctx.stroke()}
- if(d.type==='zone'){const x=Math.min(d.x1,d.x2), w=Math.abs(d.x2-d.x1), y=Math.min(d.y1,d.y2), h=Math.abs(d.y2-d.y1); ctx.fillStyle='rgba(72,168,255,.10)'; ctx.fillRect(x,y,w,h); ctx.strokeStyle='rgba(72,168,255,.8)'; ctx.strokeRect(x,y,w,h)}
- if(d.type==='fib'){const topY=Math.min(d.y1,d.y2), botY=Math.max(d.y1,d.y2), left=Math.min(d.x1,d.x2), right=Math.max(d.x1,d.x2); const h=botY-topY; const levels=[0,.236,.382,.5,.618,.786,1]; ctx.strokeStyle='rgba(228,202,72,.8)'; levels.forEach(p=>{const y=topY+h*p; ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(right,y); ctx.stroke()})}
+  const canvas=$('drawCanvas'),ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height)
+  if(!state.plot) return
+  const drawings=state.drawings[state.currentTf]||[]
+  drawings.forEach(d=>{
+    if(d.type==='line'){ctx.strokeStyle='#f0b44d'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(d.x1,d.y1); ctx.lineTo(d.x2,d.y2); ctx.stroke()}
+    if(d.type==='zone'){const x=Math.min(d.x1,d.x2), w=Math.abs(d.x2-d.x1), y=Math.min(d.y1,d.y2), h=Math.abs(d.y2-d.y1); ctx.fillStyle='rgba(72,168,255,.14)'; ctx.fillRect(x,y,w,h); ctx.strokeStyle='rgba(72,168,255,.9)'; ctx.strokeRect(x,y,w,h)}
+    if(d.type==='fib'){const topY=Math.min(d.y1,d.y2), botY=Math.max(d.y1,d.y2), left=Math.min(d.x1,d.x2), right=Math.max(d.x1,d.x2); const h=botY-topY; const levels=[['0.0',0],['23.6',.236],['38.2',.382],['50.0',.5],['61.8',.618],['78.6',.786],['100.0',1]]; ctx.strokeStyle='#e4ca48'; ctx.fillStyle='#e4ca48'; ctx.lineWidth=1.5; ctx.font='13px Segoe UI'; levels.forEach(([lbl,p])=>{const y=topY+h*p; ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(right,y); ctx.stroke(); ctx.fillText(lbl,right+6,y+4)})}
+  })
+  if(state.draft){
+    const d=state.draft
+    if(d.type==='line'){ctx.strokeStyle='rgba(240,180,77,.8)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(d.x1,d.y1); ctx.lineTo(d.x2,d.y2); ctx.stroke()}
+    if(d.type==='zone'){const x=Math.min(d.x1,d.x2), w=Math.abs(d.x2-d.x1), y=Math.min(d.y1,d.y2), h=Math.abs(d.y2-d.y1); ctx.fillStyle='rgba(72,168,255,.10)'; ctx.fillRect(x,y,w,h); ctx.strokeStyle='rgba(72,168,255,.8)'; ctx.strokeRect(x,y,w,h)}
+    if(d.type==='fib'){const topY=Math.min(d.y1,d.y2), botY=Math.max(d.y1,d.y2), left=Math.min(d.x1,d.x2), right=Math.max(d.x1,d.x2); const h=botY-topY; [0,.236,.382,.5,.618,.786,1].forEach(p=>{const y=topY+h*p; ctx.strokeStyle='rgba(228,202,72,.8)'; ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(right,y); ctx.stroke()})}
+  }
 }
+function updateLiveBarWithGuard(q){
+  const arr=state.candles[state.currentTf]
+  if(!arr || !arr.length) return
+  const last=arr[arr.length-1]
+  const recent = arr.slice(-20)
+  const avgRange = Math.max(0.001, recent.reduce((a,b)=>a+(b.h-b.l),0)/recent.length)
+  const hardGuard = avgRange * (state.currentTf==='D1' ? 4 : state.currentTf==='H4' ? 5 : 8)
+  const distanceFromClose = Math.abs(q - last.c)
+  const distanceFromRange = (q > last.h) ? (q-last.h) : (q < last.l ? (last.l-q) : 0)
+  if(distanceFromClose > hardGuard and_false_fix(distanceFromRange > hardGuard)){return}
 }
-function setTool(tool){
- state.activeTool = state.activeTool===tool ? null : tool
- $('activeToolLbl').value = state.activeTool || 'None'
- ;['toolLineBtn','toolZoneBtn','toolFibBtn'].forEach(id=>$(id).classList.remove('toolOn'))
- if(state.activeTool==='line') $('toolLineBtn').classList.add('toolOn')
- if(state.activeTool==='zone') $('toolZoneBtn').classList.add('toolOn')
- if(state.activeTool==='fib') $('toolFibBtn').classList.add('toolOn')
- setStrip(state.activeTool ? ('Active tool: '+state.activeTool+'. Draw on the chart before scanning.') : 'Tool cleared.')
- updateAdapterState('tool changed')
+function and_false_fix(v){return v}
+function guardedUpdate(q){
+  const arr=state.candles[state.currentTf]
+  if(!arr || !arr.length) return
+  const last=arr[arr.length-1]
+  const recent=arr.slice(-20)
+  const avgRange=Math.max(0.001, recent.reduce((a,b)=>a+(b.h-b.l),0)/recent.length)
+  const hardGuard=avgRange*(state.currentTf==='D1'?4:state.currentTf==='H4'?5:8)
+  const distanceFromClose=Math.abs(q-last.c)
+  const distanceFromRange=(q>last.h)?(q-last.h):(q<last.l?(last.l-q):0)
+  if(distanceFromClose>hardGuard && distanceFromRange>hardGuard){
+    state.guardBlocked=true
+    $('chartState').value='Desync blocked'
+    setStrip('Chart desync guard blocked a redraw. Price stays live, chart stays frozen until you refresh TF data.')
+    log('DESYNC GUARD BLOCKED LAST BAR UPDATE')
+    updateAdapterState('desync blocked at '+q.toFixed(3))
+    return
+  }
+  state.guardBlocked=false
+  $('chartState').value='Stable'
+  state.lastAcceptedTick=q
+  last.h=Math.max(last.h,q,last.o,last.c)
+  last.l=Math.min(last.l,q,last.o,last.c)
+  last.c=q
 }
-function updateLiveBar(q){const arr=state.candles[state.currentTf]; if(!arr||!arr.length) return; const last=arr[arr.length-1]; last.h=Math.max(last.h,q); last.l=Math.min(last.l,q); last.c=q}
 function scanCurrent(){const tf=state.currentTf, req=nextRequired(); if(req==='DONE'){setStrip('Scanner already completed.'); return} if(tf!==req){setStrip('Scan '+req+' first.'); log('SCAN BLOCKED: '+tf); return} const s=getStats(tf); if(!s.arr.length){setStrip('No candle data loaded.'); return}
-if(tf==='D1'){const sh=recentSwingHigh(s.arr,30), sl=recentSwingLow(s.arr,30), fib=calcFibLevels(sh,sl); state.results.D1={bias:s.bias,poi:fib.f618.toFixed(3)+' demand/discount zone',zone:`${fib.f618.toFixed(3)} to ${fib.f50.toFixed(3)}`,priceMap:[['Current visible price',s.last.toFixed(3)],['D1 POI price (buy opportunity)',fib.f618.toFixed(3)],['D1 swing high',sh.toFixed(3)],['D1 swing low',sl.toFixed(3)],['D1 Fib 50.0',fib.f50.toFixed(3)],['D1 Fib 61.8',fib.f618.toFixed(3)]]}; $('d1_bias').textContent=state.results.D1.bias; $('d1_poi').textContent=state.results.D1.poi; $('d1_zone').textContent=state.results.D1.zone; state.completed.D1=true; setStrip('D1 scan complete. Load H4 next.')}
-else if(tf==='H4'){const fvg=detectFVG(s.arr), ob=detectOrderBlock(s.arr,s.bias), sh=recentSwingHigh(s.arr,25), sl=recentSwingLow(s.arr,25), fib=calcFibLevels(sh,sl), fibRef=selectedFibText(fib), zlow=(ob?ob.low:fib.f618), zhigh=(ob?ob.high:fib.f50); const fvgType=s.bias==='Bullish'?'buy opportunity':'sell opportunity'; state.results.H4={bias:s.bias,mss:detectMSS(s.arr),fvg:fvg?`${fvg.low.toFixed(3)} to ${fvg.high.toFixed(3)}`:'No clean FVG',ob:ob?`${ob.low.toFixed(3)} to ${ob.high.toFixed(3)}`:'No clean OB',fib:`23.6=${fib.f236.toFixed(3)} | 38.2=${fib.f382.toFixed(3)} | 50.0=${fib.f50.toFixed(3)} | 61.8=${fib.f618.toFixed(3)} | 78.6=${fib.f786.toFixed(3)}`,fibRef:fibRef,zone:`${zlow.toFixed(3)} to ${zhigh.toFixed(3)}`,priceMap:[['H4 Fib 23.6',fib.f236.toFixed(3)],['H4 Fib 38.2',fib.f382.toFixed(3)],['H4 Fib 50.0',fib.f50.toFixed(3)],['H4 Fib 61.8',fib.f618.toFixed(3)],['H4 Fib 78.6',fib.f786.toFixed(3)],['FVG low ('+fvgType+')',fvg?fvg.low.toFixed(3):'--'],['FVG high ('+fvgType+')',fvg?fvg.high.toFixed(3):'--'],['OB low ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.low.toFixed(3):'--'],['OB high ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.high.toFixed(3):'--']]}; $('h4_bias').textContent=state.results.H4.bias; $('h4_mss').textContent=state.results.H4.mss; $('h4_fvg').textContent=state.results.H4.fvg; $('h4_ob').textContent=state.results.H4.ob; $('h4_fib').textContent=state.results.H4.fib; $('h4_fib_ref').textContent=state.results.H4.fibRef; $('h4_zone').textContent=state.results.H4.zone; state.completed.H4=true; setStrip('H4 scan complete. Load H1 next.')}
-else if(tf==='H1'){const entry=s.last+(s.bias==='Bullish'?0.6:-0.6), sl=s.last+(s.bias==='Bullish'?-2.2:2.2), tp1=s.last+(s.bias==='Bullish'?4.8:-4.8), tp2=s.last+(s.bias==='Bullish'?8.4:-8.4); state.results.H1={bias:s.bias,ema:s.last>s.ema20&&s.ema20>s.ema50?'Price above EMA20 & EMA50':s.last<s.ema20&&s.ema20<s.ema50?'Price below EMA20 & EMA50':'Price around EMA cluster',dropTo:'M5',priceMap:[['H1 trigger entry',entry.toFixed(3)],['H1 stop loss',sl.toFixed(3)],['H1 TP1',tp1.toFixed(3)],['H1 TP2',tp2.toFixed(3)]],entry:entry.toFixed(3),sl:sl.toFixed(3),tp1:tp1.toFixed(3),tp2:tp2.toFixed(3)}; $('h1_bias').textContent=state.results.H1.bias; $('h1_ema').textContent=state.results.H1.ema; $('drop_to').textContent='M5'; state.completed.H1=true; setStrip('H1 scan complete. M5 is now unlocked for execution monitoring.')}
-else {setStrip('M5 is for execution monitoring, not top-down scan step.'); return}
-renderPriceMap(); setStages(); renderChart(); log(tf+' SCAN COMPLETE'); updateAdapterState('scan '+tf+' complete')}
+  if(tf==='D1'){const sh=recentSwingHigh(s.arr,30), sl=recentSwingLow(s.arr,30), fib=calcFibLevels(sh,sl); state.results.D1={bias:s.bias,poi:fib.f618.toFixed(3)+' demand/discount zone',zone:`${fib.f618.toFixed(3)} to ${fib.f50.toFixed(3)}`,priceMap:[['Current visible price',s.last.toFixed(3)],['D1 POI price (buy opportunity)',fib.f618.toFixed(3)],['D1 swing high',sh.toFixed(3)],['D1 swing low',sl.toFixed(3)],['D1 Fib 50.0',fib.f50.toFixed(3)],['D1 Fib 61.8',fib.f618.toFixed(3)]]}; $('d1_bias').textContent=state.results.D1.bias; $('d1_poi').textContent=state.results.D1.poi; $('d1_zone').textContent=state.results.D1.zone; state.completed.D1=true; setStrip('D1 scan complete. Load H4 next.')}
+  else if(tf==='H4'){const fvg=detectFVG(s.arr), ob=detectOrderBlock(s.arr,s.bias), sh=recentSwingHigh(s.arr,25), sl=recentSwingLow(s.arr,25), fib=calcFibLevels(sh,sl), fibRef=selectedFibText(fib), zlow=(ob?ob.low:fib.f618), zhigh=(ob?ob.high:fib.f50); const fvgType=s.bias==='Bullish'?'buy opportunity':'sell opportunity'; state.results.H4={bias:s.bias,mss:detectMSS(s.arr),fvg:fvg?`${fvg.low.toFixed(3)} to ${fvg.high.toFixed(3)}`:'No clean FVG',ob:ob?`${ob.low.toFixed(3)} to ${ob.high.toFixed(3)}`:'No clean OB',fib:`23.6=${fib.f236.toFixed(3)} | 38.2=${fib.f382.toFixed(3)} | 50.0=${fib.f50.toFixed(3)} | 61.8=${fib.f618.toFixed(3)} | 78.6=${fib.f786.toFixed(3)}`,fibRef:fibRef,zone:`${zlow.toFixed(3)} to ${zhigh.toFixed(3)}`,priceMap:[['H4 Fib 23.6',fib.f236.toFixed(3)],['H4 Fib 38.2',fib.f382.toFixed(3)],['H4 Fib 50.0',fib.f50.toFixed(3)],['H4 Fib 61.8',fib.f618.toFixed(3)],['H4 Fib 78.6',fib.f786.toFixed(3)],['FVG low ('+fvgType+')',fvg?fvg.low.toFixed(3):'--'],['FVG high ('+fvgType+')',fvg?fvg.high.toFixed(3):'--'],['OB low ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.low.toFixed(3):'--'],['OB high ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.high.toFixed(3):'--']]}; $('h4_bias').textContent=state.results.H4.bias; $('h4_mss').textContent=state.results.H4.mss; $('h4_fvg').textContent=state.results.H4.fvg; $('h4_ob').textContent=state.results.H4.ob; $('h4_fib').textContent=state.results.H4.fib; $('h4_fib_ref').textContent=state.results.H4.fibRef; $('h4_zone').textContent=state.results.H4.zone; state.completed.H4=true; setStrip('H4 scan complete. Load H1 next.')}
+  else if(tf==='H1'){const entry=s.last+(s.bias==='Bullish'?0.6:-0.6), sl=s.last+(s.bias==='Bullish'?-2.2:2.2), tp1=s.last+(s.bias==='Bullish'?4.8:-4.8), tp2=s.last+(s.bias==='Bullish'?8.4:-8.4); state.results.H1={bias:s.bias,ema:s.last>s.ema20&&s.ema20>s.ema50?'Price above EMA20 & EMA50':s.last<s.ema20&&s.ema20<s.ema50?'Price below EMA20 & EMA50':'Price around EMA cluster',dropTo:'M5',priceMap:[['H1 trigger entry',entry.toFixed(3)],['H1 stop loss',sl.toFixed(3)],['H1 TP1',tp1.toFixed(3)],['H1 TP2',tp2.toFixed(3)]],entry:entry.toFixed(3),sl:sl.toFixed(3),tp1:tp1.toFixed(3),tp2:tp2.toFixed(3)}; $('h1_bias').textContent=state.results.H1.bias; $('h1_ema').textContent=state.results.H1.ema; $('drop_to').textContent='M5'; state.completed.H1=true; setStrip('H1 scan complete. M5 is now unlocked for execution monitoring.')}
+  else {setStrip('M5 is for execution monitoring, not top-down scan step.'); return}
+  renderPriceMap(); setStages(); renderChart(); log(tf+' SCAN COMPLETE'); updateAdapterState('scan '+tf+' complete')
+}
 function renderPriceMap(){const body=$('priceMapBody'); body.innerHTML=''; const rows=[...(state.results.D1?.priceMap||[]), ...(state.results.H4?.priceMap||[]), ...(state.results.H1?.priceMap||[])]; rows.forEach(([k,v])=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+k+'</td><td>'+v+'</td>'; body.appendChild(tr)})}
 function buildNarrative(){if(!(state.completed.D1&&state.completed.H4&&state.completed.H1)){setStrip('Complete D1, H4 and H1 scans first.'); return} const d1=state.results.D1,h4=state.results.H4,h1=state.results.H1; $('narrative').value=`D1 bias ${d1.bias}. POI ${d1.poi}. D1 zone ${d1.zone}. H4 bias ${h4.bias}, ${h4.mss}, FVG ${h4.fvg}, OB ${h4.ob}. Reference level: ${h4.fibRef}. H4 zone ${h4.zone}. H1 bias ${h1.bias}, ${h1.ema}. Drop to ${h1.dropTo} and wait for confirmation before entry.`; setStrip('Narrative built. Build trade advice now.'); log('NARRATIVE BUILT')}
 function buildAdvice(){if(!$('narrative').value.trim()){setStrip('Build narrative first.'); return} const h1=state.results.H1,h4=state.results.H4,dir=h4.bias==='Bullish'?'BUY':'SELL'; $('ad_dir').textContent=dir; $('ad_entry').textContent=`Entry ${h1.entry} on ${h1.dropTo} confirmation`; $('ad_sl').textContent=`SL ${h1.sl}`; $('ad_tp').textContent=`TP1 ${h1.tp1} | TP2 ${h1.tp2}`; $('ad_note').textContent=`Do not execute without LTF confirmation. Reference: ${h4.fibRef || 'no fib ref'}`; setStrip('Trade advice built. Pull into trigger.'); log('TRADE ADVICE BUILT')}
@@ -264,18 +342,30 @@ function armTrade(){if(!$('tr_dir').value||!$('tr_entry').value||!$('tr_sl').val
 function execTrade(){if(!state.armed){setStrip('Arm trade first.'); return} const row={time:new Date().toLocaleTimeString(),symbol:state.symbol,tf:$('tr_tf').value,dir:$('tr_dir').value,setup:$('tr_setup').value,fibRef:$('tr_fib_ref').value||'--',entry:$('tr_entry').value,sl:$('tr_sl').value,tp:$('tr_tp').value,rr:$('tr_rr').value||'--',status:$('tr_status').value,notes:$('tr_notes').value||'--'}; state.tradeLog.unshift(row); renderTradeLog(); log('TRADE EXECUTION CONFIRMED + JOURNAL LOGGED'); setStrip('Manual trade confirmed and added to broker-style journal.')}
 function cancelTrade(){state.armed=false; log('ARMED TRADE CANCELLED'); setStrip('Trade cancelled.')}
 function disconnectFeed(){try{if(state.socket) state.socket.close()}catch(e){} state.socket=null; state.connected=false; state.feedLive=false; $('feedLbl').textContent='Offline'; updateAdapterState('feed disconnected'); log('FEED DISCONNECTED')}
-function hardReset(){disconnectFeed(); state.symbol=$('symbolSel').value; state.currentTf='D1'; state.armed=false; state.completed={D1:false,H4:false,H1:false}; state.results={D1:null,H4:null,H1:null}; state.candles={}; state.latestTick=null; state.tradeLog=[]; state.drawings={D1:[],H4:[],H1:[],M5:[]}; state.activeTool=null; state.draft=null; $('activeToolLbl').value='None'; ['toolLineBtn','toolZoneBtn','toolFibBtn'].forEach(id=>$(id).classList.remove('toolOn')); $('visibleTf').textContent='D1'; $('livePrice').textContent='--'; $('emaBias').textContent='--'; $('rsiVal').textContent='--'; $('regimeVal').textContent='--'; $('dataState').textContent='Waiting'; ['d1_bias','d1_poi','d1_zone','h4_bias','h4_mss','h4_fvg','h4_ob','h4_fib','h4_fib_ref','h4_zone','h1_bias','h1_ema','drop_to'].forEach(id=>$(id).textContent='--'); ['ad_dir','ad_entry','ad_sl','ad_tp','ad_note'].forEach(id=>$(id).textContent='Locked'); $('narrative').value=''; $('priceMapBody').innerHTML=''; ['tr_entry','tr_sl','tr_tp','tr_rr','tr_notes','tr_fib_ref'].forEach(id=>$(id).value=''); renderTradeLog(); const ctx=$('chartCanvas').getContext('2d'); ctx.clearRect(0,0,$('chartCanvas').width,$('chartCanvas').height); const dctx=$('drawCanvas').getContext('2d'); dctx.clearRect(0,0,$('drawCanvas').width,$('drawCanvas').height); setStages(); setStrip('Session reset. Connect live first.'); updateAdapterState('reset complete'); log('SESSION RESET')}
+function hardReset(){disconnectFeed(); state.symbol=$('symbolSel').value; state.currentTf='D1'; state.armed=false; state.completed={D1:false,H4:false,H1:false}; state.results={D1:null,H4:null,H1:null}; state.candles={}; state.latestTick=null; state.tradeLog=[]; state.drawings={D1:[],H4:[],H1:[],M5:[]}; state.activeTool=null; state.draft=null; state.guardBlocked=false; state.lastAcceptedTick=null; $('chartState').value='Stable'; $('activeToolLbl').value='None'; ['toolLineBtn','toolZoneBtn','toolFibBtn'].forEach(id=>$(id).classList.remove('toolOn')); $('visibleTf').textContent='D1'; $('livePrice').textContent='--'; $('emaBias').textContent='--'; $('rsiVal').textContent='--'; $('regimeVal').textContent='--'; $('dataState').textContent='Waiting'; ['d1_bias','d1_poi','d1_zone','h4_bias','h4_mss','h4_fvg','h4_ob','h4_fib','h4_fib_ref','h4_zone','h1_bias','h1_ema','drop_to'].forEach(id=>$(id).textContent='--'); ['ad_dir','ad_entry','ad_sl','ad_tp','ad_note'].forEach(id=>$(id).textContent='Locked'); $('narrative').value=''; $('priceMapBody').innerHTML=''; ['tr_entry','tr_sl','tr_tp','tr_rr','tr_notes','tr_fib_ref'].forEach(id=>$(id).value=''); renderTradeLog(); const ctx=$('chartCanvas').getContext('2d'); ctx.clearRect(0,0,$('chartCanvas').width,$('chartCanvas').height); const dctx=$('drawCanvas').getContext('2d'); dctx.clearRect(0,0,$('drawCanvas').width,$('drawCanvas').height); setStages(); setStrip('Session reset. Connect live first.'); updateAdapterState('reset complete'); log('SESSION RESET')}
 function getMousePos(ev){const rect=$('drawCanvas').getBoundingClientRect(); const scaleX=$('drawCanvas').width/rect.width, scaleY=$('drawCanvas').height/rect.height; return {x:(ev.clientX-rect.left)*scaleX, y:(ev.clientY-rect.top)*scaleY}}
 $('drawCanvas').addEventListener('mousedown', ev=>{ if(!state.activeTool) return; const p=getMousePos(ev); state.draft={type:state.activeTool,x1:p.x,y1:p.y,x2:p.x,y2:p.y}; renderDrawings() })
 $('drawCanvas').addEventListener('mousemove', ev=>{ if(!state.draft) return; const p=getMousePos(ev); state.draft.x2=p.x; state.draft.y2=p.y; renderDrawings() })
-window.addEventListener('mouseup', ()=>{ if(!state.draft) return; state.drawings[state.currentTf].push({...state.draft}); state.draft=null; renderDrawings(); log('DRAWING SAVED ON '+state.currentTf.toUpperCase()) })
-$('toolLineBtn').onclick=()=>setTool('line')
-$('toolZoneBtn').onclick=()=>setTool('zone')
-$('toolFibBtn').onclick=()=>setTool('fib')
-$('clearDrawBtn').onclick=()=>{ state.drawings[state.currentTf]=[]; state.draft=null; renderDrawings(); log('DRAWINGS CLEARED ON '+state.currentTf); setStrip('Drawings cleared on current TF.') }
+window.addEventListener('mouseup', ()=>{ if(!state.draft) return; state.drawings[state.currentTf].push({...state.draft}); state.draft=null; renderDrawings(); log('DRAWING SAVED ON '+state.currentTf) })
+function setTool(tool){ state.activeTool = state.activeTool===tool ? null : tool; $('activeToolLbl').value = state.activeTool || 'None'; ['toolLineBtn','toolZoneBtn','toolFibBtn'].forEach(id=>$(id).classList.remove('toolOn')); if(state.activeTool==='line') $('toolLineBtn').classList.add('toolOn'); if(state.activeTool==='zone') $('toolZoneBtn').classList.add('toolOn'); if(state.activeTool==='fib') $('toolFibBtn').classList.add('toolOn'); updateAdapterState('tool changed') }
 
-$('connectBtn').onclick=connectLive; $('disconnectBtn').onclick=disconnectFeed; $('resetBtn').onclick=hardReset; $('btnD1').onclick=()=>setTf('D1'); $('btnH4').onclick=()=>setTf('H4'); $('btnH1').onclick=()=>setTf('H1'); $('btnM5').onclick=()=>setTf('M5'); $('scanBtn').onclick=scanCurrent; $('refreshTfBtn').onclick=()=>loadTf(state.currentTf,true).catch(err=>log('REFRESH ERROR: '+err.message)); $('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullTriggerBtn').onclick=pullTrigger; $('armBtn').onclick=armTrade; $('execBtn').onclick=execTrade; $('cancelBtn').onclick=cancelTrade; $('symbolSel').addEventListener('change',()=>{hardReset(); log('SYMBOL SET TO '+$('symbolSel').value)}); $('fibSelector').addEventListener('change',()=>{renderChart(); if(state.results.H4){const arr=state.candles['H4']||[]; if(arr.length){const sh=recentSwingHigh(arr,25), sl=recentSwingLow(arr,25), fib=calcFibLevels(sh,sl); state.results.H4.fibRef=selectedFibText(fib); $('h4_fib_ref').textContent=state.results.H4.fibRef; log('FIB REFERENCE CHANGED: '+state.results.H4.fibRef)}} updateAdapterState('fib selector changed')}); $('overlaySelector').addEventListener('change',()=>{renderChart(); updateAdapterState('overlay changed'); log('OVERLAY MODE CHANGED: '+$('overlaySelector').value)}); ['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
-setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.3.3 MANUAL DRAW TOOLS + DESCRIPTIVE PRICE MAP + UPDATED CANDLE COLOURS LOADED')
+$('connectBtn').onclick=connectLive; $('disconnectBtn').onclick=disconnectFeed; $('resetBtn').onclick=hardReset
+$('btnD1').onclick=()=>setTf('D1'); $('btnH4').onclick=()=>setTf('H4'); $('btnH1').onclick=()=>setTf('H1'); $('btnM5').onclick=()=>setTf('M5')
+$('scanBtn').onclick=scanCurrent; $('refreshTfBtn').onclick=()=>loadTf(state.currentTf,true).catch(err=>log('REFRESH ERROR: '+err.message))
+$('toolLineBtn').onclick=()=>setTool('line'); $('toolZoneBtn').onclick=()=>setTool('zone'); $('toolFibBtn').onclick=()=>setTool('fib')
+$('clearDrawBtn').onclick=()=>{state.drawings[state.currentTf]=[]; state.draft=null; renderDrawings(); log('DRAWINGS CLEARED ON '+state.currentTf)}
+$('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullTriggerBtn').onclick=pullTrigger
+$('armBtn').onclick=armTrade; $('execBtn').onclick=execTrade; $('cancelBtn').onclick=cancelTrade
+$('mobileConnect').onclick=connectLive; $('mobileScan').onclick=scanCurrent; $('mobileNarr').onclick=buildNarrative; $('mobileAdvice').onclick=buildAdvice
+$('symbolSel').addEventListener('change',()=>{hardReset(); log('SYMBOL SET TO '+$('symbolSel').value)})
+$('fibSelector').addEventListener('change',()=>{if(state.results.H4){const arr=state.candles['H4']||[]; if(arr.length){const sh=recentSwingHigh(arr,25), sl=recentSwingLow(arr,25), fib=calcFibLevels(sh,sl); state.results.H4.fibRef=selectedFibText(fib); $('h4_fib_ref').textContent=state.results.H4.fibRef}} renderChart(); updateAdapterState('fib selector changed')})
+$('overlaySelector').addEventListener('change',()=>{renderChart(); updateAdapterState('overlay changed')})
+;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
+
+// override guard update reference
+updateLiveBarWithGuard = guardedUpdate
+
+setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.3.4 CHART FIDELITY FIX + SMARTPHONE READY LOADED')
 })();
 </script>
 </body>
