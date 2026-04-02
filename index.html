@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Love@Fx Pro — v9.3.4.1 Stable Mobile Fix</title>
+<title>AI Love@Fx Pro — v9.4 Broker Parity Engine</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--bull:#00bfff;--bear:#2e8b57;--ema1:#5aaef7;--ema2:#d6a14c}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
@@ -20,7 +20,7 @@
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.3.4.1 STABLE</span></div><div class="sub">Runtime fix | chart fidelity guard | smartphone-ready layout</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.4 BROKER PARITY</span></div><div class="sub">Persistent trade journal | chart fidelity guard | smartphone-ready layout</div></div></div></div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Offline</div></div>
     <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Current TF</div><div id="currTfLbl" class="value">D1</div></div>
@@ -84,6 +84,12 @@
 
       <div class="card">
         <div class="label">Broker-Style Trade Journal</div>
+        <div class="small" style="margin-bottom:8px">Journal is now saved locally on the device/browser. It survives connectivity loss, page reloads, and session reset until you clear it manually.</div>
+        <div class="row3" style="margin-bottom:10px">
+          <div class="card" style="padding:10px"><div class="label">Saved Trades</div><div id="savedTradeCount" class="value">0</div></div>
+          <div class="card" style="padding:10px"><div class="label">Journal State</div><div id="journalState" class="value">Persistent</div></div>
+          <div><button id="clearJournalBtn" class="btn warn">Clear Saved Journal</button></div>
+        </div>
         <div class="tablewrap" style="max-height:260px"><table><thead><tr><th>Time</th><th>Symbol</th><th>TF</th><th>Dir</th><th>Setup</th><th>Fib Ref</th><th>Entry</th><th>SL</th><th>TP</th><th>RR</th><th>Status</th><th>Notes</th></tr></thead><tbody id="tradeLogBody"></tbody></table></div>
       </div>
     </div>
@@ -142,6 +148,61 @@
 <script>
 (function(){
 const state={socket:null,connected:false,feedLive:false,symbol:'1HZ10V',currentTf:'D1',armed:false,completed:{D1:false,H4:false,H1:false},results:{D1:null,H4:null,H1:null},candles:{},reqId:1000,pending:new Map(),latestTick:null,tradeLog:[],activeTool:null,drawings:{D1:[],H4:[],H1:[],M5:[]},draft:null,plot:null,guardBlocked:false,lastAcceptedTick:null}
+const STORAGE_KEYS={tradeLog:'ai_lovefx_trade_log_v94', prefs:'ai_lovefx_prefs_v94'}
+function saveTradeLog(){
+  try{
+    localStorage.setItem(STORAGE_KEYS.tradeLog, JSON.stringify(state.tradeLog))
+    const countEl = document.getElementById('savedTradeCount')
+    if(countEl) countEl.textContent = String(state.tradeLog.length)
+    const journalEl = document.getElementById('journalState')
+    if(journalEl) journalEl.textContent = 'Persistent'
+  }catch(e){
+    log('SAVE JOURNAL FAILED')
+    const journalEl = document.getElementById('journalState')
+    if(journalEl) journalEl.textContent = 'Save error'
+  }
+}
+function loadTradeLog(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEYS.tradeLog)
+    if(raw){
+      const parsed = JSON.parse(raw)
+      if(Array.isArray(parsed)) state.tradeLog = parsed
+    }
+  }catch(e){
+    state.tradeLog = []
+  }
+}
+function savePrefs(){
+  try{
+    const prefs = {
+      symbol: document.getElementById('symbolSel') ? document.getElementById('symbolSel').value : '1HZ10V',
+      fibSelector: document.getElementById('fibSelector') ? document.getElementById('fibSelector').value : 'auto',
+      overlaySelector: document.getElementById('overlaySelector') ? document.getElementById('overlaySelector').value : 'both'
+    }
+    localStorage.setItem(STORAGE_KEYS.prefs, JSON.stringify(prefs))
+  }catch(e){}
+}
+function loadPrefs(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEYS.prefs)
+    if(!raw) return
+    const prefs = JSON.parse(raw)
+    if(prefs.symbol && document.getElementById('symbolSel')) document.getElementById('symbolSel').value = prefs.symbol
+    if(prefs.fibSelector && document.getElementById('fibSelector')) document.getElementById('fibSelector').value = prefs.fibSelector
+    if(prefs.overlaySelector && document.getElementById('overlaySelector')) document.getElementById('overlaySelector').value = prefs.overlaySelector
+  }catch(e){}
+}
+function clearSavedJournal(){
+  state.tradeLog = []
+  try{ localStorage.removeItem(STORAGE_KEYS.tradeLog) }catch(e){}
+  renderTradeLog()
+  const journalEl = document.getElementById('journalState')
+  if(journalEl) journalEl.textContent = 'Cleared'
+  log('SAVED JOURNAL CLEARED')
+  setStrip('Saved journal cleared manually.')
+}
+
 const TF={D1:{granularity:86400,count:120},H4:{granularity:14400,count:160},H1:{granularity:3600,count:180},M5:{granularity:300,count:220},M1:{granularity:60,count:260}}
 function $(id){return document.getElementById(id)}
 function log(msg){$('history').innerHTML='<div style="padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06)">'+new Date().toLocaleTimeString()+' | '+msg+'</div>'+$('history').innerHTML}
@@ -315,12 +376,21 @@ function buildNarrative(){if(!(state.completed.D1&&state.completed.H4&&state.com
 function buildAdvice(){if(!$('narrative').value.trim()){setStrip('Build narrative first.'); return} const h1=state.results.H1,h4=state.results.H4,dir=h4.bias==='Bullish'?'BUY':'SELL'; $('ad_dir').textContent=dir; $('ad_entry').textContent=`Entry ${h1.entry} on ${h1.dropTo} confirmation`; $('ad_sl').textContent=`SL ${h1.sl}`; $('ad_tp').textContent=`TP1 ${h1.tp1} | TP2 ${h1.tp2}`; $('ad_note').textContent=`Do not execute without LTF confirmation. Reference: ${h4.fibRef || 'no fib ref'}`; setStrip('Trade advice built. Pull into trigger.'); log('TRADE ADVICE BUILT')}
 function pullTrigger(){const h1=state.results.H1; if(!h1){setStrip('Complete H1 first.'); return} $('tr_dir').value=$('ad_dir').textContent==='BUY'?'BUY':'SELL'; $('tr_tf').value='M5'; $('tr_entry').value=h1.entry; $('tr_sl').value=h1.sl; $('tr_tp').value=h1.tp1; $('tr_fib_ref').value=(state.results.H4?.fibRef||''); $('tr_notes').value=(state.results.H4?.fibRef||'')+' | waiting for M5 confirmation'; calcRR(); log('ADVICE PULLED TO TRIGGER')}
 function calcRR(){const entry=Number($('tr_entry').value),sl=Number($('tr_sl').value),tp=Number($('tr_tp').value); if([entry,sl,tp].some(isNaN)||Math.abs(entry-sl)===0){$('tr_rr').value=''; return} $('tr_rr').value=(Math.abs(tp-entry)/Math.abs(entry-sl)).toFixed(2)+'R'}
-function renderTradeLog(){const body=$('tradeLogBody'); body.innerHTML=''; state.tradeLog.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${r.time}</td><td>${r.symbol}</td><td>${r.tf}</td><td>${r.dir}</td><td>${r.setup}</td><td>${r.fibRef}</td><td>${r.entry}</td><td>${r.sl}</td><td>${r.tp}</td><td>${r.rr}</td><td>${r.status}</td><td>${r.notes}</td>`; body.appendChild(tr)})}
+function renderTradeLog(){
+  const body=$('tradeLogBody'); body.innerHTML=''
+  state.tradeLog.forEach(r=>{
+    const tr=document.createElement('tr')
+    tr.innerHTML=`<td>${r.time}</td><td>${r.symbol}</td><td>${r.tf}</td><td>${r.dir}</td><td>${r.setup}</td><td>${r.fibRef}</td><td>${r.entry}</td><td>${r.sl}</td><td>${r.tp}</td><td>${r.rr}</td><td>${r.status}</td><td>${r.notes}</td>`
+    body.appendChild(tr)
+  })
+  const countEl = document.getElementById('savedTradeCount')
+  if(countEl) countEl.textContent = String(state.tradeLog.length)
+}
 function armTrade(){if(!$('tr_dir').value||!$('tr_entry').value||!$('tr_sl').value||!$('tr_tp').value){setStrip('Complete trigger fields first.'); return} state.armed=true; log('TRADE ARMED')}
-function execTrade(){if(!state.armed){setStrip('Arm trade first.'); return} const row={time:new Date().toLocaleTimeString(),symbol:state.symbol,tf:$('tr_tf').value,dir:$('tr_dir').value,setup:$('tr_setup').value,fibRef:$('tr_fib_ref').value||'--',entry:$('tr_entry').value,sl:$('tr_sl').value,tp:$('tr_tp').value,rr:$('tr_rr').value||'--',status:$('tr_status').value,notes:$('tr_notes').value||'--'}; state.tradeLog.unshift(row); renderTradeLog(); log('TRADE EXECUTION CONFIRMED + JOURNAL LOGGED'); setStrip('Manual trade confirmed and added to broker-style journal.')}
+function execTrade(){if(!state.armed){setStrip('Arm trade first.'); return} const row={time:new Date().toLocaleTimeString(),symbol:state.symbol,tf:$('tr_tf').value,dir:$('tr_dir').value,setup:$('tr_setup').value,fibRef:$('tr_fib_ref').value||'--',entry:$('tr_entry').value,sl:$('tr_sl').value,tp:$('tr_tp').value,rr:$('tr_rr').value||'--',status:$('tr_status').value,notes:$('tr_notes').value||'--'}; state.tradeLog.unshift(row); saveTradeLog(); renderTradeLog(); log('TRADE EXECUTION CONFIRMED + JOURNAL LOGGED'); setStrip('Manual trade confirmed and saved to persistent broker-style journal.')}
 function cancelTrade(){state.armed=false; log('ARMED TRADE CANCELLED'); setStrip('Trade cancelled.')}
 function disconnectFeed(){try{if(state.socket) state.socket.close()}catch(e){} state.socket=null; state.connected=false; state.feedLive=false; $('feedLbl').textContent='Offline'; updateAdapterState('feed disconnected'); log('FEED DISCONNECTED')}
-function hardReset(){disconnectFeed(); state.symbol=$('symbolSel').value; state.currentTf='D1'; state.armed=false; state.completed={D1:false,H4:false,H1:false}; state.results={D1:null,H4:null,H1:null}; state.candles={}; state.latestTick=null; state.tradeLog=[]; state.drawings={D1:[],H4:[],H1:[],M5:[]}; state.activeTool=null; state.draft=null; state.guardBlocked=false; state.lastAcceptedTick=null; $('chartState').value='Stable'; $('activeToolLbl').value='None'; ['toolLineBtn','toolZoneBtn','toolFibBtn'].forEach(id=>$(id).classList.remove('toolOn')); $('visibleTf').textContent='D1'; $('livePrice').textContent='--'; $('emaBias').textContent='--'; $('rsiVal').textContent='--'; $('regimeVal').textContent='--'; $('dataState').textContent='Waiting'; ['d1_bias','d1_poi','d1_zone','h4_bias','h4_mss','h4_fvg','h4_ob','h4_fib','h4_fib_ref','h4_zone','h1_bias','h1_ema','drop_to'].forEach(id=>$(id).textContent='--'); ['ad_dir','ad_entry','ad_sl','ad_tp','ad_note'].forEach(id=>$(id).textContent='Locked'); $('narrative').value=''; $('priceMapBody').innerHTML=''; ['tr_entry','tr_sl','tr_tp','tr_rr','tr_notes','tr_fib_ref'].forEach(id=>$(id).value=''); renderTradeLog(); const ctx=$('chartCanvas').getContext('2d'); ctx.clearRect(0,0,$('chartCanvas').width,$('chartCanvas').height); const dctx=$('drawCanvas').getContext('2d'); dctx.clearRect(0,0,$('drawCanvas').width,$('drawCanvas').height); setStages(); setStrip('Session reset. Connect live first.'); updateAdapterState('reset complete'); log('SESSION RESET')}
+function hardReset(){disconnectFeed(); state.symbol=$('symbolSel').value; state.currentTf='D1'; state.armed=false; state.completed={D1:false,H4:false,H1:false}; state.results={D1:null,H4:null,H1:null}; state.candles={}; state.latestTick=null; state.drawings={D1:[],H4:[],H1:[],M5:[]}; state.activeTool=null; state.draft=null; state.guardBlocked=false; state.lastAcceptedTick=null; $('chartState').value='Stable'; $('activeToolLbl').value='None'; ['toolLineBtn','toolZoneBtn','toolFibBtn'].forEach(id=>$(id).classList.remove('toolOn')); $('visibleTf').textContent='D1'; $('livePrice').textContent='--'; $('emaBias').textContent='--'; $('rsiVal').textContent='--'; $('regimeVal').textContent='--'; $('dataState').textContent='Waiting'; ['d1_bias','d1_poi','d1_zone','h4_bias','h4_mss','h4_fvg','h4_ob','h4_fib','h4_fib_ref','h4_zone','h1_bias','h1_ema','drop_to'].forEach(id=>$(id).textContent='--'); ['ad_dir','ad_entry','ad_sl','ad_tp','ad_note'].forEach(id=>$(id).textContent='Locked'); $('narrative').value=''; $('priceMapBody').innerHTML=''; ['tr_entry','tr_sl','tr_tp','tr_rr','tr_notes','tr_fib_ref'].forEach(id=>$(id).value=''); renderTradeLog(); const ctx=$('chartCanvas').getContext('2d'); ctx.clearRect(0,0,$('chartCanvas').width,$('chartCanvas').height); const dctx=$('drawCanvas').getContext('2d'); dctx.clearRect(0,0,$('drawCanvas').width,$('drawCanvas').height); setStages(); setStrip('Session reset. Connect live first.'); updateAdapterState('reset complete'); log('SESSION RESET')}
 function getMousePos(ev){const rect=$('drawCanvas').getBoundingClientRect(); const scaleX=$('drawCanvas').width/rect.width, scaleY=$('drawCanvas').height/rect.height; return {x:(ev.clientX-rect.left)*scaleX, y:(ev.clientY-rect.top)*scaleY}}
 $('drawCanvas').addEventListener('mousedown', ev=>{ if(!state.activeTool) return; const p=getMousePos(ev); state.draft={type:state.activeTool,x1:p.x,y1:p.y,x2:p.x,y2:p.y}; renderDrawings() })
 $('drawCanvas').addEventListener('mousemove', ev=>{ if(!state.draft) return; const p=getMousePos(ev); state.draft.x2=p.x; state.draft.y2=p.y; renderDrawings() })
@@ -334,13 +404,13 @@ $('toolLineBtn').onclick=()=>setTool('line'); $('toolZoneBtn').onclick=()=>setTo
 $('clearDrawBtn').onclick=()=>{state.drawings[state.currentTf]=[]; state.draft=null; renderDrawings(); log('DRAWINGS CLEARED ON '+state.currentTf)}
 $('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullTriggerBtn').onclick=pullTrigger
 $('armBtn').onclick=armTrade; $('execBtn').onclick=execTrade; $('cancelBtn').onclick=cancelTrade
-$('mobileConnect').onclick=connectLive; $('mobileScan').onclick=scanCurrent; $('mobileNarr').onclick=buildNarrative; $('mobileAdvice').onclick=buildAdvice
-$('symbolSel').addEventListener('change',()=>{hardReset(); log('SYMBOL SET TO '+$('symbolSel').value)})
-$('fibSelector').addEventListener('change',()=>{if(state.results.H4){const arr=state.candles['H4']||[]; if(arr.length){const sh=recentSwingHigh(arr,25), sl=recentSwingLow(arr,25), fib=calcFibLevels(sh,sl); state.results.H4.fibRef=selectedFibText(fib); $('h4_fib_ref').textContent=state.results.H4.fibRef}} renderChart(); updateAdapterState('fib selector changed')})
-$('overlaySelector').addEventListener('change',()=>{renderChart(); updateAdapterState('overlay changed')})
+$('mobileConnect').onclick=connectLive; $('mobileScan').onclick=scanCurrent; $('mobileNarr').onclick=buildNarrative; $('mobileAdvice').onclick=buildAdvice; $('clearJournalBtn').onclick=clearSavedJournal
+$('symbolSel').addEventListener('change',()=>{savePrefs(); hardReset(); log('SYMBOL SET TO '+$('symbolSel').value)})
+$('fibSelector').addEventListener('change',()=>{savePrefs(); if(state.results.H4){const arr=state.candles['H4']||[]; if(arr.length){const sh=recentSwingHigh(arr,25), sl=recentSwingLow(arr,25), fib=calcFibLevels(sh,sl); state.results.H4.fibRef=selectedFibText(fib); $('h4_fib_ref').textContent=state.results.H4.fibRef}} renderChart(); updateAdapterState('fib selector changed')})
+$('overlaySelector').addEventListener('change',()=>{savePrefs(); renderChart(); updateAdapterState('overlay changed')})
 ;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
 
-setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.3.4.1 STABLE MOBILE FIX LOADED')
+loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.4 BROKER PARITY ENGINE LOADED')
 })();
 </script>
 </body>
