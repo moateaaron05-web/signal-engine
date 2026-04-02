@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Love@Fx Pro — v9.4.2 Auto Close Logic</title>
+<title>AI Love@Fx Pro — v9.5 Broker-Side Reconciliation + Session Analytics</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--bull:#00bfff;--bear:#2e8b57;--ema1:#5aaef7;--ema2:#d6a14c}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
@@ -20,7 +20,7 @@
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.4.2 AUTO CLOSE</span></div><div class="sub">Auto TP/SL close logic | session dashboard | smartphone-ready layout</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.5 RECON + ANALYTICS</span></div><div class="sub">Reconciliation shell | analytics dashboard | smartphone-ready layout</div></div></div></div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Offline</div></div>
     <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Current TF</div><div id="currTfLbl" class="value">D1</div></div>
@@ -84,7 +84,7 @@
 
       <div class="card">
         <div class="label">Broker-Style Trade Journal</div>
-        <div class="small" style="margin-bottom:8px">Journal is saved locally on the device/browser. Open trades are now auto-closed when live price touches TP or SL on the active symbol.</div>
+        <div class="small" style="margin-bottom:8px">Journal remains persistent. This build adds a reconciliation layer so your app journal can be checked against broker results entered into the reconciliation panel below.</div>
         <div class="row6" style="margin-bottom:10px">
           <div class="card" style="padding:10px"><div class="label">Saved Trades</div><div id="savedTradeCount" class="value">0</div></div>
           <div class="card" style="padding:10px"><div class="label">Session Wins</div><div id="sessionWins" class="value">0</div></div>
@@ -93,13 +93,21 @@
           <div class="card" style="padding:10px"><div class="label">Net R</div><div id="sessionNetR" class="value">0.0R</div></div>
           <div class="card" style="padding:10px"><div class="label">Journal State</div><div id="journalState" class="value">Persistent</div></div>
         </div>
+        <div class="row6" style="margin-bottom:10px">
+          <div class="card" style="padding:10px"><div class="label">Reconciled</div><div id="reconMatched" class="value">0</div></div>
+          <div class="card" style="padding:10px"><div class="label">Mismatched</div><div id="reconMismatched" class="value">0</div></div>
+          <div class="card" style="padding:10px"><div class="label">Pending Recon</div><div id="reconPending" class="value">0</div></div>
+          <div class="card" style="padding:10px"><div class="label">Profit Factor</div><div id="analyticsPF" class="value">0.00</div></div>
+          <div class="card" style="padding:10px"><div class="label">Avg Win R</div><div id="analyticsAvgWin" class="value">0.0R</div></div>
+          <div class="card" style="padding:10px"><div class="label">Avg Loss R</div><div id="analyticsAvgLoss" class="value">0.0R</div></div>
+        </div>
         <div class="row4" style="margin-bottom:10px">
           <div><button id="clearJournalBtn" class="btn warn">Clear Saved Journal</button></div>
           <div><button id="closeAsWinBtn" class="btn good">Close Latest Trade as Win</button></div>
           <div><button id="closeAsLossBtn" class="btn danger">Close Latest Trade as Loss</button></div>
           <div class="card" style="padding:10px"><div class="label">Auto Close Engine</div><div id="autoCloseState" class="value">Armed</div></div>
         </div>
-        <div class="tablewrap" style="max-height:260px"><table><thead><tr><th>Time</th><th>Symbol</th><th>TF</th><th>Dir</th><th>Setup</th><th>Fib Ref</th><th>Entry</th><th>SL</th><th>TP</th><th>RR</th><th>Status</th><th>Outcome</th><th>Close Px</th><th>Close Reason</th><th>Notes</th></tr></thead><tbody id="tradeLogBody"></tbody></table></div>
+        <div class="tablewrap" style="max-height:260px"><table><thead><tr><th>Trade ID</th><th>Time</th><th>Symbol</th><th>TF</th><th>Dir</th><th>Setup</th><th>Fib Ref</th><th>Entry</th><th>SL</th><th>TP</th><th>RR</th><th>Status</th><th>Outcome</th><th>Close Px</th><th>Close Reason</th><th>Recon</th><th>Notes</th></tr></thead><tbody id="tradeLogBody"></tbody></table></div>
       </div>
     </div>
 
@@ -116,6 +124,37 @@
         <div class="row3" style="margin-top:10px"><button id="buildNarrativeBtn" class="btn primary">Build Narrative</button><button id="buildAdviceBtn" class="btn primary">Build Advice</button><button id="pullTriggerBtn" class="btn primary">Pull To Trigger</button></div>
         <div class="tablewrap" style="max-height:none;margin-top:10px"><table><tbody><tr><td>Direction</td><td id="ad_dir">Locked</td></tr><tr><td>Entry</td><td id="ad_entry">Locked</td></tr><tr><td>SL</td><td id="ad_sl">Locked</td></tr><tr><td>TP</td><td id="ad_tp">Locked</td></tr><tr><td>Execution Note</td><td id="ad_note">Locked</td></tr></tbody></table></div>
       </div>
+    </div>
+  </div>
+
+  <div class="grid row2" style="margin-top:12px">
+    <div class="card">
+      <div class="label">Broker Reconciliation Panel</div>
+      <div class="small" style="margin-bottom:8px">This is a reconciliation shell. You paste broker-side close details against a Trade ID. It does not pull broker data automatically yet.</div>
+      <div class="row4">
+        <div><div class="label">Trade ID</div><input id="reconTradeId" placeholder="example: T0007"></div>
+        <div><div class="label">Broker Outcome</div><select id="reconOutcome"><option>Win</option><option>Loss</option><option>Cancelled</option></select></div>
+        <div><div class="label">Broker Close Px</div><input id="reconClosePx" type="number" step="0.001" placeholder="0.000"></div>
+        <div><div class="label">Broker Ref</div><input id="reconRef" placeholder="ticket / reference"></div>
+      </div>
+      <div class="row2" style="margin-top:10px">
+        <div><button id="applyReconBtn" class="btn good">Apply Reconciliation</button></div>
+        <div><button id="clearReconInputsBtn" class="btn primary">Clear Recon Inputs</button></div>
+      </div>
+      <div class="tablewrap" style="max-height:220px; margin-top:10px"><table><thead><tr><th>Trade ID</th><th>Journal Outcome</th><th>Broker Outcome</th><th>Result</th><th>Broker Ref</th></tr></thead><tbody id="reconTableBody"></tbody></table></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Session Analytics Panel</div>
+      <div class="tablewrap" style="max-height:none"><table><tbody>
+        <tr><td>Total Closed Trades</td><td id="analyticsClosedTrades">0</td></tr>
+        <tr><td>Total Open Trades</td><td id="analyticsOpenTrades">0</td></tr>
+        <tr><td>Expectancy (R)</td><td id="analyticsExpectancy">0.00R</td></tr>
+        <tr><td>Best Setup</td><td id="analyticsBestSetup">--</td></tr>
+        <tr><td>Worst Setup</td><td id="analyticsWorstSetup">--</td></tr>
+        <tr><td>Buy Trades</td><td id="analyticsBuyCount">0</td></tr>
+        <tr><td>Sell Trades</td><td id="analyticsSellCount">0</td></tr>
+      </tbody></table></div>
     </div>
   </div>
 
@@ -157,13 +196,66 @@
 <script>
 (function(){
 const state={socket:null,connected:false,feedLive:false,symbol:'1HZ10V',currentTf:'D1',armed:false,completed:{D1:false,H4:false,H1:false},results:{D1:null,H4:null,H1:null},candles:{},reqId:1000,pending:new Map(),latestTick:null,tradeLog:[],activeTool:null,drawings:{D1:[],H4:[],H1:[],M5:[]},draft:null,plot:null,guardBlocked:false,lastAcceptedTick:null}
-const STORAGE_KEYS={tradeLog:'ai_lovefx_trade_log_v94', prefs:'ai_lovefx_prefs_v94'}
+const STORAGE_KEYS_V95={tradeLog:'ai_lovefx_trade_log_v95', prefs:'ai_lovefx_prefs_v95'}
+let tradeSeq = 0
+function nextTradeId(){
+  tradeSeq += 1
+  return 'T' + String(tradeSeq).padStart(4,'0')
+}
+
+const STORAGE_KEYS=STORAGE_KEYS_V95
+function renderReconTable(){
+  const body = document.getElementById('reconTableBody')
+  if(!body) return
+  body.innerHTML = ''
+  state.tradeLog.forEach(r => {
+    const tr = document.createElement('tr')
+    tr.innerHTML = `<td>${r.tradeId || '--'}</td><td>${r.outcome || 'Open'}</td><td>${r.brokerOutcome || '--'}</td><td>${r.reconStatus || 'Pending'}</td><td>${r.brokerRef || '--'}</td>`
+    body.appendChild(tr)
+  })
+}
+function applyReconciliation(){
+  const tradeId = (document.getElementById('reconTradeId')?.value || '').trim()
+  const brokerOutcome = document.getElementById('reconOutcome')?.value || 'Win'
+  const brokerClosePx = document.getElementById('reconClosePx')?.value || '--'
+  const brokerRef = (document.getElementById('reconRef')?.value || '').trim() || '--'
+  if(!tradeId){
+    setStrip('Enter a Trade ID first for reconciliation.')
+    return
+  }
+  const trade = state.tradeLog.find(r => r.tradeId === tradeId)
+  if(!trade){
+    setStrip('Trade ID not found in the journal.')
+    return
+  }
+  trade.brokerOutcome = brokerOutcome
+  trade.brokerClosePx = brokerClosePx !== '--' ? Number(brokerClosePx).toFixed(3) : '--'
+  trade.brokerRef = brokerRef
+  if((trade.outcome || 'Open') === 'Open'){
+    trade.reconStatus = 'Pending'
+  } else if(trade.outcome === brokerOutcome){
+    trade.reconStatus = 'Matched'
+  } else {
+    trade.reconStatus = 'Mismatched'
+  }
+  saveTradeLog()
+  renderTradeLog()
+  log('RECON APPLIED TO ' + tradeId)
+  setStrip('Reconciliation applied to ' + tradeId + '.')
+}
+function clearReconInputs(){
+  const ids = ['reconTradeId','reconClosePx','reconRef']
+  ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = '' })
+  const outcome = document.getElementById('reconOutcome')
+  if(outcome) outcome.value = 'Win'
+}
 function closeTradeRecord(trade, outcome, closePrice, closeReason){
   if(!trade) return
   trade.outcome = outcome
   trade.status = 'Closed'
   trade.closePrice = closePrice != null ? Number(closePrice).toFixed(3) : '--'
   trade.closeReason = closeReason || 'Manual'
+  if(!trade.reconStatus || trade.reconStatus === 'Open') trade.reconStatus = 'Pending'
   saveTradeLog()
   renderTradeLog()
 }
@@ -236,6 +328,16 @@ function loadTradeLog(){
   }catch(e){
     state.tradeLog = []
   }
+  state.tradeLog = state.tradeLog.map((r, idx) => ({
+    tradeId: r.tradeId || ('T' + String(idx + 1).padStart(4,'0')),
+    reconStatus: r.reconStatus || 'Pending',
+    brokerOutcome: r.brokerOutcome || '--',
+    brokerClosePx: r.brokerClosePx || '--',
+    brokerRef: r.brokerRef || '--',
+    ...r
+  }))
+  const nums = state.tradeLog.map(r => parseInt(String(r.tradeId || '').replace('T',''))).filter(n => Number.isFinite(n))
+  tradeSeq = nums.length ? Math.max(...nums) : 0
 }
 function savePrefs(){
   try{
@@ -442,38 +544,72 @@ function pullTrigger(){const h1=state.results.H1; if(!h1){setStrip('Complete H1 
 function calcRR(){const entry=Number($('tr_entry').value),sl=Number($('tr_sl').value),tp=Number($('tr_tp').value); if([entry,sl,tp].some(isNaN)||Math.abs(entry-sl)===0){$('tr_rr').value=''; return} $('tr_rr').value=(Math.abs(tp-entry)/Math.abs(entry-sl)).toFixed(2)+'R'}
 function updateSessionStats(){
   const closed = state.tradeLog.filter(r => r.outcome === 'Win' || r.outcome === 'Loss')
-  const wins = closed.filter(r => r.outcome === 'Win').length
-  const losses = closed.filter(r => r.outcome === 'Loss').length
-  const total = wins + losses
-  const wr = total ? ((wins / total) * 100).toFixed(1) + '%' : '0%'
+  const wins = closed.filter(r => r.outcome === 'Win')
+  const losses = closed.filter(r => r.outcome === 'Loss')
+  const total = wins.length + losses.length
+  const wr = total ? ((wins.length / total) * 100).toFixed(1) + '%' : '0%'
   let netR = 0
+  let grossWinR = 0
+  let grossLossR = 0
+  const setupMap = {}
   for(const r of closed){
     const rrNum = parseFloat(String(r.rr || '0').replace('R','')) || 0
-    if(r.outcome === 'Win') netR += rrNum
-    if(r.outcome === 'Loss') netR -= 1
+    if(r.outcome === 'Win'){ netR += rrNum; grossWinR += rrNum }
+    if(r.outcome === 'Loss'){ netR -= 1; grossLossR += 1 }
+    if(!setupMap[r.setup]) setupMap[r.setup] = {winR:0, lossR:0, count:0}
+    if(r.outcome === 'Win') setupMap[r.setup].winR += rrNum
+    if(r.outcome === 'Loss') setupMap[r.setup].lossR += 1
+    setupMap[r.setup].count += 1
   }
-  const countEl = document.getElementById('savedTradeCount')
-  const winsEl = document.getElementById('sessionWins')
-  const lossesEl = document.getElementById('sessionLosses')
-  const wrEl = document.getElementById('sessionWinRate')
-  const netREl = document.getElementById('sessionNetR')
-  if(countEl) countEl.textContent = String(state.tradeLog.length)
-  if(winsEl) winsEl.textContent = String(wins)
-  if(lossesEl) lossesEl.textContent = String(losses)
-  if(wrEl) wrEl.textContent = wr
-  if(netREl) netREl.textContent = netR.toFixed(1) + 'R'
+  const pf = grossLossR > 0 ? (grossWinR / grossLossR).toFixed(2) : (grossWinR > 0 ? '∞' : '0.00')
+  const avgWin = wins.length ? (grossWinR / wins.length).toFixed(1) + 'R' : '0.0R'
+  const avgLoss = losses.length ? (grossLossR / losses.length).toFixed(1) + 'R' : '0.0R'
+  const expectancy = total ? (netR / total).toFixed(2) + 'R' : '0.00R'
+  let bestSetup = '--', worstSetup = '--', bestVal = -Infinity, worstVal = Infinity
+  Object.entries(setupMap).forEach(([setup, v])=>{
+    const score = (v.winR - v.lossR) / Math.max(1, v.count)
+    if(score > bestVal){ bestVal = score; bestSetup = setup }
+    if(score < worstVal){ worstVal = score; worstSetup = setup }
+  })
+  const matched = state.tradeLog.filter(r => r.reconStatus === 'Matched').length
+  const mismatched = state.tradeLog.filter(r => r.reconStatus === 'Mismatched').length
+  const pending = state.tradeLog.filter(r => r.reconStatus === 'Pending').length
+  const buyCount = state.tradeLog.filter(r => r.dir === 'BUY').length
+  const sellCount = state.tradeLog.filter(r => r.dir === 'SELL').length
+  const openCount = state.tradeLog.filter(r => (r.outcome || 'Open') === 'Open').length
+
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = String(val) }
+  set('savedTradeCount', state.tradeLog.length)
+  set('sessionWins', wins.length)
+  set('sessionLosses', losses.length)
+  set('sessionWinRate', wr)
+  set('sessionNetR', netR.toFixed(1) + 'R')
+  set('reconMatched', matched)
+  set('reconMismatched', mismatched)
+  set('reconPending', pending)
+  set('analyticsPF', pf)
+  set('analyticsAvgWin', avgWin)
+  set('analyticsAvgLoss', avgLoss)
+  set('analyticsClosedTrades', closed.length)
+  set('analyticsOpenTrades', openCount)
+  set('analyticsExpectancy', expectancy)
+  set('analyticsBestSetup', bestSetup)
+  set('analyticsWorstSetup', worstSetup)
+  set('analyticsBuyCount', buyCount)
+  set('analyticsSellCount', sellCount)
 }
 function renderTradeLog(){
   const body=$('tradeLogBody'); body.innerHTML=''
   state.tradeLog.forEach(r=>{
     const tr=document.createElement('tr')
-    tr.innerHTML=`<td>${r.time}</td><td>${r.symbol}</td><td>${r.tf}</td><td>${r.dir}</td><td>${r.setup}</td><td>${r.fibRef}</td><td>${r.entry}</td><td>${r.sl}</td><td>${r.tp}</td><td>${r.rr}</td><td>${r.status}</td><td>${r.outcome || 'Open'}</td><td>${r.closePrice || '--'}</td><td>${r.closeReason || '--'}</td><td>${r.notes}</td>`
+    tr.innerHTML=`<td>${r.tradeId || '--'}</td><td>${r.time}</td><td>${r.symbol}</td><td>${r.tf}</td><td>${r.dir}</td><td>${r.setup}</td><td>${r.fibRef}</td><td>${r.entry}</td><td>${r.sl}</td><td>${r.tp}</td><td>${r.rr}</td><td>${r.status}</td><td>${r.outcome || 'Open'}</td><td>${r.closePrice || '--'}</td><td>${r.closeReason || '--'}</td><td>${r.reconStatus || 'Pending'}</td><td>${r.notes}</td>`
     body.appendChild(tr)
   })
+  renderReconTable()
   updateSessionStats()
 }
 function armTrade(){if(!$('tr_dir').value||!$('tr_entry').value||!$('tr_sl').value||!$('tr_tp').value){setStrip('Complete trigger fields first.'); return} state.armed=true; log('TRADE ARMED')}
-function execTrade(){if(!state.armed){setStrip('Arm trade first.'); return} const row={time:new Date().toLocaleTimeString(),symbol:state.symbol,tf:$('tr_tf').value,dir:$('tr_dir').value,setup:$('tr_setup').value,fibRef:$('tr_fib_ref').value||'--',entry:$('tr_entry').value,sl:$('tr_sl').value,tp:$('tr_tp').value,rr:$('tr_rr').value||'--',status:$('tr_status').value,outcome:'Open',closePrice:'--',closeReason:'--',notes:$('tr_notes').value||'--'}; state.tradeLog.unshift(row); saveTradeLog(); renderTradeLog(); log('TRADE EXECUTION CONFIRMED + JOURNAL LOGGED'); setStrip('Manual trade confirmed and saved to persistent broker-style journal.')}
+function execTrade(){if(!state.armed){setStrip('Arm trade first.'); return} const row={tradeId:nextTradeId(),time:new Date().toLocaleTimeString(),symbol:state.symbol,tf:$('tr_tf').value,dir:$('tr_dir').value,setup:$('tr_setup').value,fibRef:$('tr_fib_ref').value||'--',entry:$('tr_entry').value,sl:$('tr_sl').value,tp:$('tr_tp').value,rr:$('tr_rr').value||'--',status:$('tr_status').value,outcome:'Open',closePrice:'--',closeReason:'--',reconStatus:'Pending',brokerOutcome:'--',brokerClosePx:'--',brokerRef:'--',notes:$('tr_notes').value||'--'}; state.tradeLog.unshift(row); saveTradeLog(); renderTradeLog(); log('TRADE EXECUTION CONFIRMED + JOURNAL LOGGED'); setStrip('Manual trade confirmed and saved to persistent broker-style journal.')}
 function cancelTrade(){state.armed=false; log('ARMED TRADE CANCELLED'); setStrip('Trade cancelled.')}
 function disconnectFeed(){try{if(state.socket) state.socket.close()}catch(e){} state.socket=null; state.connected=false; state.feedLive=false; $('feedLbl').textContent='Offline'; updateAdapterState('feed disconnected'); log('FEED DISCONNECTED')}
 function hardReset(){disconnectFeed(); state.symbol=$('symbolSel').value; state.currentTf='D1'; state.armed=false; state.completed={D1:false,H4:false,H1:false}; state.results={D1:null,H4:null,H1:null}; state.candles={}; state.latestTick=null; state.drawings={D1:[],H4:[],H1:[],M5:[]}; state.activeTool=null; state.draft=null; state.guardBlocked=false; state.lastAcceptedTick=null; $('chartState').value='Stable'; $('activeToolLbl').value='None'; ['toolLineBtn','toolZoneBtn','toolFibBtn'].forEach(id=>$(id).classList.remove('toolOn')); $('visibleTf').textContent='D1'; $('livePrice').textContent='--'; $('emaBias').textContent='--'; $('rsiVal').textContent='--'; $('regimeVal').textContent='--'; $('dataState').textContent='Waiting'; ['d1_bias','d1_poi','d1_zone','h4_bias','h4_mss','h4_fvg','h4_ob','h4_fib','h4_fib_ref','h4_zone','h1_bias','h1_ema','drop_to'].forEach(id=>$(id).textContent='--'); ['ad_dir','ad_entry','ad_sl','ad_tp','ad_note'].forEach(id=>$(id).textContent='Locked'); $('narrative').value=''; $('priceMapBody').innerHTML=''; ['tr_entry','tr_sl','tr_tp','tr_rr','tr_notes','tr_fib_ref'].forEach(id=>$(id).value=''); renderTradeLog(); const ctx=$('chartCanvas').getContext('2d'); ctx.clearRect(0,0,$('chartCanvas').width,$('chartCanvas').height); const dctx=$('drawCanvas').getContext('2d'); dctx.clearRect(0,0,$('drawCanvas').width,$('drawCanvas').height); setStages(); setStrip('Session reset. Connect live first.'); updateAdapterState('reset complete'); log('SESSION RESET')}
@@ -490,13 +626,13 @@ $('toolLineBtn').onclick=()=>setTool('line'); $('toolZoneBtn').onclick=()=>setTo
 $('clearDrawBtn').onclick=()=>{state.drawings[state.currentTf]=[]; state.draft=null; renderDrawings(); log('DRAWINGS CLEARED ON '+state.currentTf)}
 $('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullTriggerBtn').onclick=pullTrigger
 $('armBtn').onclick=armTrade; $('execBtn').onclick=execTrade; $('cancelBtn').onclick=cancelTrade
-$('mobileConnect').onclick=connectLive; $('mobileScan').onclick=scanCurrent; $('mobileNarr').onclick=buildNarrative; $('mobileAdvice').onclick=buildAdvice; $('clearJournalBtn').onclick=clearSavedJournal; $('closeAsWinBtn').onclick=()=>closeLatestTrade('Win'); $('closeAsLossBtn').onclick=()=>closeLatestTrade('Loss')
+$('mobileConnect').onclick=connectLive; $('mobileScan').onclick=scanCurrent; $('mobileNarr').onclick=buildNarrative; $('mobileAdvice').onclick=buildAdvice; $('clearJournalBtn').onclick=clearSavedJournal; $('closeAsWinBtn').onclick=()=>closeLatestTrade('Win'); $('closeAsLossBtn').onclick=()=>closeLatestTrade('Loss'); $('applyReconBtn').onclick=applyReconciliation; $('clearReconInputsBtn').onclick=clearReconInputs
 $('symbolSel').addEventListener('change',()=>{savePrefs(); hardReset(); log('SYMBOL SET TO '+$('symbolSel').value)})
 $('fibSelector').addEventListener('change',()=>{savePrefs(); if(state.results.H4){const arr=state.candles['H4']||[]; if(arr.length){const sh=recentSwingHigh(arr,25), sl=recentSwingLow(arr,25), fib=calcFibLevels(sh,sl); state.results.H4.fibRef=selectedFibText(fib); $('h4_fib_ref').textContent=state.results.H4.fibRef}} renderChart(); updateAdapterState('fib selector changed')})
 $('overlaySelector').addEventListener('change',()=>{savePrefs(); renderChart(); updateAdapterState('overlay changed')})
 ;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
 
-loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.4.2 AUTO CLOSE LOGIC + SESSION DASHBOARD LOADED')
+loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.5 BROKER-SIDE RECONCILIATION + SESSION ANALYTICS LOADED')
 })();
 </script>
 </body>
