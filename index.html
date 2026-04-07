@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love@Fx Pro — v10.0 Recovered Integrated Core</title>
+<title>Love@Fx Pro — v10.1 MTF Structure Mapper</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--bull:#00bfff;--bear:#2e8b57;--ema1:#5aaef7;--ema2:#d6a14c}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
@@ -20,7 +20,7 @@
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">Love@Fx Pro <span class="badge">v10.0 RECOVERED CORE</span></div><div class="sub">Recovered integrated base | live chart + scanner + advice + execution + journal</div><div class="small" style="margin-top:6px">Recovery strategy: preserve the last strong integrated machine first, then layer new structure features into this same core without fragmenting the app again.</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">Love@Fx Pro <span class="badge">v10.1 MTF STRUCTURE</span></div><div class="sub">Recovered core + D1/H4/H1 swing-point mapper + structure panel</div><div class="small" style="margin-top:6px">Recovery strategy: preserve the last strong integrated machine first, then layer new structure features into this same core without fragmenting the app again.</div></div></div></div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Offline</div></div>
     <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Current TF</div><div id="currTfLbl" class="value">D1</div></div>
@@ -117,6 +117,12 @@
       </tbody></table></div></div>
 
       <div class="card"><div class="label">Descriptive Price Map</div><div class="tablewrap" style="max-height:none"><table><thead><tr><th>Level / Opportunity</th><th>Value</th></tr></thead><tbody id="priceMapBody"></tbody></table></div></div>
+
+      <div class="card">
+        <div class="label">MTF Structure Panel</div>
+        <div class="small" style="margin-bottom:8px">Shows conservative swing anchors used for each timeframe. Fibs should be interpreted from these structure points, not just rolling range values.</div>
+        <div class="tablewrap" style="max-height:none"><table><thead><tr><th>TF</th><th>HH</th><th>HL</th><th>LH</th><th>LL</th><th>Fib Start</th><th>Fib End</th><th>Active Leg</th><th>State</th></tr></thead><tbody id="structureBody"></tbody></table></div>
+      </div>
 
       <div class="card">
         <div class="label">Narrative + Advice</div>
@@ -530,14 +536,104 @@ function guardedUpdate(q){
   last.l=Math.min(last.l,q,last.o,last.c)
   last.c=q
 }
+
+function pivotSwings(arr,left=2,right=2){
+  const pivots=[]
+  if(!arr || arr.length < left+right+1) return pivots
+  for(let i=left;i<arr.length-right;i++){
+    const c=arr[i]
+    let isHigh=true, isLow=true
+    for(let j=i-left;j<=i+right;j++){
+      if(j===i) continue
+      if(arr[j].h >= c.h) isHigh=false
+      if(arr[j].l <= c.l) isLow=false
+    }
+    if(isHigh) pivots.push({kind:'H', price:c.h, index:i, epoch:c.epoch})
+    if(isLow) pivots.push({kind:'L', price:c.l, index:i, epoch:c.epoch})
+  }
+  return pivots.sort((a,b)=>a.index-b.index)
+}
+function classifyStructureFromPivots(arr){
+  const pivots = pivotSwings(arr,2,2)
+  const highs = pivots.filter(p=>p.kind==='H')
+  const lows = pivots.filter(p=>p.kind==='L')
+  const HH = highs.length ? highs.reduce((a,b)=> b.price>a.price ? b : a) : null
+  const LL = lows.length ? lows.reduce((a,b)=> b.price<a.price ? b : a) : null
+
+  let latestHigh = highs.length ? highs[highs.length-1] : null
+  let prevHigh = highs.length>1 ? highs[highs.length-2] : null
+  let latestLow = lows.length ? lows[lows.length-1] : null
+  let prevLow = lows.length>1 ? lows[lows.length-2] : null
+
+  let HL = null, LH = null
+  if(latestLow && prevLow){
+    HL = latestLow.price > prevLow.price ? latestLow : prevLow
+  }
+  if(latestHigh && prevHigh){
+    LH = latestHigh.price < prevHigh.price ? latestHigh : prevHigh
+  }
+
+  let activeLeg='Undecided'
+  let state='Range / Transition'
+  let fibStart=null, fibEnd=null
+
+  if(HH && LL){
+    if(latestHigh && latestLow){
+      if(latestHigh.index > latestLow.index){
+        fibStart = latestLow.price
+        fibEnd = latestHigh.price
+        activeLeg = 'Bullish (LL → HH)'
+      } else {
+        fibStart = latestHigh.price
+        fibEnd = latestLow.price
+        activeLeg = 'Bearish (HH → LL)'
+      }
+    } else {
+      fibStart = LL.price
+      fibEnd = HH.price
+      activeLeg = 'Bullish (LL → HH)'
+    }
+  }
+
+  if(HH && HL && latestHigh && latestLow && latestHigh.index > latestLow.index && HL.price > (prevLow ? prevLow.price : -Infinity)){
+    state = 'Bullish Expansion / Pullback'
+  }
+  if(LL && LH && latestLow && latestHigh && latestLow.index > latestHigh.index && LH.price < (prevHigh ? prevHigh.price : Infinity)){
+    state = 'Bearish Expansion / Pullback'
+  }
+
+  return {
+    pivots, HH, HL, LH, LL,
+    fibStart, fibEnd, activeLeg, state
+  }
+}
+function renderStructurePanel(){
+  const body = $('structureBody')
+  if(!body) return
+  body.innerHTML = ''
+  ;['D1','H4','H1'].forEach(tf=>{
+    const s = state.results[tf]?.structure
+    const tr = document.createElement('tr')
+    tr.innerHTML = `<td>${tf}</td>
+      <td>${s?.HH?.price?.toFixed ? s.HH.price.toFixed(3) : '--'}</td>
+      <td>${s?.HL?.price?.toFixed ? s.HL.price.toFixed(3) : '--'}</td>
+      <td>${s?.LH?.price?.toFixed ? s.LH.price.toFixed(3) : '--'}</td>
+      <td>${s?.LL?.price?.toFixed ? s.LL.price.toFixed(3) : '--'}</td>
+      <td>${Number.isFinite(s?.fibStart) ? s.fibStart.toFixed(3) : '--'}</td>
+      <td>${Number.isFinite(s?.fibEnd) ? s.fibEnd.toFixed(3) : '--'}</td>
+      <td>${s?.activeLeg || '--'}</td>
+      <td>${s?.state || '--'}</td>`
+    body.appendChild(tr)
+  })
+}
 function scanCurrent(){const tf=state.currentTf, req=nextRequired(); if(req==='DONE'){setStrip('Scanner already completed.'); return} if(tf!==req){setStrip('Scan '+req+' first.'); log('SCAN BLOCKED: '+tf); return} const s=getStats(tf); if(!s.arr.length){setStrip('No candle data loaded.'); return}
-  if(tf==='D1'){const sh=recentSwingHigh(s.arr,30), sl=recentSwingLow(s.arr,30), fib=calcFibLevels(sh,sl); state.results.D1={bias:s.bias,poi:fib.f618.toFixed(3)+' demand/discount zone',zone:`${fib.f618.toFixed(3)} to ${fib.f50.toFixed(3)}`,priceMap:[['Current visible price',s.last.toFixed(3)],['D1 POI price (buy opportunity)',fib.f618.toFixed(3)],['D1 swing high',sh.toFixed(3)],['D1 swing low',sl.toFixed(3)],['D1 Fib 50.0',fib.f50.toFixed(3)],['D1 Fib 61.8',fib.f618.toFixed(3)]]}; $('d1_bias').textContent=state.results.D1.bias; $('d1_poi').textContent=state.results.D1.poi; $('d1_zone').textContent=state.results.D1.zone; state.completed.D1=true; setStrip('D1 scan complete. Load H4 next.')}
-  else if(tf==='H4'){const fvg=detectFVG(s.arr), ob=detectOrderBlock(s.arr,s.bias), sh=recentSwingHigh(s.arr,25), sl=recentSwingLow(s.arr,25), fib=calcFibLevels(sh,sl), fibRef=selectedFibText(fib), zlow=(ob?ob.low:fib.f618), zhigh=(ob?ob.high:fib.f50); const fvgType=s.bias==='Bullish'?'buy opportunity':'sell opportunity'; state.results.H4={bias:s.bias,mss:detectMSS(s.arr),fvg:fvg?`${fvg.low.toFixed(3)} to ${fvg.high.toFixed(3)}`:'No clean FVG',ob:ob?`${ob.low.toFixed(3)} to ${ob.high.toFixed(3)}`:'No clean OB',fib:`23.6=${fib.f236.toFixed(3)} | 38.2=${fib.f382.toFixed(3)} | 50.0=${fib.f50.toFixed(3)} | 61.8=${fib.f618.toFixed(3)} | 78.6=${fib.f786.toFixed(3)}`,fibRef:fibRef,zone:`${zlow.toFixed(3)} to ${zhigh.toFixed(3)}`,priceMap:[['H4 Fib 23.6',fib.f236.toFixed(3)],['H4 Fib 38.2',fib.f382.toFixed(3)],['H4 Fib 50.0',fib.f50.toFixed(3)],['H4 Fib 61.8',fib.f618.toFixed(3)],['H4 Fib 78.6',fib.f786.toFixed(3)],['FVG low ('+fvgType+')',fvg?fvg.low.toFixed(3):'--'],['FVG high ('+fvgType+')',fvg?fvg.high.toFixed(3):'--'],['OB low ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.low.toFixed(3):'--'],['OB high ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.high.toFixed(3):'--']]}; $('h4_bias').textContent=state.results.H4.bias; $('h4_mss').textContent=state.results.H4.mss; $('h4_fvg').textContent=state.results.H4.fvg; $('h4_ob').textContent=state.results.H4.ob; $('h4_fib').textContent=state.results.H4.fib; $('h4_fib_ref').textContent=state.results.H4.fibRef; $('h4_zone').textContent=state.results.H4.zone; state.completed.H4=true; setStrip('H4 scan complete. Load H1 next.')}
-  else if(tf==='H1'){const entry=s.last+(s.bias==='Bullish'?0.6:-0.6), sl=s.last+(s.bias==='Bullish'?-2.2:2.2), tp1=s.last+(s.bias==='Bullish'?4.8:-4.8), tp2=s.last+(s.bias==='Bullish'?8.4:-8.4); state.results.H1={bias:s.bias,ema:s.last>s.ema20&&s.ema20>s.ema50?'Price above EMA20 & EMA50':s.last<s.ema20&&s.ema20<s.ema50?'Price below EMA20 & EMA50':'Price around EMA cluster',dropTo:'M5',priceMap:[['H1 trigger entry',entry.toFixed(3)],['H1 stop loss',sl.toFixed(3)],['H1 TP1',tp1.toFixed(3)],['H1 TP2',tp2.toFixed(3)]],entry:entry.toFixed(3),sl:sl.toFixed(3),tp1:tp1.toFixed(3),tp2:tp2.toFixed(3)}; $('h1_bias').textContent=state.results.H1.bias; $('h1_ema').textContent=state.results.H1.ema; $('drop_to').textContent='M5'; state.completed.H1=true; setStrip('H1 scan complete. M5 is now unlocked for execution monitoring.')}
+  if(tf==='D1'){const st=classifyStructureFromPivots(s.arr); const sh=st.HH?st.HH.price:recentSwingHigh(s.arr,30), sl=st.LL?st.LL.price:recentSwingLow(s.arr,30); const fib=calcFibLevels(sh,sl); const fibStart = Number.isFinite(st.fibStart)?st.fibStart:sl; const fibEnd = Number.isFinite(st.fibEnd)?st.fibEnd:sh; state.results.D1={bias:s.bias,poi:fib.f618.toFixed(3)+' demand/discount zone',zone:`${fib.f618.toFixed(3)} to ${fib.f50.toFixed(3)}`,structure:st,priceMap:[['Current visible price',s.last.toFixed(3)],['D1 HH',sh.toFixed(3)],['D1 LL',sl.toFixed(3)],['D1 Fib start',fibStart.toFixed(3)],['D1 Fib end',fibEnd.toFixed(3)],['D1 active leg',st.activeLeg],['D1 state',st.state],['D1 POI price (buy opportunity)',fib.f618.toFixed(3)],['D1 swing high',sh.toFixed(3)],['D1 swing low',sl.toFixed(3)],['D1 Fib 50.0',fib.f50.toFixed(3)],['D1 Fib 61.8',fib.f618.toFixed(3)]]}; $('d1_bias').textContent=state.results.D1.bias; $('d1_poi').textContent=state.results.D1.poi; $('d1_zone').textContent=state.results.D1.zone; state.completed.D1=true; setStrip('D1 scan complete. Structure anchors captured. Load H4 next.')}
+  else if(tf==='H4'){const st=classifyStructureFromPivots(s.arr); const fvg=detectFVG(s.arr), ob=detectOrderBlock(s.arr,s.bias), sh=st.HH?st.HH.price:recentSwingHigh(s.arr,25), sl=st.LL?st.LL.price:recentSwingLow(s.arr,25), fib=calcFibLevels(sh,sl), fibRef=selectedFibText(fib), zlow=(ob?ob.low:fib.f618), zhigh=(ob?ob.high:fib.f50); const fvgType=s.bias==='Bullish'?'buy opportunity':'sell opportunity'; state.results.H4={bias:s.bias,mss:detectMSS(s.arr),fvg:fvg?`${fvg.low.toFixed(3)} to ${fvg.high.toFixed(3)}`:'No clean FVG',ob:ob?`${ob.low.toFixed(3)} to ${ob.high.toFixed(3)}`:'No clean OB',fib:`23.6=${fib.f236.toFixed(3)} | 38.2=${fib.f382.toFixed(3)} | 50.0=${fib.f50.toFixed(3)} | 61.8=${fib.f618.toFixed(3)} | 78.6=${fib.f786.toFixed(3)}`,fibRef:fibRef,zone:`${zlow.toFixed(3)} to ${zhigh.toFixed(3)}`,structure:st,priceMap:[['H4 HH',sh.toFixed(3)],['H4 LL',sl.toFixed(3)],['H4 Fib start',Number.isFinite(st.fibStart)?st.fibStart.toFixed(3):'--'],['H4 Fib end',Number.isFinite(st.fibEnd)?st.fibEnd.toFixed(3):'--'],['H4 active leg',st.activeLeg],['H4 state',st.state],['H4 Fib 23.6',fib.f236.toFixed(3)],['H4 Fib 38.2',fib.f382.toFixed(3)],['H4 Fib 50.0',fib.f50.toFixed(3)],['H4 Fib 61.8',fib.f618.toFixed(3)],['H4 Fib 78.6',fib.f786.toFixed(3)],['FVG low ('+fvgType+')',fvg?fvg.low.toFixed(3):'--'],['FVG high ('+fvgType+')',fvg?fvg.high.toFixed(3):'--'],['OB low ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.low.toFixed(3):'--'],['OB high ('+(ob?.type || (s.bias==='Bullish'?'buy opportunity':'sell opportunity'))+')',ob?ob.high.toFixed(3):'--']]}; $('h4_bias').textContent=state.results.H4.bias; $('h4_mss').textContent=state.results.H4.mss; $('h4_fvg').textContent=state.results.H4.fvg; $('h4_ob').textContent=state.results.H4.ob; $('h4_fib').textContent=state.results.H4.fib; $('h4_fib_ref').textContent=state.results.H4.fibRef; $('h4_zone').textContent=state.results.H4.zone; state.completed.H4=true; setStrip('H4 scan complete. Structure anchors captured. Load H1 next.')}
+  else if(tf==='H1'){const st=classifyStructureFromPivots(s.arr); const entry=s.last+(s.bias==='Bullish'?0.6:-0.6), sl=s.last+(s.bias==='Bullish'?-2.2:2.2), tp1=s.last+(s.bias==='Bullish'?4.8:-4.8), tp2=s.last+(s.bias==='Bullish'?8.4:-8.4); state.results.H1={bias:s.bias,ema:s.last>s.ema20&&s.ema20>s.ema50?'Price above EMA20 & EMA50':s.last<s.ema20&&s.ema20<s.ema50?'Price below EMA20 & EMA50':'Price around EMA cluster',dropTo:'M5',structure:st,priceMap:[['H1 HH',st.HH?st.HH.price.toFixed(3):'--'],['H1 LL',st.LL?st.LL.price.toFixed(3):'--'],['H1 Fib start',Number.isFinite(st.fibStart)?st.fibStart.toFixed(3):'--'],['H1 Fib end',Number.isFinite(st.fibEnd)?st.fibEnd.toFixed(3):'--'],['H1 active leg',st.activeLeg],['H1 state',st.state],['H1 trigger entry',entry.toFixed(3)],['H1 stop loss',sl.toFixed(3)],['H1 TP1',tp1.toFixed(3)],['H1 TP2',tp2.toFixed(3)]],entry:entry.toFixed(3),sl:sl.toFixed(3),tp1:tp1.toFixed(3),tp2:tp2.toFixed(3)}; $('h1_bias').textContent=state.results.H1.bias; $('h1_ema').textContent=state.results.H1.ema; $('drop_to').textContent='M5'; state.completed.H1=true; setStrip('H1 scan complete. Structure anchors captured. M5 is now unlocked for execution monitoring.')}
   else {setStrip('M5 is for execution monitoring, not top-down scan step.'); return}
   renderPriceMap(); setStages(); renderChart(); log(tf+' SCAN COMPLETE'); updateAdapterState('scan '+tf+' complete')
 }
-function renderPriceMap(){const body=$('priceMapBody'); body.innerHTML=''; const rows=[...(state.results.D1?.priceMap||[]), ...(state.results.H4?.priceMap||[]), ...(state.results.H1?.priceMap||[])]; rows.forEach(([k,v])=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+k+'</td><td>'+v+'</td>'; body.appendChild(tr)})}
+function renderPriceMap(){const body=$('priceMapBody'); body.innerHTML=''; const rows=[...(state.results.D1?.priceMap||[]), ...(state.results.H4?.priceMap||[]), ...(state.results.H1?.priceMap||[])]; rows.forEach(([k,v])=>{const tr=document.createElement('tr'); tr.innerHTML='<td>'+k+'</td><td>'+v+'</td>'; body.appendChild(tr)}); renderStructurePanel()}
 
 function directionalIntelligence(){
   const d1 = state.results.D1 || {}
@@ -582,7 +678,7 @@ function directionalIntelligence(){
 
   return { buyScore, sellScore, direction, reasons }
 }
-function buildNarrative(){if(!(state.completed.D1&&state.completed.H4&&state.completed.H1)){setStrip('Complete D1, H4 and H1 scans first.'); return} const d1=state.results.D1,h4=state.results.H4,h1=state.results.H1; $('narrative').value=`D1 bias ${d1.bias}. POI ${d1.poi}. D1 zone ${d1.zone}. H4 bias ${h4.bias}, ${h4.mss}, FVG ${h4.fvg}, OB ${h4.ob}. Reference level: ${h4.fibRef}. H4 zone ${h4.zone}. H1 bias ${h1.bias}, ${h1.ema}. Drop to ${h1.dropTo} and wait for confirmation before entry.`; setStrip('Narrative built. Build trade advice now.'); log('NARRATIVE BUILT')}
+function buildNarrative(){if(!(state.completed.D1&&state.completed.H4&&state.completed.H1)){setStrip('Complete D1, H4 and H1 scans first.'); return} const d1=state.results.D1,h4=state.results.H4,h1=state.results.H1; $('narrative').value=`D1 bias ${d1.bias}. D1 structure ${d1.structure?.state || '--'} with active leg ${d1.structure?.activeLeg || '--'}. D1 zone ${d1.zone}. H4 bias ${h4.bias}, ${h4.mss}, H4 structure ${h4.structure?.state || '--'} with active leg ${h4.structure?.activeLeg || '--'}, FVG ${h4.fvg}, OB ${h4.ob}. Reference level: ${h4.fibRef}. H4 zone ${h4.zone}. H1 bias ${h1.bias}, ${h1.ema}, H1 structure ${h1.structure?.state || '--'} with active leg ${h1.structure?.activeLeg || '--'}. Drop to ${h1.dropTo} and wait for confirmation before entry.`; setStrip('Narrative built with D1/H4/H1 structure context. Build trade advice now.'); log('NARRATIVE BUILT')}
 function buildAdvice(){
   if(!$('narrative').value.trim()){setStrip('Build narrative first.'); return}
   const h1=state.results.H1,h4=state.results.H4
@@ -667,7 +763,7 @@ $('fibSelector').addEventListener('change',()=>{savePrefs(); if(state.results.H4
 $('overlaySelector').addEventListener('change',()=>{savePrefs(); renderChart(); updateAdapterState('overlay changed')})
 ;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
 
-loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V10.0 RECOVERED INTEGRATED CORE LOADED'); setStrip('Recovered integrated base is active. Use this as the new mainline and stop branching into thin scaffolds.')
+loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V10.1 MTF STRUCTURE MAPPER LOADED'); setStrip('Recovered integrated base is active. Use this as the new mainline and stop branching into thin scaffolds.')
 })();
 </script>
 </body>
