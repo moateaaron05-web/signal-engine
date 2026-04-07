@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love@Fx Pro — v10.1 MTF Structure Mapper</title>
+<title>Love@Fx Pro — v10.2 Structure Overlay</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--bull:#00bfff;--bear:#2e8b57;--ema1:#5aaef7;--ema2:#d6a14c}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
@@ -20,7 +20,7 @@
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">Love@Fx Pro <span class="badge">v10.1 MTF STRUCTURE</span></div><div class="sub">Recovered core + D1/H4/H1 swing-point mapper + structure panel</div><div class="small" style="margin-top:6px">Recovery strategy: preserve the last strong integrated machine first, then layer new structure features into this same core without fragmenting the app again.</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">Love@Fx Pro <span class="badge">v10.2 STRUCTURE OVERLAY</span></div><div class="sub">Recovered core + on-chart HH/HL/LH/LL labels + active leg visual overlay</div><div class="small" style="margin-top:6px">Recovery strategy: preserve the last strong integrated machine first, then layer new structure features into this same core without fragmenting the app again.</div></div></div></div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Offline</div></div>
     <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Current TF</div><div id="currTfLbl" class="value">D1</div></div>
@@ -120,7 +120,7 @@
 
       <div class="card">
         <div class="label">MTF Structure Panel</div>
-        <div class="small" style="margin-bottom:8px">Shows conservative swing anchors used for each timeframe. Fibs should be interpreted from these structure points, not just rolling range values.</div>
+        <div class="small" style="margin-bottom:8px">Shows conservative swing anchors used for each timeframe. Chart now also labels HH/HL/LH/LL directly on the selected timeframe and highlights the active leg.</div>
         <div class="tablewrap" style="max-height:none"><table><thead><tr><th>TF</th><th>HH</th><th>HL</th><th>LH</th><th>LL</th><th>Fib Start</th><th>Fib End</th><th>Active Leg</th><th>State</th></tr></thead><tbody id="structureBody"></tbody></table></div>
       </div>
 
@@ -444,6 +444,85 @@ function selectedFibValue(fib){const sel=selectedFibLabel(); if(sel==='23.6') re
 function selectedFibText(fib){const sel=selectedFibLabel(); if(sel==='auto') return 'H4 Fib 61.8 = '+fib.f618.toFixed(3); return 'H4 Fib '+sel+' = '+selectedFibValue(fib).toFixed(3)}
 function renderStats(){const s=getStats(state.currentTf); if(!s.arr.length) return; $('livePrice').textContent=(state.latestTick ?? s.last).toFixed(3); $('emaBias').textContent=s.bias; $('rsiVal').textContent=s.rsi?s.rsi.toFixed(1):'--'; $('regimeVal').textContent=((s.rsi||50)>75||(s.rsi||50)<25)?'Exhaustion':s.regime; $('dataState').textContent=state.feedLive?'API':'Fallback'}
 function drawZone(ctx,x1,x2,yTop,yBot,fill,label){ctx.fillStyle=fill; ctx.fillRect(x1,yTop,x2-x1,yBot-yTop); ctx.strokeStyle='rgba(255,255,255,.18)'; ctx.strokeRect(x1,yTop,x2-x1,yBot-yTop); ctx.fillStyle='#e9f2ff'; ctx.font='12px Segoe UI'; ctx.fillText(label,x1+8,yTop+16)}
+
+function projectPoint(idx, price){
+  if(!state.plot) return null
+  const {plotX, plotY, plotW, plotH, hi, lo} = state.plot
+  const arr = state.candles[state.currentTf] || []
+  if(!arr.length) return null
+  const step = plotW / arr.length
+  const x = plotX + idx * step + step * 0.5
+  const y = plotY + (hi - price) / (hi - lo) * plotH
+  return {x, y}
+}
+function structureLabelSet(structure){
+  const labels = []
+  if(structure?.HH) labels.push({tag:'HH', p:structure.HH, color:'#2fd07f'})
+  if(structure?.HL) labels.push({tag:'HL', p:structure.HL, color:'#7dd3fc'})
+  if(structure?.LH) labels.push({tag:'LH', p:structure.LH, color:'#f0b44d'})
+  if(structure?.LL) labels.push({tag:'LL', p:structure.LL, color:'#ff6b6b'})
+  return labels
+}
+function drawStructureOverlay(ctx){
+  const st = state.results[state.currentTf]?.structure
+  if(!st || !state.plot) return
+
+  const labels = structureLabelSet(st)
+  labels.forEach(item=>{
+    const pt = projectPoint(item.p.index, item.p.price)
+    if(!pt) return
+    ctx.beginPath()
+    ctx.fillStyle = item.color
+    ctx.arc(pt.x, pt.y, 5, 0, Math.PI*2)
+    ctx.fill()
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'
+    ctx.lineWidth = 1
+    ctx.stroke()
+
+    ctx.fillStyle = item.color
+    ctx.font = 'bold 13px Segoe UI'
+    ctx.fillText(item.tag, pt.x + 8, pt.y - 8)
+    ctx.fillStyle = '#9fb3d1'
+    ctx.font = '11px Segoe UI'
+    ctx.fillText(item.p.price.toFixed(3), pt.x + 8, pt.y + 8)
+  })
+
+  if(Number.isFinite(st.fibStart) && Number.isFinite(st.fibEnd)){
+    let startPivot = null
+    let endPivot = null
+    if((st.activeLeg || '').includes('Bullish')){
+      startPivot = st.LL || st.HL
+      endPivot = st.HH || st.LH
+    } else if((st.activeLeg || '').includes('Bearish')){
+      startPivot = st.HH || st.LH
+      endPivot = st.LL || st.HL
+    }
+    if(startPivot && endPivot){
+      const a = projectPoint(startPivot.index, startPivot.price)
+      const b = projectPoint(endPivot.index, endPivot.price)
+      if(a && b){
+        ctx.strokeStyle = 'rgba(240,180,77,.95)'
+        ctx.lineWidth = 3
+        ctx.setLineDash([8,5])
+        ctx.beginPath()
+        ctx.moveTo(a.x, a.y)
+        ctx.lineTo(b.x, b.y)
+        ctx.stroke()
+        ctx.setLineDash([])
+
+        const mx = (a.x + b.x) / 2
+        const my = (a.y + b.y) / 2
+        ctx.fillStyle = 'rgba(240,180,77,.18)'
+        ctx.fillRect(mx - 90, my - 18, 180, 28)
+        ctx.strokeStyle = 'rgba(240,180,77,.9)'
+        ctx.strokeRect(mx - 90, my - 18, 180, 28)
+        ctx.fillStyle = '#f0b44d'
+        ctx.font = 'bold 12px Segoe UI'
+        ctx.fillText('Active leg: ' + st.activeLeg, mx - 82, my)
+      }
+    }
+  }
+}
 function renderChart(){
   const canvas=$('chartCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height
   ctx.clearRect(0,0,W,H); ctx.fillStyle='#091626'; ctx.fillRect(0,0,W,H)
@@ -493,6 +572,7 @@ function renderChart(){
   ctx.fillText(state.symbol+' | '+state.currentTf+' | MT5-style structure shell',74,18)
   if(stats.last) ctx.fillText('Last '+stats.last.toFixed(3),W-220,18)
 
+  drawStructureOverlay(ctx)
   renderDrawings()
   renderStats()
 }
@@ -763,7 +843,7 @@ $('fibSelector').addEventListener('change',()=>{savePrefs(); if(state.results.H4
 $('overlaySelector').addEventListener('change',()=>{savePrefs(); renderChart(); updateAdapterState('overlay changed')})
 ;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
 
-loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V10.1 MTF STRUCTURE MAPPER LOADED'); setStrip('Recovered integrated base is active. Use this as the new mainline and stop branching into thin scaffolds.')
+loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V10.2 STRUCTURE OVERLAY LOADED'); setStrip('Recovered integrated base is active. Structure overlay now labels HH/HL/LH/LL directly on the selected chart.')
 })();
 </script>
 </body>
