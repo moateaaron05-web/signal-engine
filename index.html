@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Love@Fx Pro — v9.5.1 Directional Intelligence Upgrade</title>
+<title>AI Love@Fx Pro — v9.5.1.1 Trigger Pull Repair</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--bull:#00bfff;--bear:#2e8b57;--ema1:#5aaef7;--ema2:#d6a14c}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
@@ -20,7 +20,7 @@
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.5.1 INTELLIGENCE</span></div><div class="sub">Directional scoring fix | better bias intelligence | smartphone-ready layout</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">AI Love@Fx Pro <span class="badge">v9.5.1.1 TRIGGER PULL</span></div><div class="sub">Directional scoring fix | trigger pull repair | smartphone-ready layout</div></div></div></div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Offline</div></div>
     <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Current TF</div><div id="currTfLbl" class="value">D1</div></div>
@@ -631,6 +631,34 @@ $('btnD1').onclick=()=>setTf('D1'); $('btnH4').onclick=()=>setTf('H4'); $('btnH1
 $('scanBtn').onclick=scanCurrent; $('refreshTfBtn').onclick=()=>loadTf(state.currentTf,true).catch(err=>log('REFRESH ERROR: '+err.message))
 $('toolLineBtn').onclick=()=>setTool('line'); $('toolZoneBtn').onclick=()=>setTool('zone'); $('toolFibBtn').onclick=()=>setTool('fib')
 $('clearDrawBtn').onclick=()=>{state.drawings[state.currentTf]=[]; state.draft=null; renderDrawings(); log('DRAWINGS CLEARED ON '+state.currentTf)}
+
+function pullTrigger(){
+  const h1 = state.results.H1
+  if(!h1){
+    setStrip('Complete H1 first.')
+    return
+  }
+  const dirText = String(($('ad_dir').textContent || '')).trim().toUpperCase()
+  if(!dirText || dirText === 'LOCKED'){
+    setStrip('Build advice first.')
+    return
+  }
+  if(dirText === 'WAIT'){
+    setStrip('Advice is WAIT. Trigger stays locked.')
+    return
+  }
+
+  $('tr_dir').value = dirText
+  $('tr_tf').value = 'M5'
+  $('tr_entry').value = String(h1.entry || '')
+  $('tr_sl').value = String(h1.sl || '')
+  $('tr_tp').value = String(h1.tp1 || '')
+  $('tr_fib_ref').value = String((state.results.H4 && state.results.H4.fibRef) || '')
+  $('tr_notes').value = String((state.results.H4 && state.results.H4.fibRef) || '') + ' | pulled from advice trigger'
+  calcRR()
+  setStrip('Advice pulled into trigger successfully.')
+  log('ADVICE PULLED TO TRIGGER')
+}
 $('buildNarrativeBtn').onclick=buildNarrative; $('buildAdviceBtn').onclick=buildAdvice; $('pullTriggerBtn').onclick=pullTrigger
 $('armBtn').onclick=armTrade; $('execBtn').onclick=execTrade; $('cancelBtn').onclick=cancelTrade
 $('mobileConnect').onclick=connectLive; $('mobileScan').onclick=scanCurrent; $('mobileNarr').onclick=buildNarrative; $('mobileAdvice').onclick=buildAdvice; $('clearJournalBtn').onclick=clearSavedJournal; $('closeAsWinBtn').onclick=()=>closeLatestTrade('Win'); $('closeAsLossBtn').onclick=()=>closeLatestTrade('Loss'); $('applyReconBtn').onclick=applyReconciliation; $('clearReconInputsBtn').onclick=clearReconInputs
@@ -639,7 +667,7 @@ $('fibSelector').addEventListener('change',()=>{savePrefs(); if(state.results.H4
 $('overlaySelector').addEventListener('change',()=>{savePrefs(); renderChart(); updateAdapterState('overlay changed')})
 ;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
 
-loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.5.1 DIRECTIONAL INTELLIGENCE UPGRADE LOADED')
+loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V9.5.1.1 TRIGGER PULL REPAIR LOADED')
 })();
 </script>
 </body>
