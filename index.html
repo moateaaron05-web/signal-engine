@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love@Fx Pro — v10.3 BOS Structure Engine</title>
+<title>Love@Fx Pro — v10.3.1 Swing Promotion + Pullback Validation</title>
 <style>
 :root{--bg:#08111f;--panel:#0d1b2d;--line:#27476f;--text:#e9f2ff;--muted:#9fb3d1;--green:#2fd07f;--red:#ff6b6b;--amber:#f0b44d;--blue:#48a8ff;--bull:#00bfff;--bear:#2e8b57;--ema1:#5aaef7;--ema2:#d6a14c}
 *{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#08111f,#091726 55%,#08131f);color:var(--text)}
@@ -20,7 +20,7 @@
 <body>
 <div class="wrap">
   <div class="grid top">
-    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">Love@Fx Pro <span class="badge">v10.3 BOS ENGINE</span></div><div class="sub">BOS-driven structure engine + smart swing filtering + recovered integrated core</div><div class="small" style="margin-top:6px">Recovery strategy: preserve the last strong integrated machine first, then layer new structure features into this same core without fragmenting the app again.</div></div></div></div>
+    <div class="card"><div class="brand"><div class="logo">◆</div><div><div class="title">Love@Fx Pro <span class="badge">v10.3.1 PROMOTION</span></div><div class="sub">Swing promotion rules + stronger BOS confirmation + pullback validation engine</div><div class="small" style="margin-top:6px">Recovery strategy: preserve the last strong integrated machine first, then layer new structure features into this same core without fragmenting the app again.</div></div></div></div>
     <div class="card"><div class="label">Feed</div><div id="feedLbl" class="value">Offline</div></div>
     <div class="card"><div class="label">Scanner Step</div><div id="stepLbl" class="value">D1</div></div>
     <div class="card"><div class="label">Current TF</div><div id="currTfLbl" class="value">D1</div></div>
@@ -121,7 +121,7 @@
       <div class="card">
         <div class="label">MTF Structure Panel</div>
         <div class="small" style="margin-bottom:8px">Shows BOS-aware swing anchors used for each timeframe. Chart labels HH/HL/LH/LL directly on the selected timeframe, filters weak noise pivots, and highlights the active leg.</div>
-        <div class="tablewrap" style="max-height:none"><table><thead><tr><th>TF</th><th>HH</th><th>HL</th><th>LH</th><th>LL</th><th>Fib Start</th><th>Fib End</th><th>Active Leg</th><th>State</th></tr></thead><tbody id="structureBody"></tbody></table></div>
+        <div class="tablewrap" style="max-height:none"><table><thead><tr><th>TF</th><th>HH</th><th>HL</th><th>LH</th><th>LL</th><th>Fib Start</th><th>Fib End</th><th>Active Leg</th><th>BOS</th><th>Pullback</th><th>State</th></tr></thead><tbody id="structureBody"></tbody></table></div>
       </div>
 
       <div class="card">
@@ -618,6 +618,7 @@ function guardedUpdate(q){
 }
 
 
+
 function pivotSwings(arr,left=3,right=3){
   const pivots=[]
   if(!arr || arr.length < left+right+1) return pivots
@@ -629,13 +630,18 @@ function pivotSwings(arr,left=3,right=3){
       if(arr[j].h > c.h) isHigh=false
       if(arr[j].l < c.l) isLow=false
     }
-    if(isHigh) pivots.push({kind:'H', price:c.h, index:i, epoch:c.epoch, strength:0})
-    if(isLow) pivots.push({kind:'L', price:c.l, index:i, epoch:c.epoch, strength:0})
+    if(isHigh) pivots.push({kind:'H', price:c.h, close:c.c, index:i, epoch:c.epoch, strength:0})
+    if(isLow) pivots.push({kind:'L', price:c.l, close:c.c, index:i, epoch:c.epoch, strength:0})
   }
   return pivots.sort((a,b)=>a.index-b.index)
 }
+function avgRange(arr, lookback=20){
+  const slice = arr.slice(-lookback)
+  if(!slice.length) return 0.001
+  return Math.max(0.001, slice.reduce((a,b)=>a+(b.h-b.l),0)/slice.length)
+}
 function scorePivotStrength(arr, p){
-  const look = 4
+  const look = 5
   const a = Math.max(0, p.index - look)
   const b = Math.min(arr.length - 1, p.index + look)
   let localHi = -Infinity, localLo = Infinity
@@ -644,33 +650,69 @@ function scorePivotStrength(arr, p){
     localLo = Math.min(localLo, arr[i].l)
   }
   const range = Math.max(0.001, localHi - localLo)
-  if(p.kind === 'H') return (p.price - localLo) / range
-  return (localHi - p.price) / range
+  const displacement = p.kind === 'H' ? (p.price - localLo) / range : (localHi - p.price) / range
+  const awayIdx = Math.min(arr.length-1, p.index + 3)
+  const awayMove = p.kind === 'H' ? Math.max(0, p.price - arr[awayIdx].c) : Math.max(0, arr[awayIdx].c - p.price)
+  return displacement + (awayMove / Math.max(0.001, range))
 }
 function smartFilteredPivots(arr){
   const raw = pivotSwings(arr,3,3).map(p=>({...p, strength:scorePivotStrength(arr,p)}))
   const filtered=[]
+  const ar = avgRange(arr, 24)
   for(const p of raw){
     const last = filtered[filtered.length-1]
     if(!last){ filtered.push(p); continue }
     if(last.kind === p.kind){
-      // keep stronger pivot of same type, discard weaker noise
-      if(p.strength >= last.strength){
+      // swing promotion: only replace if meaningfully stronger
+      if(p.strength > last.strength + 0.15){
         filtered[filtered.length-1] = p
       }
     } else {
-      // require minimum movement to accept next pivot
       const move = Math.abs(p.price - last.price)
-      const recent = arr.slice(Math.max(0, p.index-12), p.index+1)
-      const localHi = Math.max(...recent.map(x=>x.h))
-      const localLo = Math.min(...recent.map(x=>x.l))
-      const localRange = Math.max(0.001, localHi - localLo)
-      if(move >= localRange * 0.18 || p.strength >= 0.55){
+      const barsBetween = Math.max(1, p.index - last.index)
+      const enoughDistance = move >= ar * 1.2
+      const enoughTime = barsBetween >= 3
+      const strongEnough = p.strength >= 0.95
+      if((enoughDistance && enoughTime) || strongEnough){
         filtered.push(p)
       }
     }
   }
   return filtered
+}
+function bullishPullbackValidation(arr, hlIndex, protectedLow){
+  if(hlIndex == null) return {valid:false, reason:'No HL index'}
+  const start = Math.max(0, hlIndex - 5)
+  const end = hlIndex
+  let bearCount = 0
+  let lowerCloseSteps = 0
+  for(let i=start;i<=end;i++){
+    if(arr[i].c < arr[i].o) bearCount += 1
+    if(i>start && arr[i].c < arr[i-1].c) lowerCloseSteps += 1
+  }
+  const seqOk = bearCount >= 3 && lowerCloseSteps >= 2
+  let protectedOk = true
+  for(let i=Math.max(0, hlIndex-4); i<=hlIndex; i++){
+    if(arr[i].l < protectedLow) protectedOk = false
+  }
+  return {valid: seqOk && protectedOk, reason:`bearCount=${bearCount}, lowerCloseSteps=${lowerCloseSteps}, protected=${protectedOk}`}
+}
+function bearishPullbackValidation(arr, lhIndex, protectedHigh){
+  if(lhIndex == null) return {valid:false, reason:'No LH index'}
+  const start = Math.max(0, lhIndex - 5)
+  const end = lhIndex
+  let bullCount = 0
+  let higherCloseSteps = 0
+  for(let i=start;i<=end;i++){
+    if(arr[i].c > arr[i].o) bullCount += 1
+    if(i>start && arr[i].c > arr[i-1].c) higherCloseSteps += 1
+  }
+  const seqOk = bullCount >= 3 && higherCloseSteps >= 2
+  let protectedOk = true
+  for(let i=Math.max(0, lhIndex-4); i<=lhIndex; i++){
+    if(arr[i].h > protectedHigh) protectedOk = false
+  }
+  return {valid: seqOk && protectedOk, reason:`bullCount=${bullCount}, higherCloseSteps=${higherCloseSteps}, protected=${protectedOk}`}
 }
 function classifyStructureFromPivots(arr){
   const pivots = smartFilteredPivots(arr)
@@ -691,21 +733,36 @@ function classifyStructureFromPivots(arr){
   if(latestHigh && prevHigh && latestHigh.price < prevHigh.price) LH = latestHigh
   else if(prevHigh && latestLow && prevHigh.index < latestLow.index) LH = prevHigh
 
-  // BOS logic
+  // stronger BOS confirmation: close beyond prior pivot + follow-through
   let bullishBOS = false, bearishBOS = false
-  if(latestHigh && prevHigh && latestHigh.price > prevHigh.price) bullishBOS = true
-  if(latestLow && prevLow && latestLow.price < prevLow.price) bearishBOS = true
+  if(latestHigh && prevHigh){
+    const broke = latestHigh.price > prevHigh.price
+    const closeBeyond = arr[latestHigh.index].c > prevHigh.price
+    const followThrough = latestHigh.index + 1 < arr.length ? arr[latestHigh.index + 1].c >= arr[latestHigh.index].c - avgRange(arr,20)*0.15 : true
+    bullishBOS = broke && closeBeyond && followThrough
+  }
+  if(latestLow && prevLow){
+    const broke = latestLow.price < prevLow.price
+    const closeBeyond = arr[latestLow.index].c < prevLow.price
+    const followThrough = latestLow.index + 1 < arr.length ? arr[latestLow.index + 1].c <= arr[latestLow.index].c + avgRange(arr,20)*0.15 : true
+    bearishBOS = broke && closeBeyond && followThrough
+  }
+
+  let bullishPullback = {valid:false, reason:'No bullish pullback'}
+  let bearishPullback = {valid:false, reason:'No bearish pullback'}
+  if(HL && prevLow) bullishPullback = bullishPullbackValidation(arr, HL.index, prevLow.price)
+  if(LH && prevHigh) bearishPullback = bearishPullbackValidation(arr, LH.index, prevHigh.price)
 
   let activeLeg='Undecided'
   let state='Range / Transition'
   let fibStart=null, fibEnd=null
 
-  if(bullishBOS && HL && latestHigh){
+  if(bullishBOS && HL && latestHigh && bullishPullback.valid){
     fibStart = HL.price
     fibEnd = latestHigh.price
     activeLeg = 'Bullish (HL → HH)'
     state = 'Bullish Expansion'
-  } else if(bearishBOS && LH && latestLow){
+  } else if(bearishBOS && LH && latestLow && bearishPullback.valid){
     fibStart = LH.price
     fibEnd = latestLow.price
     activeLeg = 'Bearish (LH → LL)'
@@ -716,12 +773,12 @@ function classifyStructureFromPivots(arr){
         fibStart = (HL ? HL.price : latestLow.price)
         fibEnd = latestHigh.price
         activeLeg = HL ? 'Bullish (HL → HH)' : 'Bullish (LL → HH)'
-        state = 'Bullish Pullback / Recovery'
+        state = bullishPullback.valid ? 'Bullish Pullback / Recovery' : 'Bullish but pullback unconfirmed'
       } else {
         fibStart = (LH ? LH.price : latestHigh.price)
         fibEnd = latestLow.price
         activeLeg = LH ? 'Bearish (LH → LL)' : 'Bearish (HH → LL)'
-        state = 'Bearish Pullback / Continuation'
+        state = bearishPullback.valid ? 'Bearish Pullback / Continuation' : 'Bearish but pullback unconfirmed'
       }
     } else {
       fibStart = LL.price
@@ -733,7 +790,8 @@ function classifyStructureFromPivots(arr){
   return {
     pivots, HH, HL, LH, LL,
     fibStart, fibEnd, activeLeg, state,
-    bullishBOS, bearishBOS
+    bullishBOS, bearishBOS,
+    bullishPullback, bearishPullback
   }
 }
 function renderStructurePanel(){
@@ -742,6 +800,8 @@ function renderStructurePanel(){
   body.innerHTML = ''
   ;['D1','H4','H1'].forEach(tf=>{
     const s = state.results[tf]?.structure
+    const bosText = s?.bullishBOS ? 'BOS↑' : s?.bearishBOS ? 'BOS↓' : '--'
+    const pbText = s?.bullishPullback?.valid ? 'Bull PB✓' : s?.bearishPullback?.valid ? 'Bear PB✓' : 'Unconfirmed'
     const tr = document.createElement('tr')
     tr.innerHTML = `<td>${tf}</td>
       <td>${s?.HH?.price?.toFixed ? s.HH.price.toFixed(3) : '--'}</td>
@@ -751,10 +811,13 @@ function renderStructurePanel(){
       <td>${Number.isFinite(s?.fibStart) ? s.fibStart.toFixed(3) : '--'}</td>
       <td>${Number.isFinite(s?.fibEnd) ? s.fibEnd.toFixed(3) : '--'}</td>
       <td>${s?.activeLeg || '--'}</td>
-      <td>${s?.state || '--'}${s?.bullishBOS ? ' | BOS↑' : ''}${s?.bearishBOS ? ' | BOS↓' : ''}</td>`
+      <td>${bosText}</td>
+      <td>${pbText}</td>
+      <td>${s?.state || '--'}</td>`
     body.appendChild(tr)
   })
 }
+
 
 function scanCurrent(){const tf=state.currentTf, req=nextRequired(); if(req==='DONE'){setStrip('Scanner already completed.'); return} if(tf!==req){setStrip('Scan '+req+' first.'); log('SCAN BLOCKED: '+tf); return} const s=getStats(tf); if(!s.arr.length){setStrip('No candle data loaded.'); return}
   if(tf==='D1'){const st=classifyStructureFromPivots(s.arr); const sh=st.HH?st.HH.price:recentSwingHigh(s.arr,30), sl=st.LL?st.LL.price:recentSwingLow(s.arr,30); const fib=calcFibLevels(sh,sl); const fibStart = Number.isFinite(st.fibStart)?st.fibStart:sl; const fibEnd = Number.isFinite(st.fibEnd)?st.fibEnd:sh; state.results.D1={bias:s.bias,poi:fib.f618.toFixed(3)+' demand/discount zone',zone:`${fib.f618.toFixed(3)} to ${fib.f50.toFixed(3)}`,structure:st,priceMap:[['Current visible price',s.last.toFixed(3)],['D1 HH',sh.toFixed(3)],['D1 LL',sl.toFixed(3)],['D1 Fib start',fibStart.toFixed(3)],['D1 Fib end',fibEnd.toFixed(3)],['D1 active leg',st.activeLeg],['D1 state',st.state],['D1 POI price (buy opportunity)',fib.f618.toFixed(3)],['D1 swing high',sh.toFixed(3)],['D1 swing low',sl.toFixed(3)],['D1 Fib 50.0',fib.f50.toFixed(3)],['D1 Fib 61.8',fib.f618.toFixed(3)]]}; $('d1_bias').textContent=state.results.D1.bias; $('d1_poi').textContent=state.results.D1.poi; $('d1_zone').textContent=state.results.D1.zone; state.completed.D1=true; setStrip('D1 scan complete. BOS structure anchors captured. Load H4 next.')}
@@ -791,24 +854,39 @@ function directionalIntelligence(){
   if(ema.includes('above EMA20') || ema.includes('above EMA20 & EMA50')){ buyScore += 1.5; reasons.push('H1 above EMAs +1.5 buy') }
   if(ema.includes('below EMA20') || ema.includes('below EMA20 & EMA50')){ sellScore += 1.5; reasons.push('H1 below EMAs +1.5 sell') }
 
+  if(d1.structure?.bullishBOS){ buyScore += 2; reasons.push('D1 BOS up +2 buy') }
+  if(d1.structure?.bearishBOS){ sellScore += 2; reasons.push('D1 BOS down +2 sell') }
+  if(h4.structure?.bullishBOS){ buyScore += 2; reasons.push('H4 BOS up +2 buy') }
+  if(h4.structure?.bearishBOS){ sellScore += 2; reasons.push('H4 BOS down +2 sell') }
+  if(h1.structure?.bullishBOS){ buyScore += 1.5; reasons.push('H1 BOS up +1.5 buy') }
+  if(h1.structure?.bearishBOS){ sellScore += 1.5; reasons.push('H1 BOS down +1.5 sell') }
+
+  if(h4.structure?.bullishPullback?.valid){ buyScore += 1; reasons.push('H4 bullish pullback valid +1 buy') }
+  if(h4.structure?.bearishPullback?.valid){ sellScore += 1; reasons.push('H4 bearish pullback valid +1 sell') }
+  if(h1.structure?.bullishPullback?.valid){ buyScore += 0.75; reasons.push('H1 bullish pullback valid +0.75 buy') }
+  if(h1.structure?.bearishPullback?.valid){ sellScore += 0.75; reasons.push('H1 bearish pullback valid +0.75 sell') }
+
+  if(!h4.structure?.bullishPullback?.valid && h4.bias === 'Bullish'){ buyScore -= 0.75; reasons.push('H4 bullish pullback unconfirmed -0.75 buy') }
+  if(!h4.structure?.bearishPullback?.valid && h4.bias === 'Bearish'){ sellScore -= 0.75; reasons.push('H4 bearish pullback unconfirmed -0.75 sell') }
+
   const diff = Math.abs(buyScore - sellScore)
   let direction = 'WAIT'
   if(diff >= 2){
     direction = buyScore > sellScore ? 'BUY' : 'SELL'
   }
 
-  if(d1.bias === 'Bullish' && h1.bias === 'Bullish' && buyScore >= sellScore + 1){
+  if(d1.structure?.bullishBOS && h1.structure?.bullishBOS && buyScore >= sellScore + 1){
     direction = 'BUY'
-    reasons.push('HTF/LTF bullish agreement override')
+    reasons.push('BOS alignment override BUY')
   }
-  if(d1.bias === 'Bearish' && h1.bias === 'Bearish' && sellScore >= buyScore + 1){
+  if(d1.structure?.bearishBOS && h1.structure?.bearishBOS && sellScore >= buyScore + 1){
     direction = 'SELL'
-    reasons.push('HTF/LTF bearish agreement override')
+    reasons.push('BOS alignment override SELL')
   }
 
   return { buyScore, sellScore, direction, reasons }
 }
-function buildNarrative(){if(!(state.completed.D1&&state.completed.H4&&state.completed.H1)){setStrip('Complete D1, H4 and H1 scans first.'); return} const d1=state.results.D1,h4=state.results.H4,h1=state.results.H1; $('narrative').value=`D1 bias ${d1.bias}. D1 structure ${d1.structure?.state || '--'} with active leg ${d1.structure?.activeLeg || '--'} ${d1.structure?.bullishBOS ? '(BOS up)' : d1.structure?.bearishBOS ? '(BOS down)' : ''}. D1 zone ${d1.zone}. H4 bias ${h4.bias}, ${h4.mss}, H4 structure ${h4.structure?.state || '--'} with active leg ${h4.structure?.activeLeg || '--'} ${h4.structure?.bullishBOS ? '(BOS up)' : h4.structure?.bearishBOS ? '(BOS down)' : ''}, FVG ${h4.fvg}, OB ${h4.ob}. Reference level: ${h4.fibRef}. H4 zone ${h4.zone}. H1 bias ${h1.bias}, ${h1.ema}, H1 structure ${h1.structure?.state || '--'} with active leg ${h1.structure?.activeLeg || '--'} ${h1.structure?.bullishBOS ? '(BOS up)' : h1.structure?.bearishBOS ? '(BOS down)' : ''}. Drop to ${h1.dropTo} and wait for confirmation before entry.`; setStrip('Narrative built with D1/H4/H1 structure context. Build trade advice now.'); log('NARRATIVE BUILT')}
+function buildNarrative(){if(!(state.completed.D1&&state.completed.H4&&state.completed.H1)){setStrip('Complete D1, H4 and H1 scans first.'); return} const d1=state.results.D1,h4=state.results.H4,h1=state.results.H1; $('narrative').value=`D1 bias ${d1.bias}. D1 structure ${d1.structure?.state || '--'} with active leg ${d1.structure?.activeLeg || '--'} ${d1.structure?.bullishBOS ? '(BOS up)' : d1.structure?.bearishBOS ? '(BOS down)' : ''} ${d1.structure?.bullishPullback?.valid ? '(bullish pullback valid)' : d1.structure?.bearishPullback?.valid ? '(bearish pullback valid)' : '(pullback unconfirmed)'}. D1 zone ${d1.zone}. H4 bias ${h4.bias}, ${h4.mss}, H4 structure ${h4.structure?.state || '--'} with active leg ${h4.structure?.activeLeg || '--'} ${h4.structure?.bullishBOS ? '(BOS up)' : h4.structure?.bearishBOS ? '(BOS down)' : ''} ${h4.structure?.bullishPullback?.valid ? '(bullish pullback valid)' : h4.structure?.bearishPullback?.valid ? '(bearish pullback valid)' : '(pullback unconfirmed)'}, FVG ${h4.fvg}, OB ${h4.ob}. Reference level: ${h4.fibRef}. H4 zone ${h4.zone}. H1 bias ${h1.bias}, ${h1.ema}, H1 structure ${h1.structure?.state || '--'} with active leg ${h1.structure?.activeLeg || '--'} ${h1.structure?.bullishBOS ? '(BOS up)' : h1.structure?.bearishBOS ? '(BOS down)' : ''} ${h1.structure?.bullishPullback?.valid ? '(bullish pullback valid)' : h1.structure?.bearishPullback?.valid ? '(bearish pullback valid)' : '(pullback unconfirmed)'}. Drop to ${h1.dropTo} and wait for confirmation before entry.`; setStrip('Narrative built with D1/H4/H1 structure context. Build trade advice now.'); log('NARRATIVE BUILT')}
 function buildAdvice(){
   if(!$('narrative').value.trim()){setStrip('Build narrative first.'); return}
   const h1=state.results.H1,h4=state.results.H4
@@ -893,7 +971,7 @@ $('fibSelector').addEventListener('change',()=>{savePrefs(); if(state.results.H4
 $('overlaySelector').addEventListener('change',()=>{savePrefs(); renderChart(); updateAdapterState('overlay changed')})
 ;['tr_entry','tr_sl','tr_tp'].forEach(id=>$(id).addEventListener('input',calcRR))
 
-loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V10.3 BOS STRUCTURE ENGINE LOADED'); setStrip('Recovered integrated base is active. Structure overlay now labels HH/HL/LH/LL directly on the selected chart.')
+loadPrefs(); loadTradeLog(); setStages(); updateAdapterState('shell loaded'); renderTradeLog(); log('V10.3.1 SWING PROMOTION + BOS + PULLBACK VALIDATION LOADED'); setStrip('Recovered integrated base is active. Structure overlay now labels HH/HL/LH/LL directly on the selected chart.')
 })();
 </script>
 </body>
